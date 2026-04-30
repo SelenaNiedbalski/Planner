@@ -4,7 +4,6 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.Duration;
 import java.util.List;
-
 /**
  * Lead Author(s):
  * 
@@ -18,7 +17,7 @@ import java.util.List;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- *         Version/date: 28 April 2026
+ *         Version/date: 29 April 2026
  * 
  *         Responsibilities of class: To represent a block of time in a week for
  *         a class schedule

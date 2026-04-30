@@ -1,10 +1,7 @@
 package schedules;
+
 import java.util.List;
-
 import courseclasses.Course;
-
-
-
 /**
  * Lead Author(s):
  * @author Selena Niedbalski
@@ -16,7 +13,7 @@ import courseclasses.Course;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- * Version/date: 28 April 2026
+ * Version/date: 29 April 2026
  * 
  * Responsibilities of class: To represent a schedule with many classes that a student can take
  * 

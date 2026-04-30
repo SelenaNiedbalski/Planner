@@ -12,7 +12,7 @@ package exceptions;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- * Version/date: 28 April 2026
+ * Version/date: 29 April 2026
  * 
  * Responsibilities of class: To represent an exception that is thrown when a file path does not exist
  * 
