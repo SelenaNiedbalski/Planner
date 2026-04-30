@@ -19,5 +19,5 @@ package mcvandfileservice;
 
 public class CourseRepository
 {
-
+	// TODO calculate all courses after creation
 }

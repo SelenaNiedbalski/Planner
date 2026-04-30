@@ -19,5 +19,10 @@ package mcvandfileservice;
 
 public class AppController
 {
-
+	public AppController()
+	{
+		
+	}
+	
+	
 }

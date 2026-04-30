@@ -1,24 +1,86 @@
 package courseclasses;
 
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.List;
+
 /**
  * Lead Author(s):
+ * 
  * @author Selena Niedbalski
  * 
  * 
- * References:
- *         Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented Problem Solving.
+ *         References:
+ *         Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented
+ *         Problem Solving.
  *         Retrieved from
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- * Version/date: 28 April 2026
+ *         Version/date: 28 April 2026
  * 
- * Responsibilities of class: To represent a Creative Arts and Electives Course, which is a type of Course. This class does not have any additional attributes or methods beyond those inherited from the Course class.
+ *         Responsibilities of class: To represent a Creative Arts and Electives
+ *         Course, which is a type of Course. This class does not have any
+ *         additional attributes or methods beyond those inherited from the
+ *         Course class.
  * 
- * CreativeArtsAndElectivesCourse is-a Course
+ *         CreativeArtsAndElectivesCourse is-a Course
  */
 
 public class CreativeArtsAndElectivesCourse extends Course
 {
+	// Constructors
+	/**
+	 * Purpose: To create a CreativeArtsAndElectivesCourse object with all
+	 * default values
+	 */
+	public CreativeArtsAndElectivesCourse()
+	{
+		super("Creative Arts and Electives");
+	}
 
+	/**
+	 * Purpose: To create a CreativeArtsAndElectivesCourse object with parameter
+	 * values for course name,
+	 * the course ID, the course's weekly time block(with the constructor params
+	 * for WeeklyTimeBlock), the course's campus location,
+	 * the amount of credits the course is worth, the number of the course
+	 * difficulty rating,
+	 * if the course is required or not, the instructor's name for the course,
+	 * the instructor's RMP score, and if the course is a struggle course or not
+	 * (course score will still be default value of 0.0, and courseType will
+	 * remain as "Course")
+	 * 
+	 * @param newCourseName           The new course name
+	 * @param newCourseID             The new course ID
+	 * @param newDaysOfTheWeek        The new days the class meets during
+	 * @param newClassStartTime       The new time the class starts at
+	 * @param newClassDuration        The new length of time the class meets
+	 * @param newcourseCampusLocation The new campus location for the course
+	 * @param newCourseCredits        The new amount of credits the course is
+	 *                                worth
+	 * @param newCourseDifficulty     The new number for the difficulty rating
+	 *                                of the course
+	 * @param updatedCourseRequired   The updated value for if the course is
+	 *                                required or not
+	 * @param newInstructorName       The new name of the course's instructor
+	 * @param newInstructorRMPScore   The new RMP score for the instructor
+	 * @param updatedStruggleCourse   The updated value for if the course is a
+	 *                                struggle-course of not
+	 */
+	public CreativeArtsAndElectivesCourse(String newCourseName,
+			String newCourseID, List<DayOfWeek> newDaysOfTheWeek,
+			LocalTime newClassStartTime, Duration newClassDuration,
+			String newCourseCampusLocation, int newCourseCredits,
+			double newCourseDifficulty, boolean updatedCourseRequired,
+			String newInstructorName, double newInstructorRMPScore,
+			String newCourseType, boolean updatedStruggleCourse)
+	{
+		super(newCourseName, newCourseID, newDaysOfTheWeek, newClassStartTime,
+				newClassDuration, newCourseCampusLocation, newCourseCredits,
+				newCourseDifficulty, updatedCourseRequired, newInstructorName,
+				newInstructorRMPScore, "Creative Arts and Electives",
+				updatedStruggleCourse);
+	}
 }
