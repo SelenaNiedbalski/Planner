@@ -37,7 +37,7 @@ public abstract class Course
 	private int courseCredits; // A course has-a number of credits it is worth
 	private double courseDifficulty; // A course has-a number that represents
 										// its difficulty level
-	private boolean courseRequired; // A course has-a value indicating if it is
+	private boolean courseRequired = true; // A course has-a value indicating if it is
 									// a required course or not
 	private double courseScore; // A course has-a course score
 	private String instructorName; // A course has-an instructor's name
@@ -46,7 +46,7 @@ public abstract class Course
 	private String courseType; // A course has-a course type (STEM, Liberal
 								// Arts, Professional, or Creative Arts and
 								// Electives)
-	private boolean struggleCourse; // A course has-a value indicating if it is
+	private boolean struggleCourse = true; // A course has-a value indicating if it is
 									// a struggle course or not
 
 	// Constructors
@@ -450,8 +450,12 @@ public abstract class Course
 	public String toString()
 	{
 		return "Weekly Time Block: " + courseWeeklyTimeBlock.toString()
-				+ " Course: " + courseName + " Instructor: " + instructorName
-				+ " RMP Score: " + instructorRMPScore + " Course ID "
-				+ courseID;
+				+ " Course: " + courseName +" Course ID " + courseID
+				+ " Instructor: " + instructorName
+				+ " RMP Score: " + instructorRMPScore
+				+ "Campus Location: " + courseCampusLocation
+				+ " Credits: " + courseCredits;
+				
+				
 	}
 }

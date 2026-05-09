@@ -1,5 +1,10 @@
 package schedules;
 
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import courseclasses.Course;
 /**
@@ -26,21 +31,48 @@ public class Schedule
 	private List<WeeklyTimeBlock> currentScheduleTimes; // A schedule has-many weekly time blocks
 	private double scheduleScore; // A schedule has-a score 
 	private int totalCredits; // A schedule has-a total number of credits
-	
-	
+	private double numSTEMCourses; // A schedule has-a number of STEM courses it contains
+	private double numStruggleCourses; // A schedule has-a number of struggle courses
 	
 	
 	// Constructors
-	public Schedule(List<Course> newCurrentScheduleCourses, List<WeeklyTimeBlock> newCurrentScheduleTimes, double newScheduleScore,
+	/**
+	 * Purpose: To create a schedule object with parameter values (numSTEM courses and scheduleScore are default 0)
+	 * (creates list if no list exists for currentScheduleCourses and currentScheduleTimes )
+	 * @param newCurrentScheduleCourses The new currentScheduleCourses list (courses)
+	 * @param newCurrentScheduleTimes The new currentScheduleTimes list (timeblocks)
+	 * @param newScheduleScore The new scheduleScore
+	 * @param newTotalCredits The new totalCredits
+	 */
+	public Schedule(List<Course> newCurrentScheduleCourses, List<WeeklyTimeBlock> newCurrentScheduleTimes,
 			int newTotalCredits)
 	{
+		// If lists are null then initialize them so the class still works
+		if (newCurrentScheduleCourses == null)
+		{
+			currentScheduleCourses = List.of();
+		}
+		else
+		{
+			currentScheduleCourses = newCurrentScheduleCourses;
+		}
+
+		if (newCurrentScheduleTimes == null)
+		{
+			newCurrentScheduleTimes = List.of();
+		}
+		else
+		{
+			currentScheduleTimes = newCurrentScheduleTimes;
+		}
+		 
+		// Other IV param values
 		currentScheduleCourses = newCurrentScheduleCourses;
 		currentScheduleTimes = newCurrentScheduleTimes;
-		scheduleScore = newScheduleScore;
+		scheduleScore = 0.0;
 		totalCredits = newTotalCredits;
+		numSTEMCourses = 0;
 	}
-	
-	
 	
 	
 	// Getters and Setters
@@ -115,5 +147,532 @@ public class Schedule
 	{
 		totalCredits = newTotalCredits;
 	}
+	
+	/**
+	 * Purpose: To return the number of STEM courses in the schedule
+	 * @return numSTEMCourses The number of STEM courses in the schedule
+	 */
+	public double getNumSTEMCourses()
+	{
+		return numSTEMCourses;
+	}
+	
+	/**
+	 * Purpose: To return the number of struggle courses in the schedule
+	 * @return numStruggleCourses The number of struggle courses in the schedule
+	 */	
+	public double getNumStruggleCourses()
+	{
+		return numStruggleCourses;
+	}
+	
+	
+	// Helper Methods
+	/**
+	 * Purpose: To check if the potential schedule course has a schedule conflict with the
+	 * course in the schedule (helper method inside canAddCourse method)
+	 * @param potentialCourse The course that could potentially be added to the schedule
+	 * @param courseInSchedule The course that is currently in the schedule
+	 * return hasScheduleConflict if they do overlap, and !hasScheduleConflict if not
+	 */
+	private boolean hasScheduleConflict(Course potentialCourse, Course courseInSchedule)
+	{
+		// Initializing hasScheduleConflict
+		boolean hasScheduleConflict = true;
+				
+		// Get the actual time blocks of both courses and save it to run checkBlockCOnflict on
+		WeeklyTimeBlock weeklyTimeBlock1 = potentialCourse.getCourseWeeklyTimeBlock();
+		WeeklyTimeBlock weeklyTimeBlock2 = courseInSchedule.getCourseWeeklyTimeBlock();
+		
+		// Run method to check time block conflicts on both blocks and
+		// if it returns true then return hasScheduleConflict, otherwise return !hasScheduleConflict
+		if ((weeklyTimeBlock1.checkBlockConflict(weeklyTimeBlock2)) == true)
+		{
+			return hasScheduleConflict;
+		}
+		else
+		{
+		return !hasScheduleConflict;
+		}
+	}
+	
+	/**
+	 * Purpose: To check if a course can be added to the schedule (helper method inside addCourse method)
+	 * @param potentialCourse The course that could potentially be added to the schedule
+	 * return canAddCourse if the course can be added and !canAddCourse if not
+	 */
+	private boolean canAddCourse(Course potentialCourse)
+
+    {
+        // Initializing canAddCourse
+        boolean canAddCourse = true;
+        
+        // If there are no courses yet, you can add the first one
+        if (currentScheduleCourses == null || currentScheduleCourses.size() == 0)
+        {
+            return canAddCourse;
+        }
+        
+        // Check for duplicate course names and schedule conflicts 
+        for (Course courseInSchedule : currentScheduleCourses)
+        {
+            // Can not add course if there is already a course of the same course name
+            if (potentialCourse.getCourseName().equals(courseInSchedule.getCourseName()))
+            {
+                return !canAddCourse;
+            }
+            
+            // Check schedule conflicts with each course currently in the array
+            if (this.hasScheduleConflict(potentialCourse, courseInSchedule) == true)
+            {
+                return !canAddCourse;
+            }
+        }
+        
+        // If no duplicates and no conflicts, then return canAddCourse
+        return canAddCourse;
+    }
+	
+	
+	/**
+	 * Purpose: To compare local time for each day in a time block and store the earliest time for each day in a hashtable
+	 * (Helper method for calculateStartAndEndTimeDeviation)
+	 * @return earliestStartTimeForEachDay The earliest start time for each day in the schedule
+	 */
+	private Hashtable<DayOfWeek, LocalTime> getEarliestStartTimeForEachDay()
+	{
+		// Create the hashtable
+		Hashtable<DayOfWeek, LocalTime> earliestStartTimeForEachDay = new Hashtable<>();
+
+		// Loop through each time block in the schedule
+		for (WeeklyTimeBlock block : currentScheduleTimes)
+		{
+			// Loop through each day inside that block
+			for (DayOfWeek day : block.getDaysOfTheWeek())
+			{
+				LocalTime currentStartTime = block.getStartTimeForDay(day);
+
+				// If the day is not already in the table, add it
+				if (earliestStartTimeForEachDay.containsKey(day) == false)
+				{
+					earliestStartTimeForEachDay.put(day, currentStartTime);
+				}
+				else
+				{
+					// Compare with existing earliest time
+					LocalTime storedTime = earliestStartTimeForEachDay.get(day);
+
+					if (currentStartTime.isBefore(storedTime))
+					{
+						earliestStartTimeForEachDay.put(day, currentStartTime);
+					}
+				}
+			}
+		}
+
+		return earliestStartTimeForEachDay;
+	}
+
+	
+	/**
+	 * Purpose: To compare local time for each day in a time block and store the latest time for each day in a hashtable
+	 * (Helper method for calculateStartAndEndTimeDeviation)
+	 * @return latestEndTimeForEachDay The latest end time for each day in the schedule
+	 */
+	private Hashtable<DayOfWeek, LocalTime> getLatestEndTimeForEachDay()
+	{
+		// Create the hashtable
+		Hashtable<DayOfWeek, LocalTime> latestEndTimeForEachDay = new Hashtable<>();
+
+		// Loop through each time block in the schedule
+		for (WeeklyTimeBlock block : currentScheduleTimes)
+		{
+			// Loop through each day inside that block
+			for (DayOfWeek day : block.getDaysOfTheWeek())
+			{
+				LocalTime currentEndTime = block.getEndTimeForDay(day);
+
+				// If the day is not already in the table, add it
+				if (latestEndTimeForEachDay.containsKey(day) == false)
+				{
+					latestEndTimeForEachDay.put(day, currentEndTime);
+				}
+				else
+				{
+					// Compare with existing latest time
+					LocalTime storedTime = latestEndTimeForEachDay.get(day);
+
+					if (currentEndTime.isAfter(storedTime))
+					{
+						latestEndTimeForEachDay.put(day, currentEndTime);
+					}
+				}
+			}
+		}
+
+		return latestEndTimeForEachDay;
+		
+	}
+	
+
+	/**
+	 * Purpose: To check if the schedule contains STEM courses and to store the numberof them
+	 * (Helper method for subtractPointsForSTEMCoursesOverThree)
+	 * @return numSTEMCourses The new number of STEM courses in the schedule
+	 */
+	private double calculateNumSTEMCourses()
+	{
+		// Reset count before recalculating
+		numSTEMCourses = 0.0;
+
+		// Loop through currentScheduleCourses
+		for (Course course : currentScheduleCourses)
+		{
+			// Check if the course is STEM
+			if (course.getCourseType().equals("STEM"))
+			{
+				numSTEMCourses++;
+			}
+		}
+
+		return numSTEMCourses;
+	}
+	
+	/**
+	 * Purpose: To check if the schedule contains struggle courses and to store the number of them
+	 * (Helper method for subtractPointsForStruggleCoursesOverOne)
+	 * @return numStruggleCourses The new number of struggle courses in the schedule
+	 */
+	private double calculateNumStruggleCourses()
+	{
+		// Reset count before recalculating
+		numStruggleCourses = 0.0;
+
+		// Loop through currentScheduleCourses
+		for (Course course : currentScheduleCourses)
+		{
+			// Check if the course is STEM
+			if (course.getStruggleCourse() == true)
+			{
+				numStruggleCourses++;
+			}
+		}
+
+		return numStruggleCourses;
+	}
+
+	
+	// Other Methods
+	/**
+	 * Purpose: To add a course to the schedule and sort the schedule courses and times in order from earliest to latest time (local time)
+	 * @param potentialCourse The course that could potentially be added to the schedule
+	 * @return courseAdded if it was added successfully and !courseAdded if it could not be added
+	 */
+	public void addCourse(Course potentialCourse)
+	{
+		if (this.canAddCourse(potentialCourse) == true)
+		{
+
+			currentScheduleCourses.add(potentialCourse);
+
+			// Keep the time blocks list in sync with courses
+			WeeklyTimeBlock blockToAdd = potentialCourse.getCourseWeeklyTimeBlock();
+			if (blockToAdd != null)
+			{
+				currentScheduleTimes.add(blockToAdd);
+			}
+			
+			// Sort courses and time blocks in the schedule so that courses are
+			// in local time order (earliest to latest)
+			// Must keep lists connected so they both have to be sorted at the
+			// same time based on the time blocks
+			
+			// Create a temporary list of pairs (Course + WeeklyTimeBlock)
+			List<Object[]> pairedList = new ArrayList<>();
+
+			for (int i = 0; i < currentScheduleCourses.size(); i++)
+			{
+				pairedList.add(new Object[] { currentScheduleCourses.get(i),
+						currentScheduleTimes.get(i) });
+			}
+
+			// Sort by start time (earliest → latest)
+			pairedList.sort((a, b) -> {
+				WeeklyTimeBlock blockA = (WeeklyTimeBlock) a[1];
+				WeeklyTimeBlock blockB = (WeeklyTimeBlock) b[1];
+
+				return blockA.getClassStartTime()
+						.compareTo(blockB.getClassStartTime());
+			});
+
+			// Clear original lists
+			currentScheduleCourses.clear();
+			currentScheduleTimes.clear();
+
+			// Re-add sorted values
+			for (Object[] pair : pairedList)
+			{
+				currentScheduleCourses.add((Course) pair[0]);
+				currentScheduleTimes.add((WeeklyTimeBlock) pair[1]);
+			}
+
+			// Update total credits
+			int creditsToAdd = potentialCourse.getCourseCredits();
+			totalCredits += creditsToAdd;
+		}
+	}
+	
+	/**
+	 * Purpose: To remove a course from the schedule (course array)
+	 */
+	public void removeCourse(Course course)
+	{
+		currentScheduleCourses.remove(course);
+
+		// Keep the time blocks list in sync with courses
+		WeeklyTimeBlock blockToRemove = course.getCourseWeeklyTimeBlock();
+
+		if (blockToRemove != null)
+		{
+			currentScheduleTimes.removeIf(block -> block.equals(blockToRemove));
+		}
+
+		// Update total credits
+		int creditsToRemove = course.getCourseCredits();
+		totalCredits -= creditsToRemove;
+	}
+
+	
+	/**
+	 * Purpose: To compare schedule scores to eachother
+	 * return the schedule with the higher score (and this schedule if they're equal)
+	 */
+	public Schedule compareTo(Schedule other)
+	{
+		if (this.getScheduleScore() >= other.getScheduleScore())
+		{
+			return this;
+		}
+		else
+		{
+			return other;
+		}
+	}
+
+	/**
+	 * Purpose: To calculate the break times in between courses on the schedule
+	 * and subtract points from the scheduleScore for each break time that is outside of the desired break time range
+	 * @param minDesiredBreakTime The minimum desired break time between courses
+	 * @param maxDesiredBreakTime The maximum desired break time between courses
+	 * @return scheduleScore The new scheduleScore
+	 */
+	public double calculateBreakTimeDeviation(Duration minDesiredBreakTime, Duration maxDesiredBreakTime)
+	{
+	    for (DayOfWeek day : DayOfWeek.values())
+	    {
+	        // List to store all class time ranges for this day
+	        List<LocalTime[]> timesForDay = new ArrayList<>();
+	        
+	        // Collect times from each WeeklyTimeBlock
+	        for (WeeklyTimeBlock block : currentScheduleTimes)
+	        {
+	            if (block.containsDay(day) == true)
+	            {
+	                LocalTime start = block.getClassStartTime();
+	                LocalTime end = block.getClassEndTime();
+	                
+	                // Add this class time range
+	                timesForDay.add(new LocalTime[]{start, end});
+	            }
+	        }
+	        
+	        // Only calculate breaks if there are at least 2 classes
+	        if (timesForDay.size() >= 2)
+	        {
+	            // Sort by start time
+	            timesForDay.sort((a, b) -> a[0].compareTo(b[0]));
+	            
+	            // Loop through consecutive classes
+	            for (int i = 0; i < timesForDay.size() - 1; i++)
+	            {
+	                LocalTime endCurrent = timesForDay.get(i)[1];
+	                LocalTime startNext = timesForDay.get(i + 1)[0];
+	                
+	                Duration breakTime = Duration.between(endCurrent, startNext);
+	                
+	                // Only process valid breaks (no overlap, no zero)
+	                if (breakTime.isNegative() == false && breakTime.isZero() == false)
+	                {
+	                    // Too short
+	                    if (breakTime.compareTo(minDesiredBreakTime) < 0)
+	                    {
+	                        Duration difference = minDesiredBreakTime.minus(breakTime);
+	                        scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	                    }
+	                    
+	                    // Too long
+	                    if (breakTime.compareTo(maxDesiredBreakTime) > 0)
+	                    {
+	                        Duration difference = breakTime.minus(maxDesiredBreakTime);
+	                        scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    
+	    return scheduleScore;
+	}
+
+	
+	/**
+	 * Purpose: To calculate the difference between the schedule's times 
+	 * and the student's desired time ranges and subtract points from the scheduleScore
+	 * @param desiredStartAndEndTimes The student's desired start and end times for each day of the week (in a WeeklyTimeBlock)
+	 * @return scheduleScore The new scheduleScore
+	 */
+	public double calculateStartAndEndTimeDeviation(WeeklyTimeBlock desiredStartAndEndTimes)
+	{
+	    // Get earliest and latest times for each day in the schedule
+	    Hashtable<DayOfWeek, LocalTime> earliestTimes = this.getEarliestStartTimeForEachDay();
+	    Hashtable<DayOfWeek, LocalTime> latestTimes = this.getLatestEndTimeForEachDay();
+	    
+	    // Loop through each day stored in earliestTimes (these are the days that exist in the schedule)
+	    for (DayOfWeek day : earliestTimes.keySet())
+	    {
+	        LocalTime scheduleEarliest = earliestTimes.get(day);
+	        LocalTime scheduleLatest = latestTimes.get(day);
+	        
+	        // Get desired times for that day
+	        LocalTime desiredStart = desiredStartAndEndTimes.getStartTimeForDay(day);
+	        LocalTime desiredEnd = desiredStartAndEndTimes.getEndTimeForDay(day);
+	        
+	        // Only compare if desired times exist for that day
+	        if (desiredStart != null && desiredEnd != null)
+	        {
+	            // Check if schedule starts earlier than desired
+	            if (scheduleEarliest.isBefore(desiredStart))
+	            {
+	                Duration difference = Duration.between(scheduleEarliest, desiredStart);
+	                scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	            }
+	            
+	            // Check if schedule ends later than desired
+	            if (scheduleLatest.isAfter(desiredEnd))
+	            {
+	            	// Actual time difference between schedule end and desired end
+	                Duration difference = Duration.between(desiredEnd, scheduleLatest);
+	                
+	                // Calculation to subtract from schedule score
+	                scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	            }
+	        }
+	    }
+	    
+	    return scheduleScore;
+	}
+
+	
+	/**
+	 * Purpose: To subtract points from the scheduleScore for each numSTEMCourse count over 3
+	 * @return scheduleScore The new scheduleScore
+	 */
+	public double subtractPointsForSTEMCoursesOverThree()
+	{
+		this.calculateNumSTEMCourses();
+		if (numSTEMCourses > 3)
+		{
+			double numSTEMCoursesOverThree = numSTEMCourses - 3.0;
+
+			// Calculation to subtract from schedule score
+			double pointsToSubtract = numSTEMCoursesOverThree * 5.0;
+			scheduleScore -= pointsToSubtract;
+		}
+
+		return scheduleScore;
+	}
+	
+	/**
+	 * Purpose: To subtract points from the scheduleScore for each numSTEMCourse count over 3
+	 * @return scheduleScore The new scheduleScore
+	 */
+	public double subtractPointsForStruggleCoursesOverOne()
+	{
+		this.calculateNumSTEMCourses();
+		if (numStruggleCourses > 1)
+		{
+			double numStruggleCoursesOverOne = numStruggleCourses - 1.0;
+
+			// Calculation to subtract from schedule score
+			double pointsToSubtract = numStruggleCoursesOverOne * 5.0;
+			scheduleScore -= pointsToSubtract;
+		}
+
+		return scheduleScore;
+	}
+	
+	/**
+	 * Purpose: To add all points from the courses in the schedule to the scheduleScore
+	 * @param desiredCampusLocation The student's desired campus location
+	 * @param studentsMajorDistinction The student's major distinction (STEM or non-STEM)
+	 * @return scheduleScore The new scheduleScore
+	 */
+	public double addCourseScores(String desiredCampusLocation, String studentsMajorDistinction)
+	{
+		for (Course course : currentScheduleCourses)
+		{
+			course.calculateCourseScore(desiredCampusLocation, studentsMajorDistinction);
+			scheduleScore += course.getCourseScore();
+		}
+
+		return scheduleScore;
+	}
+	
+	/**
+	 * Purpose: To return all the instance variables info in the schedule
+	 * return all the schedule's IV info
+	 */
+	@Override 
+	public String toString()
+	{
+		return "Current Schedule Courses: " + currentScheduleCourses + 
+				" Current Schedule Times: " + currentScheduleTimes +
+				" Total Credits: " + totalCredits +
+				" Schedule's Start Times: " + this.getEarliestStartTimeForEachDay() + 
+				" Schedule's End Times: " + this.getLatestEndTimeForEachDay() + 
+				" How many STEM courses this schedule cointains: " + numSTEMCourses;
+	}
+
+
+	/**
+	 * Purpose: 
+	 */
+	public void addCourseScores()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * Purpose: To set the number of STEM courses in the schedule
+	 * @param newNumSTEMCourses The new number of STEM courses in the schedule
+	 */
+	public void setNumSTEMCourses(int newNumSTEMCourses)
+	{
+		numSTEMCourses = newNumSTEMCourses;
+	}
+
+
+	/**
+	 * Purpose: To set the number of struggle courses in the schedule
+	 * @param newNumStruggleCourses The new number of struggle courses in the schedule
+	 */
+	public void setNumStruggleCourses(int newNumStruggleCourses)
+	{
+		numStruggleCourses = newNumStruggleCourses;
+	}
+	
+	
 	
 }
