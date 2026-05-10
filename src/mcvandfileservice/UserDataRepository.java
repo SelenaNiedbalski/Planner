@@ -43,26 +43,108 @@ public class UserDataRepository
 	
 	// Constructors
 	/**
-	 * Purpose: To construct a UserDataRepository with the given wishlistModel, creditsModel, aboutYouModel, and courseInfoModel
+	 * Purpose: To construct a UserDataRepository with default values
 	 * 
 	 */
-	public UserDataRepository(WishlistModel wishlistModel, CreditsModel creditsModel, AboutYouModel aboutYouModel, CourseInfoModel courseInfoModel)
+	public UserDataRepository()
 	{
-		minRequiredCredits = creditsModel.getMinRequiredCredits();
-		maxRequiredCredits = creditsModel.getMaxRequiredCredits();
-		minDesiredBreakTime = wishlistModel.getMinDesiredBreakTime();
-		maxDesiredBreakTime = wishlistModel.getMaxDesiredBreakTime();
-		desiredStartAndEndTime = wishlistModel.getDesiredStartAndEndTime();
-		desiredCampusLocation = wishlistModel.getDesiredCampusLocation();
-		studentsMajorDistinction = aboutYouModel.getStudentsMajorDistinction();
-		topThreeSchedulesDestinationPath = wishlistModel.getTopThreeSchedulesDestinationPath();
-		numOfCoursesStudentWillInput = aboutYouModel.getNumOfCoursesStudentWillInput();
-		courseName = courseInfoModel.getCourseName();
-		studentRequiredCourse = courseInfoModel.isStudentRequiredCourse();
-		struggleCourses = aboutYouModel.getStruggleCourses();
-		availableClassesRetrievalPath = courseInfoModel.getAvailableClassesRetrievalPath();
-		courseType = courseInfoModel.getCourseType();
+		minRequiredCredits = 0;
+		maxRequiredCredits = 0;
+		minDesiredBreakTime = Duration.ZERO;
+		maxDesiredBreakTime = Duration.ZERO;
+		desiredStartAndEndTime = null;
+		desiredCampusLocation = null;
+		studentsMajorDistinction = null;
+		topThreeSchedulesDestinationPath = null;
+		numOfCoursesStudentWillInput = 0;
+		courseName = null;
+		studentRequiredCourse = true;
+		struggleCourses = null;
+		availableClassesRetrievalPath = null;
+		courseType = null;
+		
 	}
+	
+	
+	/**
+	 * Purpose: To store the info from the app controller for the credits view (for min and max required credits)
+	 * @param newMinRequiredCredits The minimum required credits for the user
+	 * @param newMaxRequiredCredits The maximum required credits for the user
+	 */
+	public void saveCredits(int newMinRequiredCredits, int newMaxRequiredCredits)
+	{
+		minRequiredCredits = newMinRequiredCredits;
+		maxRequiredCredits = newMaxRequiredCredits;
+	}
+	
+	/**
+	 * Purpose: To store the info from the app controller for the wishlist view (for the min and max desired break time,
+	 * the desired start and end time, the desired campus location, and the top three schedules destination path)
+	 * @param newMinDesiredBreakTime The minimum desired break time for the user
+	 * @param newMaxDesiredBreakTime The maximum desired break time for the user
+	 * @param newDesiredStartAndEndTime The desired start and end time for the user
+	 * @param newDesiredCampusLocation The desired campus location for the user
+	 * @param newTopThreeSchedulesDestinationPath The destination path for the top three schedules for the user
+	 */
+	 public void saveWishlist(Duration newMinDesiredBreakTime, Duration newMaxDesiredBreakTime, WeeklyTimeBlock newDesiredStartAndEndTime, 
+			 String newDesiredCampusLocation, Path newTopThreeSchedulesDestinationPath)
+	 {
+		 minDesiredBreakTime = newMinDesiredBreakTime;
+		 maxDesiredBreakTime = newMaxDesiredBreakTime;
+		 desiredStartAndEndTime = newDesiredStartAndEndTime;
+		 desiredCampusLocation = newDesiredCampusLocation;
+	 }
+	 
+	 /**
+	  * Purpose: To store the info from the app controller for the about you view (for the students major distinction, 
+	  * the number of courses the student will input, and the courses the student struggles with)
+	  * @param newStudentsMajorDistinction The student's major distinction
+	  * @param newNumOfCoursesStudentWillInput The number of courses the student will input
+	  * @param newStruggleCourses The courses the student struggles with
+	  */
+	public void saveAboutYou(String newStudentsMajorDistinction, int newNumOfCoursesStudentWillInput, List<String> newStruggleCourses)
+	{
+		studentsMajorDistinction = newStudentsMajorDistinction;
+		numOfCoursesStudentWillInput = newNumOfCoursesStudentWillInput;
+		struggleCourses = newStruggleCourses;
+	}
+	
+	/**
+	 * Purpose: To store the info from the app controller for the course info view (for the course name, 
+	 * whether the course is required for the student, availableclasses retrieval path, and the course type)
+	 * @param newCourseName The course name
+	 * @param updatedStudentRequiredCourse Whether the course is required for the student
+	 * @param newAvailableClassesRetrievalPath The available classes retrieval path
+	 * @param newCourseType The course type
+	 */
+	public void saveCourseInfo(String newCourseName, boolean updatedStudentRequiredCourse, Path newAvailableClassesRetrievalPath, String newCourseType)
+	{
+		courseName = newCourseName;
+		studentRequiredCourse = updatedStudentRequiredCourse;
+		availableClassesRetrievalPath = newAvailableClassesRetrievalPath;
+		courseType = newCourseType;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**

@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import courseclasses.Course;
 import mcvandfileservice.ScheduleGeneratorRepository;
+import mcvandfileservice.UserDataRepository;
 /**
  * Lead Author(s):
  * @author Selena Niedbalski
@@ -48,18 +49,18 @@ public class ScheduleGenerator
 	 * Purpose: To create a schedule generator object that has parameter values
 	 * @param scheduleGeneratorRepository The schedule generator repository that the schedule generator model will pull data from to set its instance variables
 	 */
-	public ScheduleGenerator(ScheduleGeneratorRepository scheduleGeneratorRepository)
+	public ScheduleGenerator(UserDataRepository userDataRepository)
 	{
 		allCourses = null;
 		topThreeSchedules = null;
 		randomizer = null;
-		minCredits = scheduleGeneratorRepository.getMinRequiredCredits();
-		maxCredits = scheduleGeneratorRepository.getMaxRequiredCredits();
-		minBreakTime = scheduleGeneratorRepository.getMinDesiredBreakTime();
-		maxBreakTime = scheduleGeneratorRepository.getMaxDesiredBreakTime();
-		desiredStartAndEndTime = scheduleGeneratorRepository.getDesiredStartAndEndTime();
-		desiredCampusLocation = scheduleGeneratorRepository.getDesiredCampusLocation();
-		studentsMajorDistinction = scheduleGeneratorRepository.getStudentsMajorDistinction();
+		minCredits = userDataRepository.getMinRequiredCredits();
+		maxCredits = userDataRepository.getMaxRequiredCredits();
+		minBreakTime = userDataRepository.getMinDesiredBreakTime();
+		maxBreakTime = userDataRepository.getMaxDesiredBreakTime();
+		desiredStartAndEndTime = userDataRepository.getDesiredStartAndEndTime();
+		desiredCampusLocation = userDataRepository.getDesiredCampusLocation();
+		studentsMajorDistinction = userDataRepository.getStudentsMajorDistinction();
 	}
 	
 	
