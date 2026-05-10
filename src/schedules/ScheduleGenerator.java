@@ -21,7 +21,7 @@ import mcvandfileservice.ScheduleGeneratorRepository;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- * Version/date: 29 April 2026
+ * Version/date: 9 May 2026
  * 
  * Responsibilities of class: To represent the data model for the schedule generator which handles final calculations and creations of randomized schedules
  * 
