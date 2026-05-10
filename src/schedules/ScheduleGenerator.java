@@ -2,6 +2,8 @@ package schedules;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -25,7 +27,7 @@ import mcvandfileservice.ScheduleGeneratorRepository;
  * 
  */
 
-public class ScheduleGeneratorModel
+public class ScheduleGenerator
 {
 	// Instance Variables
 	private List<Course> allCourses; // A schedule generator model has-many courses
@@ -46,7 +48,7 @@ public class ScheduleGeneratorModel
 	 * Purpose: To create a schedule generator object that has parameter values
 	 * @param scheduleGeneratorRepository The schedule generator repository that the schedule generator model will pull data from to set its instance variables
 	 */
-	public ScheduleGeneratorModel(ScheduleGeneratorRepository scheduleGeneratorRepository)
+	public ScheduleGenerator(ScheduleGeneratorRepository scheduleGeneratorRepository)
 	{
 		allCourses = null;
 		topThreeSchedules = null;
@@ -107,37 +109,26 @@ public class ScheduleGeneratorModel
 		return maxCredits;
 	}
 	
-	
-	
-	
-	
-	// Other Methods
 	/**
-	 * Purpose: To create many possible schedule objects to compare to eachother
+	 * Purpose: To set the top 3 schedules for test purposes ONLY
+	 * @param topSchedulesTest5 The list of 3 schedules to set as the top 3 schedules for testing purposes
 	 */
-	public List<Schedule> generatePossibleSchedule()
+	public void setTopThreeSchedules(List<Schedule> topSchedulesTest5)
 	{
-		// TODO: Code that generates possibles schedules
-		// cap at create possible schedules amount (method)
-		// randomize with randomizer (method)
+		topThreeSchedules = (List<Schedule>) topSchedulesTest5;
 	}
 	
-	/**
-	 * Purpose: To generate the top 3 schedules
-	 * @return topThreeSchedules The 3 highest scoring schedules
-	 */
-	public List<Schedule> generateTopThreeSchedules()
-	{
-		// TODO: Code that does calculations and returns top 3
-		// includes print out
-		return topThreeSchedules;
-	}
 	
+	
+	
+	// Helper Methods
 	/**
 	 * Purpose: To calculate the schedule's score
+	 * (helper method for generateSchedules)
+	 * @param schedule The schedule being scored
 	 * @return scheduleScore The score of the schedule
 	 */
-	public double calculateScheduleScore(Schedule schedule)
+	private double calculateScheduleScore(Schedule schedule)
 	{		
 		// Drop schedule score to zero if it's outside of required credits
 		if (this.withinCredits(schedule) == false)
@@ -178,8 +169,10 @@ public class ScheduleGeneratorModel
 	/**
 	 * Purpose: To add a schedule to the top 3 schedules list and remove
 	 * the lowest scoring one if there are already 3 in there
+	 * (helper method for generateSchedules)
+	 * @param possibleSchedule The schedule being considered to be added to the top 3 schedules list
 	 */
-	public void addToTopThreeSchedules(Schedule possibleSchedule)
+	private void addToTopThreeSchedules(Schedule possibleSchedule)
 	{
 		// If fewer than 3 schedules, just add it
 	    if (topThreeSchedules.size() < 3) 
@@ -205,42 +198,99 @@ public class ScheduleGeneratorModel
 	    // Sort the top three schedules highest to lowest
 	    topThreeSchedules.sort((a, b) -> a.compareTo(b) == a ? -1 : 1);
 	}
-
 	
 	/**
-	 * Purpose: To randomize the adding of courses to the schedules
-	 * 
+	 * Purpose: To randomize the courses that get added to a schedule object
+	 * (helper method for createPossibleSchedules)
+	 * @param schedule The schedule being generated that will have courses added to it
 	 */
-	public void randomizeSchedule(Schedule schedule)
+	private void addRandomCoursesToSchedule(Schedule schedule)
 	{
-		// TODO: Code that uses the randomizer to randomize which courses get added to the generated schedules
-		// (helper method)
+	    // Safety checks
+	    if (allCourses == null || allCourses.isEmpty())
+	    {
+	        return;
+	    }
+
+	    if (randomizer == null)
+	    {
+	        randomizer = new Random();
+	    }
+
+	    // Shuffle for randomness
+	    List<Course> shuffledCourses = new ArrayList<>(allCourses);
+	    Collections.shuffle(shuffledCourses, randomizer);
+
+	    // Loop through all shuffled courses and add them until max number is reached
+	    for (Course course : shuffledCourses)
+	    {
+	        if (schedule.getTotalCredits() < maxCredits)
+	        {
+	            // Let addCourse() handle all validation and updates
+	            schedule.addCourse(course);
+	        }
+	    }
 	}
 	
 	/**
 	 * Purpose: To cap the amount of schedules generated at the specified parameter amount
+	 * (helper method for generatePossibleSchedule)
 	 * @param maxSchedules The max amount of schedules generated
 	 */
-	public List<Schedule> createPossibleSchedules(int maxSchedules)
+	private List<Schedule> createPossibleSchedules(int maxSchedules)
 	{
-		// TODO: Code that actually creates schedule objects after checking is done in shell calculation (this is the final helper)
+	    // List to store all generated schedules
+	    List<Schedule> possibleSchedules = new ArrayList<>();
+
+	    // Keep generating until we reach the desired number of schedules
+	    while (possibleSchedules.size() < maxSchedules)
+	    {
+	        // Create a new empty schedule
+	        Schedule schedule = new Schedule();
+
+	        // Randomly add courses to schedule
+	        this.addRandomCoursesToSchedule(schedule);
+
+	        // Only keep schedules that meet minimum credit requirement
+	        if (schedule.getTotalCredits() >= minCredits)
+	        {
+	            possibleSchedules.add(schedule);
+	        }
+	        // If it doesn't meet minCredits, it is discarded and loop continues
+	    }
+	    return possibleSchedules;
 	}
 
-
+	
+	// Other Methods
 	/**
-	 * Purpose: To set the top 3 schedules for test purposes ONLY
-	 * @param topSchedulesTest5 The list of 3 schedules to set as the top 3 schedules for testing purposes
+	 * Purpose: To create many possible schedule objects to compare to each other
+	 * and add to the top 3 schedules list if they are high scoring enough
+	 * and return the top 3 schedules at the end
+	 * @param maxSchedules The max amount of schedules generated
+	 * @return topThreeSchedules The 3 highest scoring schedules generated
 	 */
-	public void setTopThreeSchedules(List<Schedule> topSchedulesTest5)
+	public List<Schedule> generateTopThreeSchedules(int maxSchedules)
 	{
-		topThreeSchedules = (List<Schedule>) topSchedulesTest5;
+	    // Generate all possible schedules
+	    List<Schedule> possibleSchedules = this.createPossibleSchedules(maxSchedules);
+
+	    // Ensure topThreeSchedules is initialized
+	    if (topThreeSchedules == null)
+	    {
+	        topThreeSchedules = new ArrayList<>();
+	    }
+
+	    // Loop through each schedule
+	    for (Schedule schedule : possibleSchedules)
+	    {
+	        // Calculate its score
+	        this.calculateScheduleScore(schedule);
+
+	        // Let helper method handle ranking
+	        this.addToTopThreeSchedules(schedule);
+	    }
+	    return topThreeSchedules;
 	}
-	
-	/**
-	 * Purpose: To calculate the scores for each schedule created and compare to eachother
-	 */
-	
-	
-	
 	
 }

@@ -21,7 +21,7 @@ import courseclasses.Course;
 import courseclasses.STEMCourse;
 import mcvandfileservice.ScheduleGeneratorRepository;
 import schedules.Schedule;
-import schedules.ScheduleGeneratorModel;
+import schedules.ScheduleGenerator;
 import schedules.WeeklyTimeBlock;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -89,7 +89,7 @@ class TestCoursesAndSchedules
         List<WeeklyTimeBlock> timesTest3 = new ArrayList<>();
 
         Schedule scheduleTest3 =
-            new Schedule(coursesTest3, timesTest3, 0);
+            new Schedule();
 
         assertNotNull(scheduleTest3);
 
@@ -123,7 +123,7 @@ class TestCoursesAndSchedules
     void testScheduleCounts()
     {
         Schedule scheduleTest4 =
-            new Schedule(new ArrayList<>(), new ArrayList<>(), 0);
+            new Schedule();
 
         // Set counts
         scheduleTest4.setNumSTEMCourses(3);
@@ -134,27 +134,40 @@ class TestCoursesAndSchedules
         assertEquals(2, scheduleTest4.getNumStruggleCourses());
     }
 
-    // ======================
+ // ======================
     // SCHEDULE GENERATOR MODEL (METHOD TEST)
     // ======================
     @Order(5)
     @Test
-    void testScheduleGeneratorModelMethods()
+    void testScheduleGeneratorMethods()
     {
         ScheduleGeneratorRepository repoTest5 =
             new ScheduleGeneratorRepository(null);
 
-        ScheduleGeneratorModel generatorTest5 =
-            new ScheduleGeneratorModel(repoTest5);
+        ScheduleGenerator generatorTest5 =
+            new ScheduleGenerator(repoTest5);
 
         assertNotNull(generatorTest5);
 
+        // Test constructor values (cannot assert exact numbers, but can verify they exist)
+        assertTrue(generatorTest5.getMinCredits() >= 0);
+        assertTrue(generatorTest5.getMaxCredits() >= generatorTest5.getMinCredits());
+
+        // Test initial state
+        assertNull(generatorTest5.getAllCourses());
+        assertNull(generatorTest5.getTopThreeSchedules());
+
         // Test setters for lists
-        List<Course> allCoursesTest5 = List.of();
-        List<Schedule> topSchedulesTest5 = List.of();
+        List<Course> allCoursesTest5 = new ArrayList<>();
+        List<Schedule> topSchedulesTest5 = new ArrayList<>();
 
         generatorTest5.setAllCourses(allCoursesTest5);
         generatorTest5.setTopThreeSchedules(topSchedulesTest5);
 
-    	}
+        assertNotNull(generatorTest5.getAllCourses());
+        assertSame(allCoursesTest5, generatorTest5.getAllCourses());
+
+        assertNotNull(generatorTest5.getTopThreeSchedules());
+        assertSame(topSchedulesTest5, generatorTest5.getTopThreeSchedules());
+    }
    }

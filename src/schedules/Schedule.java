@@ -37,41 +37,17 @@ public class Schedule
 	
 	// Constructors
 	/**
-	 * Purpose: To create a schedule object with parameter values (numSTEM courses and scheduleScore are default 0)
-	 * (creates list if no list exists for currentScheduleCourses and currentScheduleTimes )
-	 * @param newCurrentScheduleCourses The new currentScheduleCourses list (courses)
-	 * @param newCurrentScheduleTimes The new currentScheduleTimes list (timeblocks)
-	 * @param newScheduleScore The new scheduleScore
-	 * @param newTotalCredits The new totalCredits
+	 * Purpose: To create a schedule object with default values
+	 * 
 	 */
-	public Schedule(List<Course> newCurrentScheduleCourses, List<WeeklyTimeBlock> newCurrentScheduleTimes,
-			int newTotalCredits)
+	public Schedule()
 	{
-		// If lists are null then initialize them so the class still works
-		if (newCurrentScheduleCourses == null)
-		{
-			currentScheduleCourses = List.of();
-		}
-		else
-		{
-			currentScheduleCourses = newCurrentScheduleCourses;
-		}
-
-		if (newCurrentScheduleTimes == null)
-		{
-			newCurrentScheduleTimes = List.of();
-		}
-		else
-		{
-			currentScheduleTimes = newCurrentScheduleTimes;
-		}
-		 
-		// Other IV param values
-		currentScheduleCourses = newCurrentScheduleCourses;
-		currentScheduleTimes = newCurrentScheduleTimes;
+		currentScheduleCourses = null;
+		currentScheduleTimes = null;
 		scheduleScore = 0.0;
-		totalCredits = newTotalCredits;
+		totalCredits = 0;
 		numSTEMCourses = 0;
+		numStruggleCourses = 0;
 	}
 	
 	
@@ -598,7 +574,7 @@ public class Schedule
 	 */
 	public double subtractPointsForStruggleCoursesOverOne()
 	{
-		this.calculateNumSTEMCourses();
+		this.calculateNumStruggleCourses();
 		if (numStruggleCourses > 1)
 		{
 			double numStruggleCoursesOverOne = numStruggleCourses - 1.0;
@@ -644,14 +620,6 @@ public class Schedule
 	}
 
 
-	/**
-	 * Purpose: 
-	 */
-	public void addCourseScores()
-	{
-		// TODO Auto-generated method stub
-		
-	}
 
 
 	/**

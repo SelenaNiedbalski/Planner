@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import courseclasses.Course;
 import mcvandfileservice.AboutYouModel;
 import mcvandfileservice.AppController;
 import mcvandfileservice.CourseInfoModel;
@@ -20,6 +21,8 @@ import mcvandfileservice.CreditsModel;
 import mcvandfileservice.ScheduleGeneratorRepository;
 import mcvandfileservice.UserDataRepository;
 import mcvandfileservice.WishlistModel;
+import schedules.Schedule;
+import schedules.ScheduleGeneratorModel;
 
 /**
  * Lead Author(s): Selena Niedbalski
@@ -172,29 +175,51 @@ class TestMVCStructure
 
 	@Order(6)
 	@Test
-	void testScheduleGeneratorRepository()
+	void testScheduleGeneratorModelMethods()
 	{
+	    // ======================
+	    // BUILD REQUIRED CHAIN (no nulls)
+	    // ======================
+
 	    WishlistModel wishlistTest6 = new WishlistModel();
 
 	    CreditsModel creditsTest6 = new CreditsModel();
-	    creditsTest6.setMinRequiredCredits(9);
+	    creditsTest6.setMinRequiredCredits(12);
 	    creditsTest6.setMaxRequiredCredits(18);
 
-	    AboutYouModel aboutModelTest6 = new AboutYouModel();
-	    aboutModelTest6.setStudentsMajorDistinction("Undecided");
+	    AboutYouModel aboutTest6 = new AboutYouModel();
 
-	    CourseInfoModel courseModelTest6 = new CourseInfoModel();
+	    CourseInfoModel courseTest6 = new CourseInfoModel();
 
-	    UserDataRepository repoTest6 =
-	        new UserDataRepository(wishlistTest6, creditsTest6, aboutModelTest6, courseModelTest6);
+	    UserDataRepository userDataTest6 =
+	        new UserDataRepository(wishlistTest6, creditsTest6, aboutTest6, courseTest6);
 
-	    AppController controllerTest6 = new AppController(repoTest6);
+	    AppController controllerTest6 =
+	        new AppController(userDataTest6);
 
-	    ScheduleGeneratorRepository schedRepoTest6 =
+	    ScheduleGeneratorRepository repoTest6 =
 	        new ScheduleGeneratorRepository(controllerTest6);
 
-	    assertNotNull(schedRepoTest6);
+	    // ======================
+	    // CONSTRUCT MODEL
+	    // ======================
 
-	    assertEquals(9, schedRepoTest6.getMinRequiredCredits());
+	    ScheduleGeneratorModel generatorTest6 =
+	        new ScheduleGeneratorModel(repoTest6);
+
+	    assertNotNull(generatorTest6);
+
+	    // ======================
+	    // TEST ONLY MODEL-OWNED METHODS
+	    // ======================
+
+	    List<Course> allCoursesTest6 = List.of();
+	    List<Schedule> topSchedulesTest6 = List.of();
+
+	    generatorTest6.setAllCourses(allCoursesTest6);
+	    generatorTest6.setTopThreeSchedules(topSchedulesTest6);
+
+	    assertEquals(allCoursesTest6, generatorTest6.getAllCourses());
+	    assertEquals(topSchedulesTest6, generatorTest6.getTopThreeSchedules());
 	}
 }
