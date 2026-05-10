@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import courseclasses.Course;
+import mcvandfileservice.FileService;
 import mcvandfileservice.ScheduleGeneratorRepository;
 import mcvandfileservice.UserDataRepository;
 /**
@@ -41,15 +42,19 @@ public class ScheduleGenerator
 	private WeeklyTimeBlock desiredStartAndEndTime; // A schedule generator model has-a desired start and end time for eachday of the week
 	private String desiredCampusLocation; // A schedule generator model has-a desired campus location
 	private String studentsMajorDistinction; // A schedule generator model has-a student's major distinction (STEM, non-STEM, undecided)
+	private ScheduleGeneratorRepository scheduleGeneratorRepository; // A schedule generator model has-a schedule generator repository
+	private FileService fileService; // A schedule generator model has-a file service
 	
 	
 	
 	// Constructors
 	/**
 	 * Purpose: To create a schedule generator object that has parameter values
-	 * @param scheduleGeneratorRepository The schedule generator repository that the schedule generator model will pull data from to set its instance variables
+	 * @param userDataRepository The user data repository 
+	 * @param newScheduleGeneratorRepository The schedule generator repository
+	 * @param newFileService The file service
 	 */
-	public ScheduleGenerator(UserDataRepository userDataRepository)
+	public ScheduleGenerator(UserDataRepository userDataRepository, ScheduleGeneratorRepository newScheduleGeneratorRepository, FileService newFileService)
 	{
 		allCourses = null;
 		topThreeSchedules = null;
@@ -61,6 +66,8 @@ public class ScheduleGenerator
 		desiredStartAndEndTime = userDataRepository.getDesiredStartAndEndTime();
 		desiredCampusLocation = userDataRepository.getDesiredCampusLocation();
 		studentsMajorDistinction = userDataRepository.getStudentsMajorDistinction();
+		scheduleGeneratorRepository = newScheduleGeneratorRepository;
+		fileService = newFileService;
 	}
 	
 	
@@ -291,6 +298,10 @@ public class ScheduleGenerator
 	        // Let helper method handle ranking
 	        this.addToTopThreeSchedules(schedule);
 	    }
+	    
+	    // Add 3 top schedules to the file service
+	    scheduleGeneratorRepository.addTopThreeSchedules(topThreeSchedules);
+	    fileService.addScheduleGeneratorRepository(scheduleGeneratorRepository);
 	    return topThreeSchedules;
 	}
 	
