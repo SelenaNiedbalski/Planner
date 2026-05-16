@@ -23,4 +23,26 @@ import javax.swing.JFrame;
 public class CourseInfoView extends JFrame
 {
 
+    // Instance Variables
+	private AppController appController; // A course info view has-an app controller
+	
+	
+	/**
+	 * Purpose: To return the app controller
+	 * @return appController The app controller
+	 */
+	public AppController getAppController()
+	{
+		return appController;
+	}
+	
+	/**
+	 * Purpose: To set the app controller to the given value
+	 * @param newAppController The new app controller
+	 */
+	public void setAppController(AppController newAppController)
+	{
+		appController = newAppController;
+	}
+
 }

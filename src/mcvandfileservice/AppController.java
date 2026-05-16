@@ -28,30 +28,15 @@ import schedules.WeeklyTimeBlock;
 
 public class AppController implements ActionListener
 {
-	// Instance Variables (daisy chains might edit)
-	private int minRequiredCredits; // An app controller has-a minimum amount of required credits
-	private int maxRequiredCredits; // An app controller has-a maximum amount of required credits
-	private Duration minDesiredBreakTime; // An app controller has-a minimum desired break time
-	private Duration maxDesiredBreakTime; // An app controller has-a maximum desired break time
-	private WeeklyTimeBlock desiredStartAndEndTime; // An app controller has-a desired start and end time for each day of the week
-	private String desiredCampusLocation; // An app controller has-a desired campus location
-	private String studentsMajorDistinction; // An app controller has-a student's major distinction (STEM, non-STEM, Undecided)
-	
-//	minRequiredCredits = userDataRepository.getMinRequiredCredits();
-//	maxRequiredCredits = userDataRepository.getMaxRequiredCredits();
-//	minDesiredBreakTime = userDataRepository.getMinDesiredBreakTime();
-//	maxDesiredBreakTime = userDataRepository.getMaxDesiredBreakTime();
-//	desiredStartAndEndTime = userDataRepository.getDesiredStartAndEndTime();
-//	desiredCampusLocation = userDataRepository.getDesiredCampusLocation();
-//	studentsMajorDistinction = userDataRepository.getStudentsMajorDistinction();
-	
-	
+	// Instance Variables
 	// IVs App views
 	private AboutYouView aboutYouView; // An app controller has-an about you view
 	private CourseInfoView courseInfoView; // An app controller has-a course info view
 	private CreditsView creditsView; // An app controller has-a credits view
 	private ScheduleGeneratorView scheduleGeneratorView; // An app controller has-a schedule generator view
 	private WishlistView wishlistView; // An app controller has-a wishlist view
+	private StartScreenView startScreenView; // An app controller has-a start screen view
+	private LoadingScreenView loadingScreenView; // An app controller has-a loading screen view
 	
 	// IVs App models
 	private AboutYouModel aboutYouModel; // An app controller has-an about you model
@@ -62,31 +47,63 @@ public class AppController implements ActionListener
 	
 	/**
 	 * Purpose: To construct an AppController with the given app views and app models
+	 * @param newStartScreenView The new start screen view
 	 * @param newAboutYouView The about you view 
 	 * @param newCourseInfoView The course info view
 	 * @param newCreditsView The credits view
 	 * @param newScheduleGeneratorView The schedule generator view
 	 * @param newWishlistView The wishlist view
+	 * @param newLoadingScreenView The new loading screen view
 	 * @param newAboutYouModel The about you model
 	 * @param newCourseInfoModel The course info model
 	 * @param newCreditsModel The credits model
 	 * @param newScheduleGenerator The schedule generator model
 	 * @param newWishlistModel The wishlist model
 	 */
-	public AppController(AboutYouView newAboutYouView, CourseInfoView newCourseInfoView, 
-			CreditsView newCreditsView, ScheduleGeneratorView newScheduleGeneratorView, 
-			WishlistView newWishlistView, AboutYouModel newAboutYouModel, 
-			CourseInfoModel newCourseInfoModel, CreditsModel newCreditsModel, 
-			ScheduleGenerator newScheduleGenerator, WishlistModel newWishlistModel)
+	public AppController(StartScreenView newStartScreenView, AboutYouView newAboutYouView, CourseInfoView newCourseInfoView, 
+			CreditsView newCreditsView, ScheduleGeneratorView newScheduleGeneratorView, WishlistView newWishlistView, 
+			LoadingScreenView newLoadingScreenView,AboutYouModel newAboutYouModel, CourseInfoModel newCourseInfoModel, 
+			CreditsModel newCreditsModel, ScheduleGenerator newScheduleGenerator, WishlistModel newWishlistModel)
 	{
 		super();
 		
 		// Set appviews
+		startScreenView = newStartScreenView;
 		aboutYouView = newAboutYouView;
 		courseInfoView = newCourseInfoView;
 		creditsView = newCreditsView;
 		scheduleGeneratorView = newScheduleGeneratorView;
 		wishlistView = newWishlistView;
+		loadingScreenView = newLoadingScreenView;
+		
+		// Set the app controller for each view
+		startScreenView.setAppController(this);
+		aboutYouView.setAppController(this);
+		courseInfoView.setAppController(this);
+		creditsView.setAppController(this);
+		scheduleGeneratorView.setAppController(this);
+		wishlistView.setAppController(this);
+		loadingScreenView.setAppController(this);
+		
+		// Add action events to each JComponent within each view (Add e to comp for)
+		// Add e to comp for StartScreenView
+		startScreenView.getStartButton().addActionListener(this);
+		
+		
+		
+		// Add e to comp for AboutYouView
+		
+		// Add e to comp for CourseInfoView
+		
+		// Add e to comp for CreditsView
+		
+		// Add e to comp for ScheduleGeneratorView
+		
+		// Add e to comp for WishlistView
+		
+		// Add e to comp for LoadingScreenView
+		
+		
 		
 		// Set appmodels
 		aboutYouModel = newAboutYouModel;
@@ -106,86 +123,32 @@ public class AppController implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		// TODO Auto-generated method stub
+		// If the source is the start button from the start screen view
+		if(e.getSource() == startScreenView.getStartButton())
+		{
+			startApp();
+		}
 		
 	}
-	
-	/**
-	 * Purpose: To save the information from the user's input into the correct repositories
-	 * 
-	 */
-	
-	
-	
-	
-	
-	
+		
 	
 	// Getters and Setter that are getting changed
-	/**
-	 * Purpose: To return the minimum amount of required credits for a schedule
-	 * @return minRequiredCredits The minimum amount of required credits for a schedule
-	 */
-	public int getMinRequiredCredits()
-	{
-		return minRequiredCredits;
-	}
 
-	/**
-	 * Purpose: To return the maximum amount of required credits for a schedule
-	 * @return maxRequiredCredits The maximum amount of required credits for a schedule
-	 */
-	public int getMaxRequiredCredits()
-	{
-		return maxRequiredCredits;
-	}
-
-	/**
-	 * Purpose: To return the minimum desired break time for a schedule
-	 * @return minDesiredBreakTime The minimum desired break time for a schedule
-	 */
-	public Duration getMinDesiredBreakTime()
-	{
-		return minDesiredBreakTime;
-	}
-
-	/**
-	 * Purpose: To return the maximum desired break time for a schedule
-	 * @return maxDesiredBreakTime The maximum desired break time for a schedule
-	 */
-	public Duration getMaxDesiredBreakTime()
-	{
-		return maxDesiredBreakTime;
-	}
-
-	/**
-	 * Purpose: To return the desired start and end time for each day of the week for a schedule
-	 * @return desiredStartAndEndTime The desired start and end time for each day of the week for a schedule
-	 */
-	public WeeklyTimeBlock getDesiredStartAndEndTime()
-	{
-		return desiredStartAndEndTime;
-	}
-
-	/**
-	 * Purpose: To return the desired campus location for a schedule
-	 * @return desiredCampusLocation The desired campus location for a schedule
-	 */
-	public String getDesiredCampusLocation()
-	{
-		return desiredCampusLocation;
-	}
-
-	/**
-	 * Purpose: To return the student's major distinction (STEM, non-STEM, Undecided)
-	 * @return studentsMajorDistinction The student's major distinction (STEM, non-STEM, Undecided)
-	 */
-	public String getStudentsMajorDistinction()
-	{
-		return studentsMajorDistinction;
-	}
 
 	
-	
+	// Other Methods
+	/**
+	 * Purpose: To start the app's process by closing out the start window and opening the 
+	 * wishlist window
+	 * 
+	 */
+	public void startApp()
+	{
+		// Close the start screen
+		startScreenView.dispose();
+		
+		// Open a new wishlist window
+		wishlistView.setVisible(true);
+	}
 	
 }

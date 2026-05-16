@@ -171,7 +171,7 @@ public abstract class Course
 	}
 
 	/**
-	 * Purpose: To set the weekly time block for the course
+	 * Purpose: To set the weekly time block for the course using raw data values (not a completed time block)
 	 * 
 	 * @param newDaysOfTheWeek  The new days the class meets during
 	 * @param newClassStartTime The new time the class starts at
@@ -457,5 +457,14 @@ public abstract class Course
 				+ " Credits: " + courseCredits;
 				
 				
+	}
+
+	/**
+	 * Purpose: To set the course's weekly time block from a completed WeeklyTimeBlock object
+	 * @param newWeeklyTimeBlock The new weekly time block for the course
+	 */
+	public void setCourseTimeBlock(WeeklyTimeBlock newWeeklyTimeBlock)
+	{
+		courseWeeklyTimeBlock = newWeeklyTimeBlock;
 	}
 }

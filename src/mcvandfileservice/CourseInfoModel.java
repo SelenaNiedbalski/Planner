@@ -22,22 +22,24 @@ import java.nio.file.Path;
 public class CourseInfoModel
 {
 	// Instance Variables
-	private String courseName;
-	private boolean studentRequiredCourse;
-	private final Path availableClassesRetrievalPath;
-	private String courseType;
+	private String courseName; // A course info model has-a course name
+	private boolean studentRequiredCourse; // A course info model has-a boolean value for whether the course is a required course or not
+	private final Path availableClassesRetrievalPath; // A course info model has-a path for where the available classes will be retrieved from
+	private String courseType; // A course info model has-a course type
+	private int coursesRemaining; // A course info model has-a course count for how many courses the student has left to input
 	
 	// Constructors
 	/**
 	 * Purpose: To construct a CourseInfoModel with default values
 	 * 
 	 */
-	public CourseInfoModel()
+	public CourseInfoModel(AboutYouModel aboutYouModel)
 	{
 		courseName = null;
 		studentRequiredCourse = false;
 		availableClassesRetrievalPath = Path.of("");
 		courseType = null;
+		coursesRemaining = aboutYouModel.getNumOfCoursesStudentWillInput();
 	}
 	
 	/**
@@ -101,6 +103,23 @@ public class CourseInfoModel
 	public void setCourseType(String newCourseType)
 	{
 		courseType = newCourseType;
+	}
+	
+	/**
+	 * Purpose: To return the number of courses the student has left to input
+	 * @return coursesRemaining The number of courses the student has left to input
+	 */
+	public int getCoursesRemaining()
+	{
+		return coursesRemaining;
+	}
+	
+	/**
+	 * Purpose: To update the number of courses the student has left to input (by decrementing the current value by 1)
+	 */
+	public void updateCoursesRemaining()
+	{
+		coursesRemaining--;
 	}
 
 }

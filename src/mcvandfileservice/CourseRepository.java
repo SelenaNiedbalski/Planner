@@ -1,6 +1,15 @@
 package mcvandfileservice;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import courseclasses.Course;
+import courseclasses.CreativeArtsAndElectivesCourse;
+import courseclasses.LiberalArtsCourse;
+import courseclasses.ProfessionalCourse;
+import courseclasses.STEMCourse;
+import schedules.WeeklyTimeBlock;
 
 /**
  * Lead Author(s):
@@ -21,94 +30,105 @@ import java.nio.file.Path;
 
 public class CourseRepository
 {
-	// TODO calculate all courses after creation
-	// From controller
-	// Instance Variables
-	private String courseName;
-	private String courseType;
-	private boolean studentRequiredCourse = true;
-	private Path availableClassesRetrievalPath;
-	
+	private List<PartialCourse> storedClasses; // A course repository has-many partial courses
+	private Path topThreeSchedulesDestinationPath; // A course repository has-a destination path to save the top three schedules to
 	
 	/**
-	 * Purpose: To construct a CourseRepository with the given values
+	 * Purpose: To construct a CourseRepository a default empty storedClasses list and the given userData repository to grab the destination schedule path
+	 * @param userDataRepository The user data repository to grab the destination schedule path from
 	 * 
 	 */
 	public CourseRepository(UserDataRepository userDataRepository)
 	{
-		courseName = userDataRepository.getCourseName();
-		courseType = userDataRepository.getCourseType();
-		studentRequiredCourse = userDataRepository.isStudentRequiredCourse();
-		availableClassesRetrievalPath = userDataRepository.getAvailableClassesRetrievalPath();
+		storedClasses = null;
+		topThreeSchedulesDestinationPath = userDataRepository.getTopThreeSchedulesDestinationPath();
+	}
+	
+	
+	
+	/**
+	 * Purpose: To save the course information that the student will input to a file
+	 * @param newCourseID The course ID
+	 * @param newCourseWeeklyTimeBlock The course weekly time block
+	 * @param newCourseInstructor The course instructor
+	 * @param newCourseRMPScore The course RMP score
+	 * @param newCourseCampus The course campus
+	 * @param newCourseCredits The course credits
+	 */
+	public void storeClassInfo(String courseID,
+			WeeklyTimeBlock courseWeeklyTimeBlock, String courseInstructor,
+			double courseRMPScore, String courseCampus, int courseCredits)
+	{
+		PartialCourse newCourse = new PartialCourse(courseID,
+				courseWeeklyTimeBlock, courseInstructor, courseRMPScore,
+				courseCampus, courseCredits);
+
+		storedClasses.add(newCourse);
+	}
+	
+	
+	/**
+	 * Purpose: To create course objects based on partial info from partial course and input info from user input
+	 * @param courseType The course type that the student will input
+	 * @param required Whether the course is a required course or not that the student will input
+	 * @param difficulty The course difficulty that the student will input
+	 * @return finalCourses The list of course objects created based on the partial info from partial course and input info from user input
+	 * 
+	 */
+	public List<Course> buildFinalCourses(String courseType, boolean required, double difficulty)
+	{
+	    List<Course> finalCourses = new ArrayList<>();
+
+	    for (PartialCourse pc : storedClasses)
+	    {
+	        Course newCourse;
+
+	        if (courseType.equals("STEM"))
+	        {
+	            newCourse = new STEMCourse();
+	        }
+	        else if (courseType.equals("LiberalArts"))
+	        {
+	            newCourse = new LiberalArtsCourse();
+	        }
+	        else if (courseType.equals("Professional"))
+	        {
+	            newCourse = new ProfessionalCourse();
+	        }
+	        else
+	        {
+	            newCourse = new CreativeArtsAndElectivesCourse();
+	        }
+
+
+			newCourse.setCourseID(pc.getCourseID());
+			newCourse.setCourseTimeBlock(pc.getTimeBlock());
+			newCourse.setInstructorName(pc.getInstructor());
+			newCourse.setInstructorRMPScore(pc.getRmpScore());
+			newCourse.setCourseCampusLocation(pc.getCampus());
+			newCourse.setCourseCredits(pc.getCredits());
+
+	        newCourse.setCourseDifficulty(difficulty);
+	        newCourse.setCourseRequired(required);
+
+	        finalCourses.add(newCourse);
+	    }
+
+	    // ✅ CLEAR AFTER BUILDING
+	    storedClasses.clear();
+
+	    return finalCourses;
 	}
 	
 	// Getters
+
 	/**
-	 * Purpose: To return the course name that the student will input
-	 * @return courseName The course name
+	 * Purpose: To return the path where the top three schedules file will be saved to
+	 * @return topThreeSchedulesDestinationPath The path where the top three schedules file will be saved to
 	 */
-	public String getCourseName()
+	public Path getTopThreeSchedulesDestinationPath()
 	{
-		return courseName;
+		return topThreeSchedulesDestinationPath;
 	}
-	
-	/**
-	 * Purpose: To set the course name that the student will input
-	 * @return newCourseName The new course name
-	 */
-	public void setCourseName(String newCourseName)
-	{
-		courseName = newCourseName;
-	}
-	
-	/**
-	 * Purpose: To return the course type that the student will input
-	 * @return courseType The course type
-	 */
-	public String getCourseType()
-	{
-		return courseType;
-	}
-	
-	/**
-	 * Purpose: To set the course type that the student will input
-	 * @return newCourseType The new course type
-	 */
-	public void setCourseType(String newCourseType)
-	{
-		courseType = newCourseType;
-	}
-	
-	/**
-	 * Purpose: To return whether the course the student will input is a required course or not
-	 * @return studentRequiredCourse Whether the course is a required course or not
-	 */
-	public boolean isStudentRequiredCourse()
-	{
-		return studentRequiredCourse;
-	}
-	
-	/**
-	 * Purpose: To set whether the course the student will input is a required course or not
-	 * @return updatedStudentRequiredCourse The updated value for whether the course is a required course or not
-	 */
-	public void setStudentRequiredCourse(boolean updatedStudentRequiredCourse)
-	{
-		studentRequiredCourse = updatedStudentRequiredCourse;
-	}
-	
-	
-	/**
-	 * Purpose: To return the path where the available classes will be retrieved from
-	 * @return availableClassesRetrievalPath The path where the available classes will be retrieved from
-	 */
-	public Path getAvailableClassesRetrievalPath()
-	{
-		return availableClassesRetrievalPath;
-	}
-	
-	
-	
-	
 	
 }

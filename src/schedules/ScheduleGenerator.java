@@ -299,9 +299,9 @@ public class ScheduleGenerator
 	        this.addToTopThreeSchedules(schedule);
 	    }
 	    
-	    // Add 3 top schedules to the file service
+	    // Add 3 top schedules to the schedule generator repository
 	    scheduleGeneratorRepository.addTopThreeSchedules(topThreeSchedules);
-	    fileService.addScheduleGeneratorRepository(scheduleGeneratorRepository);
+	    
 	    return topThreeSchedules;
 	}
 	

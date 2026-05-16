@@ -1,10 +1,8 @@
 package mcvandfileservice;
 
-import java.time.Duration;
 import java.util.List;
 
 import schedules.Schedule;
-import schedules.WeeklyTimeBlock;
 
 /**
  * Lead Author(s):
@@ -26,8 +24,7 @@ import schedules.WeeklyTimeBlock;
 public class ScheduleGeneratorRepository
 {
 	List<Schedule> topThreeSchedules; // A schedule generator repository has-a list of the top three schedules
-	
-	
+	List<String> createdFilePaths; // A schedule generator repository has-a list of the file paths of the created top three schedule CSV files
 	
 	// Constructor
 	/**
@@ -60,6 +57,19 @@ public class ScheduleGeneratorRepository
 	{
 		topThreeSchedules = newTopThreeSchedules;
 	}
+
+
+
+	/**
+	 * Purpose: To save the file paths of the created top three schedule CSV files to the schedule generator repository
+	 * @param newCreatedFilePaths The list of the file paths of the created top three schedule CSV files
+	 */
+	public void saveTopThreeCSVFilePaths(List<String> newCreatedFilePaths)
+	{
+		createdFilePaths = newCreatedFilePaths;
+	}
+
+	
 }
 	
 	

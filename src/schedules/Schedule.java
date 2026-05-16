@@ -442,62 +442,53 @@ public class Schedule
 	 * @param maxDesiredBreakTime The maximum desired break time between courses
 	 * @return scheduleScore The new scheduleScore
 	 */
-	public double calculateBreakTimeDeviation(Duration minDesiredBreakTime, Duration maxDesiredBreakTime)
+	public double calculateBreakTimeDeviation(long minDesiredBreakMinutes,
+			long maxDesiredBreakMinutes)
 	{
-	    for (DayOfWeek day : DayOfWeek.values())
-	    {
-	        // List to store all class time ranges for this day
-	        List<LocalTime[]> timesForDay = new ArrayList<>();
-	        
-	        // Collect times from each WeeklyTimeBlock
-	        for (WeeklyTimeBlock block : currentScheduleTimes)
-	        {
-	            if (block.containsDay(day) == true)
-	            {
-	                LocalTime start = block.getClassStartTime();
-	                LocalTime end = block.getClassEndTime();
-	                
-	                // Add this class time range
-	                timesForDay.add(new LocalTime[]{start, end});
-	            }
-	        }
-	        
-	        // Only calculate breaks if there are at least 2 classes
-	        if (timesForDay.size() >= 2)
-	        {
-	            // Sort by start time
-	            timesForDay.sort((a, b) -> a[0].compareTo(b[0]));
-	            
-	            // Loop through consecutive classes
-	            for (int i = 0; i < timesForDay.size() - 1; i++)
-	            {
-	                LocalTime endCurrent = timesForDay.get(i)[1];
-	                LocalTime startNext = timesForDay.get(i + 1)[0];
-	                
-	                Duration breakTime = Duration.between(endCurrent, startNext);
-	                
-	                // Only process valid breaks (no overlap, no zero)
-	                if (breakTime.isNegative() == false && breakTime.isZero() == false)
-	                {
-	                    // Too short
-	                    if (breakTime.compareTo(minDesiredBreakTime) < 0)
-	                    {
-	                        Duration difference = minDesiredBreakTime.minus(breakTime);
-	                        scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
-	                    }
-	                    
-	                    // Too long
-	                    if (breakTime.compareTo(maxDesiredBreakTime) > 0)
-	                    {
-	                        Duration difference = breakTime.minus(maxDesiredBreakTime);
-	                        scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
-	                    }
-	                }
-	            }
-	        }
-	    }
-	    
-	    return scheduleScore;
+		for (DayOfWeek day : DayOfWeek.values())
+		{
+
+			List<LocalTime[]> timesForDay = new ArrayList<>();
+
+			for (WeeklyTimeBlock block : currentScheduleTimes)
+			{
+				if (block.containsDay(day))
+				{
+					timesForDay.add(new LocalTime[] { block.getClassStartTime(),
+							block.getClassEndTime() });
+				}
+			}
+
+			if (timesForDay.size() >= 2)
+			{
+				timesForDay.sort((a, b) -> a[0].compareTo(b[0]));
+
+				for (int i = 0; i < timesForDay.size() - 1; i++)
+				{
+					LocalTime endCurrent = timesForDay.get(i)[1];
+					LocalTime startNext = timesForDay.get(i + 1)[0];
+
+					long breakMinutes = java.time.temporal.ChronoUnit.MINUTES
+							.between(endCurrent, startNext);
+
+					// Only process valid breaks (no overlap, no zero)
+					if (breakMinutes > 0)
+					{
+						if (breakMinutes < minDesiredBreakMinutes)
+						{
+							long diff = minDesiredBreakMinutes - breakMinutes;
+							scheduleScore -= diff / 10.0;
+						}
+						else if (breakMinutes > maxDesiredBreakMinutes)
+						{
+							long diff = breakMinutes - maxDesiredBreakMinutes;
+							scheduleScore -= diff / 10.0;
+						}
+					}
+				}
+			}
+		}
+		return scheduleScore;
 	}
 
 	

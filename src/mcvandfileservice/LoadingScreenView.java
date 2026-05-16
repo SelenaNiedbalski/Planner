@@ -17,19 +17,24 @@ import javax.swing.JFrame;
  * 
  * Responsibilities of class: 
  * 
- * CreditsView is-a JFrame
+ * LoadingScreenView is-a JFrame 
  */
-
-public class CreditsView extends JFrame
+public class LoadingScreenView extends JFrame
 {
-
-    // Instance Variables
-	private AppController appController; // A credits view has-an app controller
+	// Instance Variables
+	private AppController appController; // A loading screen view has-an app controller
 	
 	
+	
+	
+	
+	
+	
+	
+	// Getters and Setters
 	/**
 	 * Purpose: To return the app controller
-	 * @return appController The app controller
+	 * @return appController The app controller instance variable
 	 */
 	public AppController getAppController()
 	{
@@ -37,12 +42,11 @@ public class CreditsView extends JFrame
 	}
 	
 	/**
-	 * Purpose: To set the app controller to the given value
-	 * @param newAppController The new app controller
-	 */
+	 * Purpose: To set the app controller
+	 * @param newAppController The app controller to set the app controller instance variable to
+	 */	
 	public void setAppController(AppController newAppController)
 	{
 		appController = newAppController;
 	}
-
 }

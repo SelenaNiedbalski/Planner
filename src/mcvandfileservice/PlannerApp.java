@@ -1,4 +1,7 @@
 package mcvandfileservice;
+
+import schedules.ScheduleGenerator;
+
 /**
  * Lead Author(s):
  * @author Selena Niedbalski
@@ -18,5 +21,38 @@ package mcvandfileservice;
 
 public class PlannerApp
 {
-
+	// Main method to run the app
+	public static void main(String[] args)
+	{
+		// Initialize app views
+		StartScreenView startScreenView = new StartScreenView();
+		WishlistView wishlistView = new WishlistView();
+		CreditsView creditsView = new CreditsView();
+		AboutYouView aboutYouView = new AboutYouView();
+		CourseInfoView courseInfoView = new CourseInfoView();
+		LoadingScreenView loadingScreenView = new LoadingScreenView();
+		ScheduleGeneratorView scheduleGeneratorView = new ScheduleGeneratorView();
+		
+		// Initialize repositories and File Service
+		UserDataRepository userDataRepository = new UserDataRepository();
+		CourseRepository courseRepository = new CourseRepository(userDataRepository);
+		ScheduleGeneratorRepository scheduleGeneratorRepository = new ScheduleGeneratorRepository();
+		FileService fileService = new FileService(scheduleGeneratorRepository, courseRepository);
+		
+		
+		// Initialize app models
+		WishlistModel wishlistModel = new WishlistModel();
+		CreditsModel creditsModel = new CreditsModel();
+		AboutYouModel aboutYouModel = new AboutYouModel();
+		CourseInfoModel courseInfoModel = new CourseInfoModel(aboutYouModel);
+		ScheduleGenerator scheduleGenerator = new ScheduleGenerator(userDataRepository, scheduleGeneratorRepository, fileService);
+		
+		
+		// Initialize app controller
+		AppController appController = new AppController(startScreenView,
+				aboutYouView, courseInfoView, creditsView,
+				scheduleGeneratorView, wishlistView, loadingScreenView,
+				aboutYouModel, courseInfoModel, creditsModel, scheduleGenerator,
+				wishlistModel);
+	}
 }
