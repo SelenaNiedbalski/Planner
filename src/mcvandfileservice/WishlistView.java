@@ -26,6 +26,9 @@ import java.awt.Font;
  * Wishlistview is-a JFrame 
  */
 import javax.swing.*;
+
+import exceptions.IncorrectTimeFormatException;
+
 import java.awt.*;
 
 public class WishlistView extends JFrame
@@ -94,6 +97,7 @@ public class WishlistView extends JFrame
         Color darkHotPink = new Color(170, 0, 85);
         Font instructionsAndLabelsFont = new Font("Sans Serif", Font.PLAIN, 12);
         Font buttonFont = new Font("Lucida Calligraphy", Font.PLAIN, 12);
+        Font errorFont = new Font("Sans Serif", Font.ITALIC, 8);
 
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
@@ -123,9 +127,19 @@ public class WishlistView extends JFrame
         topPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        JPanel timetablePanel = new JPanel(new GridLayout(8, 4, 6, 6));
+        // Timetable uses a 3-column horizontal wrapper:
+        // (1) Day labels in a Y_AXIS box, (2) 8x2 time grid, (3) Error JLabels in a wider Y_AXIS box
+        JPanel timetablePanel = new JPanel(new GridLayout(8, 2, 6, 6));
         timetablePanel.setOpaque(false);
-        timetablePanel.setPreferredSize(new Dimension(300, 190));
+        timetablePanel.setPreferredSize(new Dimension(120, 190));
+
+        JPanel dayLabelsPanel = new JPanel();
+        dayLabelsPanel.setOpaque(false);
+        dayLabelsPanel.setLayout(new BoxLayout(dayLabelsPanel, BoxLayout.Y_AXIS));
+
+        JPanel errorLabelsPanel = new JPanel();
+        errorLabelsPanel.setOpaque(false);
+        errorLabelsPanel.setLayout(new BoxLayout(errorLabelsPanel, BoxLayout.Y_AXIS));
 
         // Helper to prevent GridLayout from stretching JTextFields:
         java.util.function.Function<JComponent, JPanel> fit = (comp) -> {
@@ -135,9 +149,34 @@ public class WishlistView extends JFrame
             return p;
         };
 
+        // Helper to keep the Day/Error columns aligned with the 8 grid rows:
+        java.util.function.Function<JComponent, JPanel> fixedRowCell = (comp) -> {
+            JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            p.setOpaque(false);
+            p.setPreferredSize(new Dimension(95, 20));
+            p.setMaximumSize(new Dimension(95, 20));
+            p.setMinimumSize(new Dimension(95, 20));
+            p.add(comp);
+            return p;
+        };
+
+        // Helper to keep the Error column wider and left-aligned:
+        java.util.function.Function<JComponent, JPanel> fixedErrorCell = (comp) -> {
+            JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            p.setOpaque(false);
+            p.setPreferredSize(new Dimension(240, 20));
+            p.setMaximumSize(new Dimension(240, 20));
+            p.setMinimumSize(new Dimension(240, 20));
+            p.add(comp);
+            return p;
+        };
+
         JPanel timetableWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         timetableWrapper.setOpaque(false);
-        timetableWrapper.add(timetablePanel);
+
+        JPanel timetableRowWrapper = new JPanel();
+        timetableRowWrapper.setOpaque(false);
+        timetableRowWrapper.setLayout(new BoxLayout(timetableRowWrapper, BoxLayout.X_AXIS));
 
         JLabel headerDay = new JLabel("Day", SwingConstants.CENTER);
         headerDay.setFont(instructionsAndLabelsFont);
@@ -151,14 +190,19 @@ public class WishlistView extends JFrame
         headerEnd.setFont(instructionsAndLabelsFont);
         headerEnd.setForeground(darkHotPink);
 
-        JLabel headerError = new JLabel("", SwingConstants.CENTER);
+        JLabel headerError = new JLabel("Error", SwingConstants.LEFT);
         headerError.setFont(instructionsAndLabelsFont);
         headerError.setForeground(darkHotPink);
 
-        timetablePanel.add(headerDay);
+        // Add headers (row 0)
+        dayLabelsPanel.add(fixedRowCell.apply(headerDay));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
+
         timetablePanel.add(headerStart);
         timetablePanel.add(headerEnd);
-        timetablePanel.add(headerError);
+
+        errorLabelsPanel.add(fixedErrorCell.apply(headerError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         Dimension timeFieldMax = new Dimension(38, 20);
 
@@ -173,13 +217,16 @@ public class WishlistView extends JFrame
         monEndOfDay.setText("16:00");
         monEndOfDay.setPreferredSize(timeFieldMax);
         monEndOfDay.setMaximumSize(timeFieldMax);
-        monError = new JLabel("", SwingConstants.CENTER);
-        monError.setFont(instructionsAndLabelsFont);
+        monError = new JLabel("", SwingConstants.LEFT);
+        monError.setFont(errorFont);
         monError.setForeground(darkHotPink);
-        timetablePanel.add(monLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(monLabel));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
         timetablePanel.add(fit.apply(monStartOfDay));
         timetablePanel.add(fit.apply(monEndOfDay));
-        timetablePanel.add(monError);
+        errorLabelsPanel.add(fixedErrorCell.apply(monError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         JLabel tuesLabel = new JLabel("Tuesday", SwingConstants.CENTER);
         tuesLabel.setFont(instructionsAndLabelsFont);
@@ -192,13 +239,16 @@ public class WishlistView extends JFrame
         tuesEndOfDay.setText("16:00");
         tuesEndOfDay.setPreferredSize(timeFieldMax);
         tuesEndOfDay.setMaximumSize(timeFieldMax);
-        tuesError = new JLabel("", SwingConstants.CENTER);
-        tuesError.setFont(instructionsAndLabelsFont);
+        tuesError = new JLabel("", SwingConstants.LEFT);
+        tuesError.setFont(errorFont);
         tuesError.setForeground(darkHotPink);
-        timetablePanel.add(tuesLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(tuesLabel));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
         timetablePanel.add(fit.apply(tuesStartOfDay));
         timetablePanel.add(fit.apply(tuesEndOfDay));
-        timetablePanel.add(tuesError);
+        errorLabelsPanel.add(fixedErrorCell.apply(tuesError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         JLabel wedLabel = new JLabel("Wednesday", SwingConstants.CENTER);
         wedLabel.setFont(instructionsAndLabelsFont);
@@ -211,13 +261,16 @@ public class WishlistView extends JFrame
         wedEndOfDay.setText("16:00");
         wedEndOfDay.setPreferredSize(timeFieldMax);
         wedEndOfDay.setMaximumSize(timeFieldMax);
-        wedError = new JLabel("", SwingConstants.CENTER);
-        wedError.setFont(instructionsAndLabelsFont);
+        wedError = new JLabel("", SwingConstants.LEFT);
+        wedError.setFont(errorFont);
         wedError.setForeground(darkHotPink);
-        timetablePanel.add(wedLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(wedLabel));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
         timetablePanel.add(fit.apply(wedStartOfDay));
         timetablePanel.add(fit.apply(wedEndOfDay));
-        timetablePanel.add(wedError);
+        errorLabelsPanel.add(fixedErrorCell.apply(wedError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         JLabel thursLabel = new JLabel("Thursday", SwingConstants.CENTER);
         thursLabel.setFont(instructionsAndLabelsFont);
@@ -230,13 +283,16 @@ public class WishlistView extends JFrame
         thursEndOfDay.setText("16:00");
         thursEndOfDay.setPreferredSize(timeFieldMax);
         thursEndOfDay.setMaximumSize(timeFieldMax);
-        thursError = new JLabel("", SwingConstants.CENTER);
-        thursError.setFont(instructionsAndLabelsFont);
+        thursError = new JLabel("", SwingConstants.LEFT);
+        thursError.setFont(errorFont);
         thursError.setForeground(darkHotPink);
-        timetablePanel.add(thursLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(thursLabel));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
         timetablePanel.add(fit.apply(thursStartOfDay));
         timetablePanel.add(fit.apply(thursEndOfDay));
-        timetablePanel.add(thursError);
+        errorLabelsPanel.add(fixedErrorCell.apply(thursError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         JLabel friLabel = new JLabel("Friday", SwingConstants.CENTER);
         friLabel.setFont(instructionsAndLabelsFont);
@@ -249,13 +305,16 @@ public class WishlistView extends JFrame
         friEndOfDay.setText("16:00");
         friEndOfDay.setPreferredSize(timeFieldMax);
         friEndOfDay.setMaximumSize(timeFieldMax);
-        friError = new JLabel("", SwingConstants.CENTER);
-        friError.setFont(instructionsAndLabelsFont);
+        friError = new JLabel("", SwingConstants.LEFT);
+        friError.setFont(errorFont);
         friError.setForeground(darkHotPink);
-        timetablePanel.add(friLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(friLabel));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
         timetablePanel.add(fit.apply(friStartOfDay));
         timetablePanel.add(fit.apply(friEndOfDay));
-        timetablePanel.add(friError);
+        errorLabelsPanel.add(fixedErrorCell.apply(friError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         JLabel satLabel = new JLabel("Saturday", SwingConstants.CENTER);
         satLabel.setFont(instructionsAndLabelsFont);
@@ -268,13 +327,16 @@ public class WishlistView extends JFrame
         satEndOfDay.setText("16:00");
         satEndOfDay.setPreferredSize(timeFieldMax);
         satEndOfDay.setMaximumSize(timeFieldMax);
-        satError = new JLabel("", SwingConstants.CENTER);
-        satError.setFont(instructionsAndLabelsFont);
+        satError = new JLabel("", SwingConstants.LEFT);
+        satError.setFont(errorFont);
         satError.setForeground(darkHotPink);
-        timetablePanel.add(satLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(satLabel));
+        dayLabelsPanel.add(Box.createVerticalStrut(6));
         timetablePanel.add(fit.apply(satStartOfDay));
         timetablePanel.add(fit.apply(satEndOfDay));
-        timetablePanel.add(satError);
+        errorLabelsPanel.add(fixedErrorCell.apply(satError));
+        errorLabelsPanel.add(Box.createVerticalStrut(6));
 
         JLabel sunLabel = new JLabel("Sunday", SwingConstants.CENTER);
         sunLabel.setFont(instructionsAndLabelsFont);
@@ -287,13 +349,22 @@ public class WishlistView extends JFrame
         sunEndOfDay.setText("16:00");
         sunEndOfDay.setPreferredSize(timeFieldMax);
         sunEndOfDay.setMaximumSize(timeFieldMax);
-        sunError = new JLabel("", SwingConstants.CENTER);
-        sunError.setFont(instructionsAndLabelsFont);
+        sunError = new JLabel("", SwingConstants.LEFT);
+        sunError.setFont(errorFont);
         sunError.setForeground(darkHotPink);
-        timetablePanel.add(sunLabel);
+
+        dayLabelsPanel.add(fixedRowCell.apply(sunLabel));
         timetablePanel.add(fit.apply(sunStartOfDay));
         timetablePanel.add(fit.apply(sunEndOfDay));
-        timetablePanel.add(sunError);
+        errorLabelsPanel.add(fixedErrorCell.apply(sunError));
+        
+        timetableRowWrapper.add(Box.createHorizontalStrut(50));
+        timetableRowWrapper.add(dayLabelsPanel);
+        timetableRowWrapper.add(Box.createHorizontalStrut(10));
+        timetableRowWrapper.add(timetablePanel);
+        timetableRowWrapper.add(Box.createHorizontalStrut(10));
+        timetableRowWrapper.add(errorLabelsPanel);
+        timetableWrapper.add(timetableRowWrapper);
 
         mainPanel.add(timetableWrapper, BorderLayout.CENTER);
 
@@ -319,7 +390,7 @@ public class WishlistView extends JFrame
         breakInstructionsWrapper.setOpaque(false);
         breakInstructionsWrapper.add(breakTimesInstructionsLabel);
 
-        bottomPanel.add(Box.createVerticalStrut(10));
+        bottomPanel.add(Box.createVerticalStrut(6));
         bottomPanel.add(breakInstructionsWrapper);
         bottomPanel.add(Box.createVerticalStrut(10));
 
@@ -444,8 +515,7 @@ public class WishlistView extends JFrame
         continueButton.setFont(buttonFont);
         continueButton.setForeground(Color.WHITE);
         continueButton.setBackground(darkHotPink);
-        
-        
+
         buttonsPanel.add(backButton);
         buttonsPanel.add(Box.createHorizontalStrut(160));
         buttonsPanel.add(saveButton);
@@ -460,6 +530,7 @@ public class WishlistView extends JFrame
 
         setVisible(false);
     }
+    
     
 	
 	
@@ -549,14 +620,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired start time for Monday
 	 * @return monStartOfDay The desired start time for Monday
+	 * @throws IncorrectTimeFormatException if the desired start time for Monday is not in hh:mm format
 	 */
-	public LocalTime getMonStartOfDay()
+	public LocalTime getMonStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (monStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(monStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(monStartOfDay.getText());
+
+	    return LocalTime.parse(monStartOfDay.getText().trim());
 	}
 
 
@@ -564,15 +640,21 @@ public class WishlistView extends JFrame
 
 
 	/**
-	 * Purpose: To return the desired @return monEndOfDay The desired end time for Monday * Purpose: To return the desired end time for Monday
+	 * Purpose: To return the desired end time for Monday
+	 * @return monEndOfDay The desired end time for Monday
+	 * @throws IncorrectTimeFormatException if the desired end time for Monday is not in hh:mm format
 	 */
-	public LocalTime getMonEndOfDay()
+	public LocalTime getMonEndOfDay() throws IncorrectTimeFormatException
 	{
 	    if (monEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(monEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(monEndOfDay.getText());
+
+	    return LocalTime.parse(monEndOfDay.getText().trim());
 	}
 
 
@@ -580,15 +662,21 @@ public class WishlistView extends JFrame
 
 
 	/**
-	 * Purpose: To return the desired * @return tuesStartOfDay The desired start time for Tuesday * Purpose: To return the desired start time for Tuesday
+	 * Purpose: To return the desired start time for Tuesday
+	 * @return tuesStartOfDay The desired start time for Tuesday
+	 * @throws IncorrectTimeFormatException if the desired start time for Tuesday is not in hh:mm format
 	 */
-	public LocalTime getTuesStartOfDay()
+	public LocalTime getTuesStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (tuesStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(tuesStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(tuesStartOfDay.getText());
+
+	    return LocalTime.parse(tuesStartOfDay.getText().trim());
 	}
 
 
@@ -598,26 +686,39 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired end time for Tuesday
 	 * @return tuesEndOfDay The desired end time for Tuesday
+	 * @throws IncorrectTimeFormatException if the desired end time for Tuesday is not in hh:mm format
 	 */
-	public LocalTime getTuesEndOfDay()
+	public LocalTime getTuesEndOfDay() throws IncorrectTimeFormatException
 	{
-	    if (tuesEndOfDay.getText().isEmpty())
+		if (tuesEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(tuesEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(tuesEndOfDay.getText());
+
+	    return LocalTime.parse(tuesEndOfDay.getText().trim());
 	}
 
 
 
-
-	public LocalTime getWedStartOfDay()
+	/**
+	 * Purpose: To return the desired start time for Wednesday
+	 * @return wedStartOfDay The desired start time for Wednesday
+	 * @throws IncorrectTimeFormatException if the desired start time for Wednesday is not in hh:mm format
+	 */
+	public LocalTime getWedStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (wedStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(wedStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(wedStartOfDay.getText());
+
+	    return LocalTime.parse(wedStartOfDay.getText().trim());
 	}
 
 
@@ -626,14 +727,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired end time for Wednesday
 	 * @return wedEndOfDay The desired end time for Wednesday
+	 * @throws IncorrectTimeFormatException if the desired end time for Wednesday is not in hh:mm format
 	 */
-	public LocalTime getWedEndOfDay()
+	public LocalTime getWedEndOfDay() throws IncorrectTimeFormatException
 	{
 	    if (wedEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(wedEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(wedEndOfDay.getText());
+
+	    return LocalTime.parse(wedEndOfDay.getText().trim());
 	}
 
 
@@ -642,14 +748,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired start time for Thursday
 	 * @return thursStartOfDay The desired start time for Thursday
+	 * @throws IncorrectTimeFormatException if the desired start time for Thursday is not in hh:mm format
 	 */
-	public LocalTime getThursStartOfDay()
+	public LocalTime getThursStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (thursStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(thursStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(thursStartOfDay.getText());
+
+	    return LocalTime.parse(thursStartOfDay.getText().trim());
 	}
 
 
@@ -658,14 +769,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired end time for Thursday
 	 * @return thursEndOfDay The desired end time for Thursday
+	 * @throws IncorrectTimeFormatException if the desired end time for Thursday is not in hh:mm format
 	 */
-	public LocalTime getThursEndOfDay()
+	public LocalTime getThursEndOfDay() throws IncorrectTimeFormatException
 	{
-	    if (thursEndOfDay.getText().isEmpty())
+		if (thursEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(thursEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(thursEndOfDay.getText());
+
+	    return LocalTime.parse(thursEndOfDay.getText().trim());
 	}
 
 
@@ -674,14 +790,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired start time for Friday
 	 * @return friStartOfDay The desired start time for Friday
+	 * @throws IncorrectTimeFormatException if the desired start time for Friday is not in hh:mm format
 	 */
-	public LocalTime getFriStartOfDay()
+	public LocalTime getFriStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (friStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(friStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(friStartOfDay.getText());
+
+	    return LocalTime.parse(friStartOfDay.getText().trim());
 	}
 
 
@@ -690,14 +811,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired end time for Friday
 	 * @return friEndOfDay The desired end time for Friday
+	 * @throws IncorrectTimeFormatException if the desired end time for Friday is not in hh:mm format
 	 */
-	public LocalTime getFriEndOfDay()
+	public LocalTime getFriEndOfDay() throws IncorrectTimeFormatException
 	{
 	    if (friEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(friEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(friEndOfDay.getText());
+
+	    return LocalTime.parse(friEndOfDay.getText().trim());
 	}
 
 
@@ -706,14 +832,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired start time for Saturday
 	 * @return satStartOfDay The desired start time for Saturday
+	 * @throws IncorrectTimeFormatException if the desired start time for Saturday is not in hh:mm format
 	 */
-	public LocalTime getSatStartOfDay()
+	public LocalTime getSatStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (satStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(satStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(satStartOfDay.getText());
+
+	    return LocalTime.parse(satStartOfDay.getText().trim());
 	}
 
 
@@ -722,14 +853,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired end time for Saturday
 	 * @return satEndOfDay The desired end time for Saturday
+	 * @throws IncorrectTimeFormatException if the desired end time for Saturday is not in hh:mm format
 	 */
-	public LocalTime getSatEndOfDay()
+	public LocalTime getSatEndOfDay() throws IncorrectTimeFormatException
 	{
 	    if (satEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(satEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(satEndOfDay.getText());
+
+	    return LocalTime.parse(satEndOfDay.getText().trim());
 	}
 
 
@@ -738,14 +874,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired start time for Sunday
 	 * @return sunStartOfDay The desired start time for Sunday
+	 * @throws IncorrectTimeFormatException if the desired start time is not in hh:mm format
 	 */
-	public LocalTime getSunStartOfDay()
+	public LocalTime getSunStartOfDay() throws IncorrectTimeFormatException
 	{
 	    if (sunStartOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(sunStartOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(sunStartOfDay.getText());
+
+	    return LocalTime.parse(sunStartOfDay.getText().trim());
 	}
 
 
@@ -754,14 +895,19 @@ public class WishlistView extends JFrame
 	/**
 	 * Purpose: To return the desired end time for Sunday
 	 * @return sunEndOfDay The desired end time for Sunday
+	 * @throws IncorrectTimeFormatException if the desired end time is not in hh:mm format
 	 */
-	public LocalTime getSunEndOfDay()
+	public LocalTime getSunEndOfDay() throws IncorrectTimeFormatException
 	{
 	    if (sunEndOfDay.getText().isEmpty())
 	    {
 	        return null;
 	    }
-	    return LocalTime.parse(sunEndOfDay.getText());
+
+	    // If the user's input is not in hh:mm format
+	    validateHHMM(sunEndOfDay.getText());
+
+	    return LocalTime.parse(sunEndOfDay.getText().trim());
 	}
 
 
@@ -870,5 +1016,69 @@ public class WishlistView extends JFrame
 	}
 	
 	
+	/**
+	 * Purpose: To validate code is HH:MM format and is a valid time
+	 * @throws IncorrectTimeFormatException if the time is not in the correct format or is not a valid time
+	 */
+	private void validateHHMM(String timeText) throws IncorrectTimeFormatException
 
+    {
+        if (timeText == null)
+        {
+            throw new IncorrectTimeFormatException();
+        }
+
+        String trimmed = timeText.trim();
+
+        // If the time is not in hh:mm format
+        if (!trimmed.matches("^(?:[01]\\d|2[0-3]):[0-5]\\d$"))
+        {
+            throw new IncorrectTimeFormatException();
+        }
+    }
+	
+	/**
+	 * Purpose: To reset all wishlist input fields to default values
+	 * 
+	 */
+	public void resetFields()
+	{
+	    monStartOfDay.setText("08:00");
+	    monEndOfDay.setText("16:00");
+
+	    tuesStartOfDay.setText("08:00");
+	    tuesEndOfDay.setText("16:00");
+
+	    wedStartOfDay.setText("08:00");
+	    wedEndOfDay.setText("16:00");
+
+	    thursStartOfDay.setText("08:00");
+	    thursEndOfDay.setText("16:00");
+
+	    friStartOfDay.setText("08:00");
+	    friEndOfDay.setText("16:00");
+
+	    satStartOfDay.setText("08:00");
+	    satEndOfDay.setText("16:00");
+
+	    sunStartOfDay.setText("08:00");
+	    sunEndOfDay.setText("16:00");
+
+	    minBreakTime.setText("10");
+	    maxBreakTime.setText("120");
+
+	    campusLocation.setText("");
+	    topThreeSchedulesDestinationPath.setText("");
+
+	    // Clear error labels
+	    setMonError("");
+	    setTuesError("");
+	    setWedError("");
+	    setThursError("");
+	    setFriError("");
+	    setSatError("");
+	    setSunError("");
+	}
+
+	
 }

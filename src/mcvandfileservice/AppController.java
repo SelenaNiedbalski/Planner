@@ -6,11 +6,14 @@ import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.swing.JOptionPane;
 
+import exceptions.IncorrectTimeFormatException;
 import schedules.ScheduleGenerator;
 import schedules.WeeklyTimeBlock;
 
@@ -203,166 +206,365 @@ public class AppController implements ActionListener
 	}
 	
 	/**
+	 * Purpose: To store all collected wishlist input data in one object
+	 * (helper class for collectWishlistInput() method)
+	 */
+	private class WishlistInputData
+	{
+	    Long minBreak;
+	    Long maxBreak;
+	    HashMap<DayOfWeek, WeeklyTimeBlock> times;
+	    HashMap<DayOfWeek, String> formatErrors;
+	    String campus;
+	    Path path;
+
+	    public WishlistInputData(Long minBreak, Long maxBreak,
+	                             HashMap<DayOfWeek, WeeklyTimeBlock> times,
+	                             HashMap<DayOfWeek, String> formatErrors,
+	                             String campus, Path path)
+	    {
+	        this.minBreak = minBreak;
+	        this.maxBreak = maxBreak;
+	        this.times = times;
+	        this.formatErrors = formatErrors;
+	        this.campus = campus;
+	        this.path = path;
+	    }
+	}
+	
+	
+	/**
+	 * Purpose: To collect all wishlist input data from the view, including time blocks and format errors
+	 * (helper method for saveWishlist() and continueWithWishlist() methods)
+	 * @return A wrapper object containing all necessary wishlist data and errors
+	 */
+	private WishlistInputData collectWishlistInput()
+	{
+	    // Clear any previous error messages in the view
+	    wishlistView.setMonError("");
+	    wishlistView.setTuesError("");
+	    wishlistView.setWedError("");
+	    wishlistView.setThursError("");
+	    wishlistView.setFriError("");
+	    wishlistView.setSatError("");
+	    wishlistView.setSunError("");
+
+	    // Get the new values from the wishlist view
+	    Long newMinDesiredBreakTime = wishlistView.getMinBreakTime();
+	    Long newMaxDesiredBreakTime = wishlistView.getMaxBreakTime();
+
+	    // Store any time format errors from the view getters
+	    HashMap<DayOfWeek, String> inputFormatErrors = new HashMap<DayOfWeek, String>();
+
+	    // Create individual time blocks for each day of the week and add them to a new hashmap
+	    HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime = new HashMap<DayOfWeek, WeeklyTimeBlock>();        
+
+	    // Monday time block
+	    LocalTime monStartTime = null;
+	    LocalTime monEndTime = null;
+	    try
+	    {
+	        monStartTime = wishlistView.getMonStartOfDay();
+	        monEndTime = wishlistView.getMonEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.MONDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setMonError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock monTimeBlock;
+	    if (monStartTime == null && monEndTime == null)
+	    {
+	        monTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.MONDAY))
+	    {
+	        monTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> monList = new ArrayList<DayOfWeek>();
+	        monList.add(DayOfWeek.MONDAY);
+	        monTimeBlock = new WeeklyTimeBlock(monList, monStartTime, monEndTime);
+	    }
+
+	    // Tuesday time block
+	    LocalTime tuesStartTime = null;
+	    LocalTime tuesEndTime = null;
+	    try
+	    {
+	        tuesStartTime = wishlistView.getTuesStartOfDay();
+	        tuesEndTime = wishlistView.getTuesEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.TUESDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setTuesError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock tuesTimeBlock;
+	    if (tuesStartTime == null && tuesEndTime == null)
+	    {
+	        tuesTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.TUESDAY))
+	    {
+	        tuesTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> tuesList = new ArrayList<DayOfWeek>();
+	        tuesList.add(DayOfWeek.TUESDAY);
+	        tuesTimeBlock = new WeeklyTimeBlock(tuesList, tuesStartTime, tuesEndTime);
+	    }
+
+	    // Wednesday time block
+	    LocalTime wedStartTime = null;
+	    LocalTime wedEndTime = null;
+	    try
+	    {
+	        wedStartTime = wishlistView.getWedStartOfDay();
+	        wedEndTime = wishlistView.getWedEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.WEDNESDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setWedError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock wedTimeBlock;
+	    if (wedStartTime == null && wedEndTime == null)
+	    {
+	        wedTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.WEDNESDAY))
+	    {
+	        wedTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> wedList = new ArrayList<DayOfWeek>();
+	        wedList.add(DayOfWeek.WEDNESDAY);
+	        wedTimeBlock = new WeeklyTimeBlock(wedList, wedStartTime, wedEndTime);
+	    }
+
+	    // Thursday time block
+	    LocalTime thursStartTime = null;
+	    LocalTime thursEndTime = null;
+	    try
+	    {
+	        thursStartTime = wishlistView.getThursStartOfDay();
+	        thursEndTime = wishlistView.getThursEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.THURSDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setThursError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock thursTimeBlock;
+	    if (thursStartTime == null && thursEndTime == null)
+	    {
+	        thursTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.THURSDAY))
+	    {
+	        thursTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> thursList = new ArrayList<DayOfWeek>();
+	        thursList.add(DayOfWeek.THURSDAY);
+	        thursTimeBlock = new WeeklyTimeBlock(thursList, thursStartTime, thursEndTime);
+	    }
+
+	    // Friday time block
+	    LocalTime friStartTime = null;
+	    LocalTime friEndTime = null;
+	    try
+	    {
+	        friStartTime = wishlistView.getFriStartOfDay();
+	        friEndTime = wishlistView.getFriEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.FRIDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setFriError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock friTimeBlock;
+	    if (friStartTime == null && friEndTime == null)
+	    {
+	        friTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.FRIDAY))
+	    {
+	        friTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> friList = new ArrayList<DayOfWeek>();
+	        friList.add(DayOfWeek.FRIDAY);
+	        friTimeBlock = new WeeklyTimeBlock(friList, friStartTime, friEndTime);
+	    }
+
+	    // Saturday time block
+	    LocalTime satStartTime = null;
+	    LocalTime satEndTime = null;
+	    try
+	    {
+	        satStartTime = wishlistView.getSatStartOfDay();
+	        satEndTime = wishlistView.getSatEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.SATURDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setSatError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock satTimeBlock;
+	    if (satStartTime == null && satEndTime == null)
+	    {
+	        satTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.SATURDAY))
+	    {
+	        satTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> satList = new ArrayList<DayOfWeek>();
+	        satList.add(DayOfWeek.SATURDAY);
+	        satTimeBlock = new WeeklyTimeBlock(satList, satStartTime, satEndTime);
+	    }
+
+	    // Sunday time block
+	    LocalTime sunStartTime = null;
+	    LocalTime sunEndTime = null;
+	    try
+	    {
+	        sunStartTime = wishlistView.getSunStartOfDay();
+	        sunEndTime = wishlistView.getSunEndOfDay();
+	    }
+	    catch (IncorrectTimeFormatException incorrectTimeFormatException)
+	    {
+	        inputFormatErrors.put(DayOfWeek.SUNDAY, incorrectTimeFormatException.getMessage());
+	        wishlistView.setSunError(incorrectTimeFormatException.getMessage());
+	    }
+
+	    WeeklyTimeBlock sunTimeBlock;
+	    if (sunStartTime == null && sunEndTime == null)
+	    {
+	        sunTimeBlock = null;
+	    }
+	    else if (inputFormatErrors.containsKey(DayOfWeek.SUNDAY))
+	    {
+	        sunTimeBlock = null;
+	    }
+	    else
+	    {
+	        List<DayOfWeek> sunList = new ArrayList<DayOfWeek>();
+	        sunList.add(DayOfWeek.SUNDAY);
+	        sunTimeBlock = new WeeklyTimeBlock(sunList, sunStartTime, sunEndTime);
+	    }
+
+	    // Add the time blocks to the hashmap
+	    newDesiredStartAndEndTime.put(DayOfWeek.MONDAY, monTimeBlock);
+	    newDesiredStartAndEndTime.put(DayOfWeek.TUESDAY, tuesTimeBlock);
+	    newDesiredStartAndEndTime.put(DayOfWeek.WEDNESDAY, wedTimeBlock);
+	    newDesiredStartAndEndTime.put(DayOfWeek.THURSDAY, thursTimeBlock);
+	    newDesiredStartAndEndTime.put(DayOfWeek.FRIDAY, friTimeBlock);
+	    newDesiredStartAndEndTime.put(DayOfWeek.SATURDAY, satTimeBlock);
+	    newDesiredStartAndEndTime.put(DayOfWeek.SUNDAY, sunTimeBlock);
+
+	    return new WishlistInputData(
+	        newMinDesiredBreakTime,
+	        newMaxDesiredBreakTime,
+	        newDesiredStartAndEndTime,
+	        inputFormatErrors,
+	        wishlistView.getCampusLocation(),
+	        wishlistView.getTopThreeSchedulesDestinationPath()
+	    );
+	}
+	
+	/**
 	 * Purpose: To save the values in the wishlist view to the wishlist model and repository
 	 */
 	public void saveWishlist()
-	{		
-		// Get the new values from the wishlist view
-		Long newMinDesiredBreakTime = wishlistView.getMinBreakTime();
-		Long newMaxDesiredBreakTime = wishlistView.getMaxBreakTime();
-		
-		// Create individual time blocks for each day of the week and add them to a new hashmap
-		HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime = new HashMap<DayOfWeek, WeeklyTimeBlock>();		
-		// Monday time block
-		LocalTime monStartTime = wishlistView.getMonStartOfDay();
-		LocalTime monEndTime = wishlistView.getMonEndOfDay();
-		List<DayOfWeek> monList = new ArrayList<DayOfWeek>();
-		monList.add(DayOfWeek.MONDAY);
-		WeeklyTimeBlock monTimeBlock;
-		if (monStartTime != null || monEndTime != null)
-		{
-		    monTimeBlock = new WeeklyTimeBlock(monList, monStartTime, monEndTime);
-		}
-		else
-		{
-		    monTimeBlock = null;
-		}
+	{
+	    // Purpose: To collect all wishlist input data from the view
+	    WishlistInputData data = collectWishlistInput();
 
-		// Tuesday time block
-		LocalTime tuesStartTime = wishlistView.getTuesStartOfDay();
-		LocalTime tuesEndTime = wishlistView.getTuesEndOfDay();
-		List<DayOfWeek> tuesList = new ArrayList<DayOfWeek>();
-		tuesList.add(DayOfWeek.TUESDAY);
-		WeeklyTimeBlock tuesTimeBlock;
-		if (tuesStartTime != null || tuesEndTime != null)
-		{
-		    tuesTimeBlock = new WeeklyTimeBlock(tuesList, tuesStartTime, tuesEndTime);
-		}
-		else
-		{
-		    tuesTimeBlock = null;
-		}
+	    try
+	    {
+	        // Purpose: To store general (non-time) errors for popup
+	        List<String> generalErrors = new ArrayList<String>();
 
-		// Wednesday time block
-		LocalTime wedStartTime = wishlistView.getWedStartOfDay();
-		LocalTime wedEndTime = wishlistView.getWedEndOfDay();
-		List<DayOfWeek> wedList = new ArrayList<DayOfWeek>();
-		wedList.add(DayOfWeek.WEDNESDAY);
-		WeeklyTimeBlock wedTimeBlock;
-		if (wedStartTime != null || wedEndTime != null)
-		{
-		    wedTimeBlock = new WeeklyTimeBlock(wedList, wedStartTime, wedEndTime);
-		}
-		else
-		{
-		    wedTimeBlock = null;
-		}
+	        // Always validate through the model so general errors update correctly in the view
+	        HashMap<DayOfWeek, String> timeErrors = wishlistModel.saveWishlist(
+	                data.minBreak,
+	                data.maxBreak,
+	                data.times,
+	                data.campus,
+	                data.path,
+	                generalErrors);
 
-		// Thursday time block
-		LocalTime thursStartTime = wishlistView.getThursStartOfDay();
-		LocalTime thursEndTime = wishlistView.getThursEndOfDay();
-		List<DayOfWeek> thursList = new ArrayList<DayOfWeek>();
-		thursList.add(DayOfWeek.THURSDAY);
-		WeeklyTimeBlock thursTimeBlock;
-		if (thursStartTime != null || thursEndTime != null)
-		{
-		    thursTimeBlock = new WeeklyTimeBlock(thursList, thursStartTime, thursEndTime);
-		}
-		else
-		{
-		    thursTimeBlock = null;
-		}
+	        // Add format errors on top (override if needed)
+	        timeErrors.putAll(data.formatErrors);
 
-		// Friday time block
-		LocalTime friStartTime = wishlistView.getFriStartOfDay();
-		LocalTime friEndTime = wishlistView.getFriEndOfDay();
-		List<DayOfWeek> friList = new ArrayList<DayOfWeek>();
-		friList.add(DayOfWeek.FRIDAY);
-		WeeklyTimeBlock friTimeBlock;
-		if (friStartTime != null || friEndTime != null)
-		{
-		    friTimeBlock = new WeeklyTimeBlock(friList, friStartTime, friEndTime);
-		}
-		else
-		{
-		    friTimeBlock = null;
-		}
+	        // Update error labels next to desired start and end time fields
+	        updateWishlistStartAndEndTimeErrors(timeErrors);
 
-		// Saturday time block
-		LocalTime satStartTime = wishlistView.getSatStartOfDay();
-		LocalTime satEndTime = wishlistView.getSatEndOfDay();
-		List<DayOfWeek> satList = new ArrayList<DayOfWeek>();
-		satList.add(DayOfWeek.SATURDAY);
-		WeeklyTimeBlock satTimeBlock;
-		if (satStartTime != null || satEndTime != null)
-		{
-		    satTimeBlock = new WeeklyTimeBlock(satList, satStartTime, satEndTime);
-		}
-		else
-		{
-		    satTimeBlock = null;
-		}
+	        // Update the wishlist view to reflect any changes to error messages
+	        updateWishlistView();
 
-		// Sunday time block
-		LocalTime sunStartTime = wishlistView.getSunStartOfDay();
-		LocalTime sunEndTime = wishlistView.getSunEndOfDay();
-		List<DayOfWeek> sunList = new ArrayList<DayOfWeek>();
-		sunList.add(DayOfWeek.SUNDAY);
-		WeeklyTimeBlock sunTimeBlock;
-		if (sunStartTime != null || sunEndTime != null)
-		{
-		    sunTimeBlock = new WeeklyTimeBlock(sunList, sunStartTime, sunEndTime);
-		}
-		else
-		{
-		    sunTimeBlock = null;
-		}
+	        // Show general errors in a popup if any exist
+	        if (!generalErrors.isEmpty())
+	        {
+	            StringBuilder errorMessage = new StringBuilder();
 
-		// Add the time blocks to the hashmap
-		newDesiredStartAndEndTime.put(DayOfWeek.MONDAY, monTimeBlock);
-		newDesiredStartAndEndTime.put(DayOfWeek.TUESDAY, tuesTimeBlock);
-		newDesiredStartAndEndTime.put(DayOfWeek.WEDNESDAY, wedTimeBlock);
-		newDesiredStartAndEndTime.put(DayOfWeek.THURSDAY, thursTimeBlock);
-		newDesiredStartAndEndTime.put(DayOfWeek.FRIDAY, friTimeBlock);
-		newDesiredStartAndEndTime.put(DayOfWeek.SATURDAY, satTimeBlock);
-		newDesiredStartAndEndTime.put(DayOfWeek.SUNDAY, sunTimeBlock);
+	            for (String errMsg : generalErrors)
+	            {
+	                errorMessage.append(errMsg).append("\n");
+	            }
 
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    errorMessage.toString(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
 
-		
-		// Get the desired campus location and top three schedules destination path from the wishlist view
-		String newDesiredcampusLocation = wishlistView.getCampusLocation();
-		Path newTopThreeSchedulesDestinationPath = wishlistView.getTopThreeSchedulesDestinationPath();
-		
-		try
-		{
-		// Input the values into the wishlistModel to verify
-		HashMap<DayOfWeek, String> timeErrors = wishlistModel.saveWishlist(newMinDesiredBreakTime, newMaxDesiredBreakTime, newDesiredStartAndEndTime, newDesiredcampusLocation, newTopThreeSchedulesDestinationPath);
-		
-		// Update error labels next to desired start and end time fields
-		updateWishlistStartAndEndTimeErrors(timeErrors);
-		
-		// Update the wishlist view to reflect any changes to error messages
-		updateWishlistView();
-		
-			// If there are no time errors, show a success message
-			if (timeErrors.isEmpty())
-			{
-				// Save the values to the user data repository
-				userDataRepository.saveWishlist(newMinDesiredBreakTime, newMaxDesiredBreakTime, newDesiredStartAndEndTime, newDesiredcampusLocation, newTopThreeSchedulesDestinationPath);
-				
-				// Show success message
-				JOptionPane.showMessageDialog(null, "Wishlist saved successfully!", "Success",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-		catch (Exception e)
+	        // If there are no errors, show success message and save
+	        if (timeErrors.isEmpty() && generalErrors.isEmpty())
+	        {
+	            userDataRepository.saveWishlist(
+	                    data.minBreak,
+	                    data.maxBreak,
+	                    data.times,
+	                    data.campus,
+	                    data.path);
 
-		{
-			// If there is an error during saving, show an error message
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    "Wishlist saved successfully!",
+	                    "Success",
+	                    JOptionPane.INFORMATION_MESSAGE);
+	        }
+	    }
+	    catch (Exception e)
+	    {
+	        // Handle unexpected exceptions by showing an error message
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
 	}
+	
+	
 	
 	/**
 	 * Purpose: To continue from the wishlist view to the about you view.
@@ -372,241 +574,151 @@ public class AppController implements ActionListener
 	 */
 	private void continueWithWishlist()
 	{
-	        // Get the new values from the wishlist view
-	        Long newMinDesiredBreakTime = wishlistView.getMinBreakTime();
-	        Long newMaxDesiredBreakTime = wishlistView.getMaxBreakTime();
-	        
-			// Create individual time blocks for each day of the week and add them to a new hashmap
-			HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime = new HashMap<DayOfWeek, WeeklyTimeBlock>();		
-			// Monday time block
-			LocalTime monStartTime = wishlistView.getMonStartOfDay();
-			LocalTime monEndTime = wishlistView.getMonEndOfDay();
-			List<DayOfWeek> monList = new ArrayList<DayOfWeek>();
-			monList.add(DayOfWeek.MONDAY);
-			WeeklyTimeBlock monTimeBlock;
-			if (monStartTime != null || monEndTime != null)
-			{
-			    monTimeBlock = new WeeklyTimeBlock(monList, monStartTime, monEndTime);
-			}
-			else
-			{
-			    monTimeBlock = null;
-			}
+	    // Purpose: To collect all wishlist input data from the view
+	    WishlistInputData data = collectWishlistInput();
 
-			// Tuesday time block
-			LocalTime tuesStartTime = wishlistView.getTuesStartOfDay();
-			LocalTime tuesEndTime = wishlistView.getTuesEndOfDay();
-			List<DayOfWeek> tuesList = new ArrayList<DayOfWeek>();
-			tuesList.add(DayOfWeek.TUESDAY);
-			WeeklyTimeBlock tuesTimeBlock;
-			if (tuesStartTime != null || tuesEndTime != null)
-			{
-			    tuesTimeBlock = new WeeklyTimeBlock(tuesList, tuesStartTime, tuesEndTime);
-			}
-			else
-			{
-			    tuesTimeBlock = null;
-			}
+	    // Determine if anything was edited compared to what was previously saved
+	    boolean wasEdited = false;
 
-			// Wednesday time block
-			LocalTime wedStartTime = wishlistView.getWedStartOfDay();
-			LocalTime wedEndTime = wishlistView.getWedEndOfDay();
-			List<DayOfWeek> wedList = new ArrayList<DayOfWeek>();
-			wedList.add(DayOfWeek.WEDNESDAY);
-			WeeklyTimeBlock wedTimeBlock;
-			if (wedStartTime != null || wedEndTime != null)
-			{
-			    wedTimeBlock = new WeeklyTimeBlock(wedList, wedStartTime, wedEndTime);
-			}
-			else
-			{
-			    wedTimeBlock = null;
-			}
+	    try
+	    {
+	        // Compare against previously saved values (repository is the source of truth)
+	        Long oldMinDesiredBreakTime = userDataRepository.getMinDesiredBreakTime();
+	        Long oldMaxDesiredBreakTime = userDataRepository.getMaxDesiredBreakTime();
+	        HashMap<DayOfWeek, WeeklyTimeBlock> oldDesiredStartAndEndTime = userDataRepository.getDesiredStartAndEndTime();
+	        String oldDesiredCampusLocation = userDataRepository.getDesiredCampusLocation();
+	        Path oldTopThreeSchedulesDestinationPath = userDataRepository.getTopThreeSchedulesDestinationPath();
 
-			// Thursday time block
-			LocalTime thursStartTime = wishlistView.getThursStartOfDay();
-			LocalTime thursEndTime = wishlistView.getThursEndOfDay();
-			List<DayOfWeek> thursList = new ArrayList<DayOfWeek>();
-			thursList.add(DayOfWeek.THURSDAY);
-			WeeklyTimeBlock thursTimeBlock;
-			if (thursStartTime != null || thursEndTime != null)
-			{
-			    thursTimeBlock = new WeeklyTimeBlock(thursList, thursStartTime, thursEndTime);
-			}
-			else
-			{
-			    thursTimeBlock = null;
-			}
-
-			// Friday time block
-			LocalTime friStartTime = wishlistView.getFriStartOfDay();
-			LocalTime friEndTime = wishlistView.getFriEndOfDay();
-			List<DayOfWeek> friList = new ArrayList<DayOfWeek>();
-			friList.add(DayOfWeek.FRIDAY);
-			WeeklyTimeBlock friTimeBlock;
-			if (friStartTime != null || friEndTime != null)
-			{
-			    friTimeBlock = new WeeklyTimeBlock(friList, friStartTime, friEndTime);
-			}
-			else
-			{
-			    friTimeBlock = null;
-			}
-
-			// Saturday time block
-			LocalTime satStartTime = wishlistView.getSatStartOfDay();
-			LocalTime satEndTime = wishlistView.getSatEndOfDay();
-			List<DayOfWeek> satList = new ArrayList<DayOfWeek>();
-			satList.add(DayOfWeek.SATURDAY);
-			WeeklyTimeBlock satTimeBlock;
-			if (satStartTime != null || satEndTime != null)
-			{
-			    satTimeBlock = new WeeklyTimeBlock(satList, satStartTime, satEndTime);
-			}
-			else
-			{
-			    satTimeBlock = null;
-			}
-
-			// Sunday time block
-			LocalTime sunStartTime = wishlistView.getSunStartOfDay();
-			LocalTime sunEndTime = wishlistView.getSunEndOfDay();
-			List<DayOfWeek> sunList = new ArrayList<DayOfWeek>();
-			sunList.add(DayOfWeek.SUNDAY);
-			WeeklyTimeBlock sunTimeBlock;
-			if (sunStartTime != null || sunEndTime != null)
-			{
-			    sunTimeBlock = new WeeklyTimeBlock(sunList, sunStartTime, sunEndTime);
-			}
-			else
-			{
-			    sunTimeBlock = null;
-			}
-
-			// Add the time blocks to the hashmap
-			newDesiredStartAndEndTime.put(DayOfWeek.MONDAY, monTimeBlock);
-			newDesiredStartAndEndTime.put(DayOfWeek.TUESDAY, tuesTimeBlock);
-			newDesiredStartAndEndTime.put(DayOfWeek.WEDNESDAY, wedTimeBlock);
-			newDesiredStartAndEndTime.put(DayOfWeek.THURSDAY, thursTimeBlock);
-			newDesiredStartAndEndTime.put(DayOfWeek.FRIDAY, friTimeBlock);
-			newDesiredStartAndEndTime.put(DayOfWeek.SATURDAY, satTimeBlock);
-			newDesiredStartAndEndTime.put(DayOfWeek.SUNDAY, sunTimeBlock);
-	        // Get the desired campus location and top three schedules destination path from the wishlist view
-	        String newDesiredcampusLocation = wishlistView.getCampusLocation();
-	        Path newTopThreeSchedulesDestinationPath = wishlistView.getTopThreeSchedulesDestinationPath();
-
-	        // Determine if anything was edited compared to what was previously saved
-	        boolean wasEdited = false;
-
-	        try
+	        if ((oldMinDesiredBreakTime == null && data.minBreak != null)
+	                || (oldMinDesiredBreakTime != null && !oldMinDesiredBreakTime.equals(data.minBreak)))
 	        {
-	            // Compare against previously saved values (repository is the source of truth)
-	            // NOTE: Update these getter method names to match your repository if they differ.
-	            Long oldMinDesiredBreakTime = userDataRepository.getMinDesiredBreakTime();
-	            Long oldMaxDesiredBreakTime = userDataRepository.getMaxDesiredBreakTime();
-	            HashMap<DayOfWeek, WeeklyTimeBlock> oldDesiredStartAndEndTime = userDataRepository.getDesiredStartAndEndTime();
-	            String oldDesiredCampusLocation = userDataRepository.getDesiredCampusLocation();
-	            Path oldTopThreeSchedulesDestinationPath = userDataRepository.getTopThreeSchedulesDestinationPath();
-
-	            if ((oldMinDesiredBreakTime == null && newMinDesiredBreakTime != null)
-	                    || (oldMinDesiredBreakTime != null && !oldMinDesiredBreakTime.equals(newMinDesiredBreakTime)))
-	            {
-	                wasEdited = true;
-	            }
-
-	            if ((oldMaxDesiredBreakTime == null && newMaxDesiredBreakTime != null)
-	                    || (oldMaxDesiredBreakTime != null && !oldMaxDesiredBreakTime.equals(newMaxDesiredBreakTime)))
-	            {
-	                wasEdited = true;
-	            }
-
-	            if ((oldDesiredCampusLocation == null && newDesiredcampusLocation != null)
-	                    || (oldDesiredCampusLocation != null && !oldDesiredCampusLocation.equals(newDesiredcampusLocation)))
-	            {
-	                wasEdited = true;
-	            }
-
-	            if ((oldTopThreeSchedulesDestinationPath == null && newTopThreeSchedulesDestinationPath != null)
-	                    || (oldTopThreeSchedulesDestinationPath != null && !oldTopThreeSchedulesDestinationPath.equals(newTopThreeSchedulesDestinationPath)))
-	            {
-	                wasEdited = true;
-	            }
-
-	            // Compare time blocks day-by-day
-	            if (oldDesiredStartAndEndTime == null)
-	            {
-	                wasEdited = true;
-	            }
-	            else
-	            {
-	                for (DayOfWeek day : DayOfWeek.values())
-	                {
-	                    WeeklyTimeBlock oldBlock = oldDesiredStartAndEndTime.get(day);
-	                    WeeklyTimeBlock newBlock = newDesiredStartAndEndTime.get(day);
-
-	                    LocalTime oldStart = (oldBlock == null) ? null : oldBlock.getClassStartTime();
-	                    LocalTime newStart = (newBlock == null) ? null : newBlock.getClassStartTime();
-
-	                    LocalTime oldEnd = (oldBlock == null) ? null : oldBlock.getClassEndTime();
-	                    LocalTime newEnd = (newBlock == null) ? null : newBlock.getClassEndTime();
-
-	                    if ((oldStart == null && newStart != null) || (oldStart != null && !oldStart.equals(newStart)))
-	                    {
-	                        wasEdited = true;
-	                        break;
-	                    }
-
-	                    if ((oldEnd == null && newEnd != null) || (oldEnd != null && !oldEnd.equals(newEnd)))
-	                    {
-	                        wasEdited = true;
-	                        break;
-	                    }
-	                }
-	            }
-	        }
-	        catch (Exception e)
-	        {
-	            // If repository getters aren't available yet or something unexpected happens, treat as edited
 	            wasEdited = true;
 	        }
 
-	        try
+	        if ((oldMaxDesiredBreakTime == null && data.maxBreak != null)
+	                || (oldMaxDesiredBreakTime != null && !oldMaxDesiredBreakTime.equals(data.maxBreak)))
 	        {
-	            // Always validate through the model so timeErrors update correctly in the view
-	            HashMap<DayOfWeek, String> timeErrors = wishlistModel.saveWishlist(newMinDesiredBreakTime,
-	                    newMaxDesiredBreakTime,
-	                    newDesiredStartAndEndTime,
-	                    newDesiredcampusLocation,
-	                    newTopThreeSchedulesDestinationPath);
+	            wasEdited = true;
+	        }
 
-	            // Update error labels next to desired start and end time fields
-	            updateWishlistStartAndEndTimeErrors(timeErrors);
-	            updateWishlistView();
-	            
-	            // If there are no time errors, proceed to the next view
-	            if (timeErrors.isEmpty())
+	        if ((oldDesiredCampusLocation == null && data.campus != null)
+	                || (oldDesiredCampusLocation != null && !oldDesiredCampusLocation.equals(data.campus)))
+	        {
+	            wasEdited = true;
+	        }
+
+	        if ((oldTopThreeSchedulesDestinationPath == null && data.path != null)
+	                || (oldTopThreeSchedulesDestinationPath != null && !oldTopThreeSchedulesDestinationPath.equals(data.path)))
+	        {
+	            wasEdited = true;
+	        }
+
+	        // Compare time blocks day-by-day
+	        if (oldDesiredStartAndEndTime == null)
+	        {
+	            wasEdited = true;
+	        }
+	        else
+	        {
+	            for (DayOfWeek day : DayOfWeek.values())
 	            {
-	                // Save to the user data repository
-	                if (wasEdited)
+	                WeeklyTimeBlock oldBlock = oldDesiredStartAndEndTime.get(day);
+	                WeeklyTimeBlock newBlock = data.times.get(day);
+
+	                LocalTime oldStart = (oldBlock == null) ? null : oldBlock.getClassStartTime();
+	                LocalTime newStart = (newBlock == null) ? null : newBlock.getClassStartTime();
+
+	                LocalTime oldEnd = (oldBlock == null) ? null : oldBlock.getClassEndTime();
+	                LocalTime newEnd = (newBlock == null) ? null : newBlock.getClassEndTime();
+
+	                if ((oldStart == null && newStart != null)
+	                        || (oldStart != null && !oldStart.equals(newStart)))
 	                {
-	                    userDataRepository.saveWishlist(newMinDesiredBreakTime,
-	                            newMaxDesiredBreakTime,
-	                            newDesiredStartAndEndTime,
-	                            newDesiredcampusLocation,
-	                            newTopThreeSchedulesDestinationPath);
+	                    wasEdited = true;
+	                    break;
 	                }
-	                
-	                // Dispose of the wishlist view and show the about you view
-	                wishlistView.dispose();
-	                aboutYouView.setVisible(true);
+
+	                if ((oldEnd == null && newEnd != null)
+	                        || (oldEnd != null && !oldEnd.equals(newEnd)))
+	                {
+	                    wasEdited = true;
+	                    break;
+	                }
 	            }
 	        }
-	        catch (Exception e)
+	    }
+	    catch (Exception e)
+	    {
+	        // If repository getters fail, assume data was edited
+	        wasEdited = true;
+	    }
+
+	    try
+	    {
+	        // Purpose: To store general (non-time) errors for popup
+	        List<String> generalErrors = new ArrayList<String>();
+
+	        // Validate through model
+	        HashMap<DayOfWeek, String> timeErrors = wishlistModel.saveWishlist(
+	                data.minBreak,
+	                data.maxBreak,
+	                data.times,
+	                data.campus,
+	                data.path,
+	                generalErrors);
+
+	        // Update error labels
+	        updateWishlistStartAndEndTimeErrors(timeErrors);
+	        updateWishlistView();
+
+	        // Show general errors in popup
+	        if (!generalErrors.isEmpty())
 	        {
-	            JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
+	            StringBuilder errorMessage = new StringBuilder();
+
+	            for (String errMsg : generalErrors)
+	            {
+	                errorMessage.append(errMsg).append("\n");
+	            }
+
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    errorMessage.toString(),
+	                    "Error",
 	                    JOptionPane.ERROR_MESSAGE);
+
+	            return;
+	        }
+
+	        // Proceed only if there are NO errors
+	        if (timeErrors.isEmpty() && generalErrors.isEmpty())
+	        {
+	            if (wasEdited)
+	            {
+	                userDataRepository.saveWishlist(
+	                        data.minBreak,
+	                        data.maxBreak,
+	                        data.times,
+	                        data.campus,
+	                        data.path);
+	            }
+
+	            wishlistView.dispose();
+	            aboutYouView.setVisible(true);
 	        }
 	    }
+	    catch (Exception e)
+	    {
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
+	
+	
 	/**
 	 * Purpose: To clear out all values saved in the wishlist model and user repository
 	 * 
@@ -614,54 +726,20 @@ public class AppController implements ActionListener
 	private void clearWishlist()
 	{
 		wishlistModel.clear();
+		wishlistView.resetFields();
 		userDataRepository.clearWishlist();
 	}
 	
-	/**
-	 * Purpose: To update the error messages for the desired start and end times in the wishlist view 
-	 * (helper method for saveWishlist() to call after it gets the time errors from the wishlist model and user repository and saves them to the app controller)
-	 */
-	private void updateWishlistStartAndEndTimeErrors(HashMap<DayOfWeek, String> timeErrors)
+	// Purpose: To update error labels next to desired start and end time fields
+	public void updateWishlistStartAndEndTimeErrors(HashMap<DayOfWeek, String> timeErrors)
 	{
-	// Clear all day error JLabels first
-	wishlistView.setMonError("");
-	wishlistView.setTuesError("");
-	wishlistView.setWedError("");
-	wishlistView.setThursError("");
-	wishlistView.setFriError("");
-	wishlistView.setSatError("");
-	wishlistView.setSunError("");
-
-	// Now apply the new errors from timeErrors
-	for (DayOfWeek day : timeErrors.keySet())
-	{
-	    String message = timeErrors.get(day);
-
-	    switch (day)
-	    {
-	        case MONDAY:
-	            wishlistView.setMonError(message);
-	            break;
-	        case TUESDAY:
-	            wishlistView.setTuesError(message);
-	            break;
-	        case WEDNESDAY:
-	            wishlistView.setWedError(message);
-	            break;
-	        case THURSDAY:
-	            wishlistView.setThursError(message);
-	            break;
-	        case FRIDAY:
-	            wishlistView.setFriError(message);
-	            break;
-	        case SATURDAY:
-	            wishlistView.setSatError(message);
-	            break;
-	        case SUNDAY:
-	            wishlistView.setSunError(message);
-	            break;
-	    }
-	}
+	    wishlistView.setMonError(timeErrors.getOrDefault(DayOfWeek.MONDAY, ""));
+	    wishlistView.setTuesError(timeErrors.getOrDefault(DayOfWeek.TUESDAY, ""));
+	    wishlistView.setWedError(timeErrors.getOrDefault(DayOfWeek.WEDNESDAY, ""));
+	    wishlistView.setThursError(timeErrors.getOrDefault(DayOfWeek.THURSDAY, ""));
+	    wishlistView.setFriError(timeErrors.getOrDefault(DayOfWeek.FRIDAY, ""));
+	    wishlistView.setSatError(timeErrors.getOrDefault(DayOfWeek.SATURDAY, ""));
+	    wishlistView.setSunError(timeErrors.getOrDefault(DayOfWeek.SUNDAY, ""));
 	}
 	
 	/**

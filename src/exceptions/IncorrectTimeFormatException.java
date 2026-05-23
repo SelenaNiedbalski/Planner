@@ -25,6 +25,6 @@ public class IncorrectTimeFormatException extends Exception
 	 */
 	public IncorrectTimeFormatException()
 	{
-		super("Incorrect time format. Expected format: HH:MM:SS");
+		super("Incorrect time format. Expected format: HH:MM");
 	}
 }

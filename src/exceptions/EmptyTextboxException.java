@@ -21,10 +21,12 @@ package exceptions;
 public class EmptyTextboxException extends Exception
 {
 	/**
-	 * Constructs an EmptyTextboxException with a default error message.
+	 * Constructs an EmptyTextboxException with a default error message
+	 * with a parameter for the name of the text field that is empty
+	 * @param textfieldValue The name of the text field that is empty
 	 */
-	public EmptyTextboxException()
+	public EmptyTextboxException(String textfieldValue)
 	{
-		super("The textbox cannot be empty");
+		super("The " +textfieldValue + " cannot be empty.");
 	}
 }

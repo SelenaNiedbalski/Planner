@@ -22,9 +22,10 @@ public class MustBeOverOneException extends Exception
 {
 	/**
 	 * Constructs a MustBeOverOneException with a default message.
+	 * @param valueType The type of value that must be over one
 	 */
-	public MustBeOverOneException()
+	public MustBeOverOneException(String valueType)
 	{
-		super("Value must be over one.");
+		super("" + valueType + " must be over one.");
 	}
 }

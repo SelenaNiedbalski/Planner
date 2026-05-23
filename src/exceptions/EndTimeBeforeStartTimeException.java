@@ -18,13 +18,15 @@ package exceptions;
  * MaxBreakLessThanMinException is-an Exception
  */
 
-public class GreaterThanPreviousTimeException extends Exception
+public class EndTimeBeforeStartTimeException extends Exception
 {
 	/**
-	 * Constructs a MustBeOverOneException with a default message.
+	 * Constructs a MustBeOverOneException with a default message that takes parameters for time type
+	 * @startTimeType The type of start time
+	 * @endTimeType The type of end time
 	 */
-	public GreaterThanPreviousTimeException()
+	public EndTimeBeforeStartTimeException(String startTimeType, String endTimeType)
 	{
-		super("Time value must be equal to or greater than the previous input time value.");
+		super("" + startTimeType + "  must be greater than " + endTimeType + ".");
 	}
 }
