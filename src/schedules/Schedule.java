@@ -4,7 +4,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import courseclasses.Course;
 /**
@@ -211,83 +211,94 @@ public class Schedule
 	
 	
 	/**
-	 * Purpose: To compare local time for each day in a time block and store the earliest time for each day in a hashtable
-	 * (Helper method for calculateStartAndEndTimeDeviation)
-	 * @return earliestStartTimeForEachDay The earliest start time for each day in the schedule
-	 */
-	private Hashtable<DayOfWeek, LocalTime> getEarliestStartTimeForEachDay()
+     * Purpose: To compare local time for each day in a time block and store the earliest time for each day in a hashmap
+     * (Helper method for calculateStartAndEndTimeDeviation)
+     * @return earliestStartTimeForEachDay The earliest start time for each day in the schedule
+     */
+	private HashMap<DayOfWeek, LocalTime> getEarliestStartTimeForEachDay()
 	{
-		// Create the hashtable
-		Hashtable<DayOfWeek, LocalTime> earliestStartTimeForEachDay = new Hashtable<>();
+	    // Create the hashmap
+	    HashMap<DayOfWeek, LocalTime> earliestStartTimeForEachDay = new HashMap<>();
 
-		// Loop through each time block in the schedule
-		for (WeeklyTimeBlock block : currentScheduleTimes)
-		{
-			// Loop through each day inside that block
-			for (DayOfWeek day : block.getDaysOfTheWeek())
-			{
-				LocalTime currentStartTime = block.getStartTimeForDay(day);
+	    // Loop through each time block in the schedule
+	    for (WeeklyTimeBlock block : currentScheduleTimes)
+	    {
+	        if (block != null)
+	        {
+	            // Loop through each day inside that block
+	            for (DayOfWeek day : block.getDaysOfTheWeek())
+	            {
+	                LocalTime currentStartTime = block.getStartTimeForDay(day);
 
-				// If the day is not already in the table, add it
-				if (earliestStartTimeForEachDay.containsKey(day) == false)
-				{
-					earliestStartTimeForEachDay.put(day, currentStartTime);
-				}
-				else
-				{
-					// Compare with existing earliest time
-					LocalTime storedTime = earliestStartTimeForEachDay.get(day);
+	                if (currentStartTime != null)
+	                {
+	                    // If the day is not already in the table, add it
+	                    if (earliestStartTimeForEachDay.containsKey(day) == false)
+	                    {
+	                        earliestStartTimeForEachDay.put(day, currentStartTime);
+	                    }
+	                    else
+	                    {
+	                        // Compare with existing earliest time
+	                        LocalTime storedTime = earliestStartTimeForEachDay.get(day);
 
-					if (currentStartTime.isBefore(storedTime))
-					{
-						earliestStartTimeForEachDay.put(day, currentStartTime);
-					}
-				}
-			}
-		}
+	                        if (currentStartTime.isBefore(storedTime))
+	                        {
+	                            earliestStartTimeForEachDay.put(day, currentStartTime);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
 
-		return earliestStartTimeForEachDay;
+	    return earliestStartTimeForEachDay;
 	}
-
+	
 	
 	/**
-	 * Purpose: To compare local time for each day in a time block and store the latest time for each day in a hashtable
+	 * Purpose: To compare local time for each day in a time block and store the latest time for each day in a hashmap
 	 * (Helper method for calculateStartAndEndTimeDeviation)
 	 * @return latestEndTimeForEachDay The latest end time for each day in the schedule
 	 */
-	private Hashtable<DayOfWeek, LocalTime> getLatestEndTimeForEachDay()
+	private HashMap<DayOfWeek, LocalTime> getLatestEndTimeForEachDay()
 	{
-		// Create the hashtable
-		Hashtable<DayOfWeek, LocalTime> latestEndTimeForEachDay = new Hashtable<>();
+	    // Create the hashmap
+	    HashMap<DayOfWeek, LocalTime> latestEndTimeForEachDay = new HashMap<>();
 
-		// Loop through each time block in the schedule
-		for (WeeklyTimeBlock block : currentScheduleTimes)
-		{
-			// Loop through each day inside that block
-			for (DayOfWeek day : block.getDaysOfTheWeek())
-			{
-				LocalTime currentEndTime = block.getEndTimeForDay(day);
+	    // Loop through each time block in the schedule
+	    for (WeeklyTimeBlock block : currentScheduleTimes)
+	    {
+	        if (block != null)
+	        {
+	            // Loop through each day inside that block
+	            for (DayOfWeek day : block.getDaysOfTheWeek())
+	            {
+	                LocalTime currentEndTime = block.getEndTimeForDay(day);
 
-				// If the day is not already in the table, add it
-				if (latestEndTimeForEachDay.containsKey(day) == false)
-				{
-					latestEndTimeForEachDay.put(day, currentEndTime);
-				}
-				else
-				{
-					// Compare with existing latest time
-					LocalTime storedTime = latestEndTimeForEachDay.get(day);
+	                if (currentEndTime != null)
+	                {
+	                    // If the day is not already in the table, add it
+	                    if (latestEndTimeForEachDay.containsKey(day) == false)
+	                    {
+	                        latestEndTimeForEachDay.put(day, currentEndTime);
+	                    }
+	                    else
+	                    {
+	                        // Compare with existing latest time
+	                        LocalTime storedTime = latestEndTimeForEachDay.get(day);
 
-					if (currentEndTime.isAfter(storedTime))
-					{
-						latestEndTimeForEachDay.put(day, currentEndTime);
-					}
-				}
-			}
-		}
+	                        if (currentEndTime.isAfter(storedTime))
+	                        {
+	                            latestEndTimeForEachDay.put(day, currentEndTime);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
 
-		return latestEndTimeForEachDay;
-		
+	    return latestEndTimeForEachDay;
 	}
 	
 
@@ -346,56 +357,71 @@ public class Schedule
 	 */
 	public void addCourse(Course potentialCourse)
 	{
-		if (this.canAddCourse(potentialCourse) == true)
-		{
+	    if (this.canAddCourse(potentialCourse) == true)
+	    {
 
-			currentScheduleCourses.add(potentialCourse);
+	        currentScheduleCourses.add(potentialCourse);
 
-			// Keep the time blocks list in sync with courses
-			WeeklyTimeBlock blockToAdd = potentialCourse.getCourseWeeklyTimeBlock();
-			if (blockToAdd != null)
-			{
-				currentScheduleTimes.add(blockToAdd);
-			}
-			
-			// Sort courses and time blocks in the schedule so that courses are
-			// in local time order (earliest to latest)
-			// Must keep lists connected so they both have to be sorted at the
-			// same time based on the time blocks
-			
-			// Create a temporary list of pairs (Course + WeeklyTimeBlock)
-			List<Object[]> pairedList = new ArrayList<>();
+	        // Keep the time blocks list in sync with courses
+	        WeeklyTimeBlock blockToAdd = potentialCourse.getCourseWeeklyTimeBlock();
+	        if (blockToAdd != null)
+	        {
+	            currentScheduleTimes.add(blockToAdd);
+	        }
+	        
+	        // Sort courses and time blocks in the schedule so that courses are
+	        // in local time order (earliest to latest)
+	        // Must keep lists connected so they both have to be sorted at the
+	        // same time based on the time blocks
+	        
+	        // Create a temporary list of pairs (Course + WeeklyTimeBlock)
+	        List<Object[]> pairedList = new ArrayList<>();
 
-			for (int i = 0; i < currentScheduleCourses.size(); i++)
-			{
-				pairedList.add(new Object[] { currentScheduleCourses.get(i),
-						currentScheduleTimes.get(i) });
-			}
+	        for (int i = 0; i < currentScheduleCourses.size(); i++)
+	        {
+	            pairedList.add(new Object[] { currentScheduleCourses.get(i),
+	                    currentScheduleTimes.get(i) });
+	        }
 
-			// Sort by start time (earliest → latest)
-			pairedList.sort((a, b) -> {
-				WeeklyTimeBlock blockA = (WeeklyTimeBlock) a[1];
-				WeeklyTimeBlock blockB = (WeeklyTimeBlock) b[1];
+	        // Sort by start time (earliest to latest)
+	        pairedList.sort((a, b) -> {
+	            WeeklyTimeBlock blockA = (WeeklyTimeBlock) a[1];
+	            WeeklyTimeBlock blockB = (WeeklyTimeBlock) b[1];
 
-				return blockA.getClassStartTime()
-						.compareTo(blockB.getClassStartTime());
-			});
+	            LocalTime startA = blockA.getClassStartTime();
+	            LocalTime startB = blockB.getClassStartTime();
 
-			// Clear original lists
-			currentScheduleCourses.clear();
-			currentScheduleTimes.clear();
+	            if (startA == null && startB == null)
+	            {
+	                return 0;
+	            }
+	            else if (startA == null)
+	            {
+	                return 1;
+	            }
+	            else if (startB == null)
+	            {
+	                return -1;
+	            }
 
-			// Re-add sorted values
-			for (Object[] pair : pairedList)
-			{
-				currentScheduleCourses.add((Course) pair[0]);
-				currentScheduleTimes.add((WeeklyTimeBlock) pair[1]);
-			}
+	            return startA.compareTo(startB);
+	        });
 
-			// Update total credits
-			int creditsToAdd = potentialCourse.getCourseCredits();
-			totalCredits += creditsToAdd;
-		}
+	        // Clear original lists
+	        currentScheduleCourses.clear();
+	        currentScheduleTimes.clear();
+
+	        // Re-add sorted values
+	        for (Object[] pair : pairedList)
+	        {
+	            currentScheduleCourses.add((Course) pair[0]);
+	            currentScheduleTimes.add((WeeklyTimeBlock) pair[1]);
+	        }
+
+	        // Update total credits
+	        int creditsToAdd = potentialCourse.getCourseCredits();
+	        totalCredits += creditsToAdd;
+	    }
 	}
 	
 	/**
@@ -493,49 +519,59 @@ public class Schedule
 
 	
 	/**
-	 * Purpose: To calculate the difference between the schedule's times 
-	 * and the student's desired time ranges and subtract points from the scheduleScore
-	 * @param desiredStartAndEndTimes The student's desired start and end times for each day of the week (in a WeeklyTimeBlock)
-	 * @return scheduleScore The new scheduleScore
-	 */
-	public double calculateStartAndEndTimeDeviation(WeeklyTimeBlock desiredStartAndEndTimes)
+     * Purpose: To calculate the difference between the schedule's times 
+     * and the student's desired time ranges and subtract points from the scheduleScore
+     * @param desiredStartAndEndTimes The student's desired start and end times for each day of the week 
+     * (a hashmap containing a weekly time block for each day)
+     * @return scheduleScore The new scheduleScore
+     */
+	public double calculateStartAndEndTimeDeviation(HashMap<DayOfWeek, WeeklyTimeBlock> desiredTimesPerDay)
 	{
-	    // Get earliest and latest times for each day in the schedule
-	    Hashtable<DayOfWeek, LocalTime> earliestTimes = this.getEarliestStartTimeForEachDay();
-	    Hashtable<DayOfWeek, LocalTime> latestTimes = this.getLatestEndTimeForEachDay();
-	    
-	    // Loop through each day stored in earliestTimes (these are the days that exist in the schedule)
+	    HashMap<DayOfWeek, LocalTime> earliestTimes = this.getEarliestStartTimeForEachDay();
+	    HashMap<DayOfWeek, LocalTime> latestTimes = this.getLatestEndTimeForEachDay();
+
 	    for (DayOfWeek day : earliestTimes.keySet())
 	    {
 	        LocalTime scheduleEarliest = earliestTimes.get(day);
 	        LocalTime scheduleLatest = latestTimes.get(day);
-	        
-	        // Get desired times for that day
-	        LocalTime desiredStart = desiredStartAndEndTimes.getStartTimeForDay(day);
-	        LocalTime desiredEnd = desiredStartAndEndTimes.getEndTimeForDay(day);
-	        
-	        // Only compare if desired times exist for that day
-	        if (desiredStart != null && desiredEnd != null)
+
+	        // Get that day's specific time block
+	        WeeklyTimeBlock desiredBlock = desiredTimesPerDay.get(day);
+
+	        if (desiredBlock != null)
 	        {
-	            // Check if schedule starts earlier than desired
-	            if (scheduleEarliest.isBefore(desiredStart))
+	            LocalTime desiredStart = desiredBlock.getClassStartTime();
+	            LocalTime desiredEnd = desiredBlock.getClassEndTime();
+
+	            // If student left the day blank (both null) but schedule has a class that day, subtract 300 points
+	            if (desiredStart == null && desiredEnd == null)
 	            {
-	                Duration difference = Duration.between(scheduleEarliest, desiredStart);
-	                scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	                if (scheduleEarliest != null && scheduleLatest != null)
+	                {
+	                    scheduleScore -= 300;
+	                }
 	            }
-	            
-	            // Check if schedule ends later than desired
-	            if (scheduleLatest.isAfter(desiredEnd))
+
+	            // Only compare times if both are filled
+	            else if (desiredStart != null && desiredEnd != null)
 	            {
-	            	// Actual time difference between schedule end and desired end
-	                Duration difference = Duration.between(desiredEnd, scheduleLatest);
-	                
-	                // Calculation to subtract from schedule score
-	                scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	                // Starts earlier than desired
+	                if (scheduleEarliest != null && scheduleEarliest.isBefore(desiredStart))
+	                {
+	                    Duration difference = Duration.between(scheduleEarliest, desiredStart);
+	                    scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	                }
+
+	                // Ends later than desired
+	                if (scheduleLatest != null && scheduleLatest.isAfter(desiredEnd))
+	                {
+	                    Duration difference = Duration.between(desiredEnd, scheduleLatest);
+	                    scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
+	                }
 	            }
 	        }
 	    }
-	    
+
 	    return scheduleScore;
 	}
 

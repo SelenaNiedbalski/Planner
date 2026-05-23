@@ -14,7 +14,7 @@ package exceptions;
  * 
  * Version/date: 29 April 2026
  * 
- * Responsibilities of class: To represent an exception that is thrown when a textbox is left empty.
+ * Responsibilities of class: To represent an exception that is thrown when a textbox is left empty
  * 
  * EmptyTextboxException is-an Exception
  */
@@ -25,6 +25,6 @@ public class EmptyTextboxException extends Exception
 	 */
 	public EmptyTextboxException()
 	{
-		super("The textbox cannot be empty.");
+		super("The textbox cannot be empty");
 	}
 }

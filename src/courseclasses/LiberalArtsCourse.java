@@ -125,7 +125,7 @@ public class LiberalArtsCourse extends Course implements MajorSpecific
 	{
 		this.addPointsForRMPScore();
 		this.addPointsForCourseRequired();
-		this.addPointsForMajorSpecificCourse(studentsMajorDistinction);
+		this.addPointsForMajorSpecificCourse(studentsMajorDistinction); // Variation for polymorphism
 		this.subtractPointsForWrongCampusLocation(desiredCampusLocation);
 		this.subtractPointsForCourseDifficulty();
 		return courseScore;

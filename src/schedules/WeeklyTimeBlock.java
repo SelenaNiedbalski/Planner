@@ -3,8 +3,10 @@ package schedules;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.Duration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+
+import exceptions.MustBeOverOneException;
 /**
  * Lead Author(s):
  * 
@@ -36,7 +38,7 @@ public class WeeklyTimeBlock
 									// time for a class
 	private LocalTime classEndTime; // A weekly time block has-a class end time	
 	
-	private Hashtable<DayOfWeek, List<LocalTime[]>> timesPerDay; // A weekly time block has-a hashtable that maps days of the week to lists of time ranges (start and end times)
+	private HashMap<DayOfWeek, List<LocalTime[]>> timesPerDay; // A weekly time block has-a hashmap that maps days of the week to lists of time ranges (start and end times)
 	
 	// Constructor
 	/**
@@ -46,13 +48,20 @@ public class WeeklyTimeBlock
 	 * @param newStart         The new start time of the class
 	 * @param newDuration      The new length of the class time
 	 */
-	public WeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek,
-			LocalTime newClassStartTime, Duration newClassDuration)
+	public WeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek, LocalTime newClassStartTime, LocalTime newClassEndTime)
 	{
 		daysOfTheWeek = newDaysOfTheWeek;
 		classStartTime = newClassStartTime;
-		classDuration = newClassDuration;
-		classEndTime = (classStartTime.plus(classDuration));
+		classEndTime = newClassEndTime;
+
+		if (classStartTime != null && classEndTime != null)
+		{
+			classDuration = Duration.between(classStartTime, classEndTime);
+		}
+		else
+		{
+			classDuration = null;
+		}
 	}
 
 	// Getters and Setters
@@ -63,15 +72,23 @@ public class WeeklyTimeBlock
 	 * @param newStart         The new start time of the class
 	 * @param newDuration      The new length of the class time
 	 */
-	public void setWeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek,
-			LocalTime newClassStartTime, Duration newClassDuration)
+	public void setWeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek, LocalTime newClassStartTime, LocalTime newClassEndTime)
 	{
-		daysOfTheWeek = newDaysOfTheWeek;
-		classStartTime = newClassStartTime;
-		classDuration = newClassDuration;
-		classEndTime = (classStartTime.plus(classDuration));
-	}
+	    daysOfTheWeek = newDaysOfTheWeek;
+	    classStartTime = newClassStartTime;
+	    classEndTime = newClassEndTime;
 
+	    if (classStartTime != null && classEndTime != null)
+	    {
+	        classDuration = Duration.between(classStartTime, classEndTime);
+	    }
+	    else
+	    {
+	        classDuration = null;
+	    }
+	}
+	
+	
 	/**
 	 * Purpose: To return the days stored in the time block
 	 * return daysOfTheWeek The days stored in the weekly time block when the
@@ -141,7 +158,7 @@ public class WeeklyTimeBlock
 	public LocalTime getStartTimeForDay(DayOfWeek day)
 
 {		
-    // If the day is not in the hashtable, return null
+    // If the day is not in the hashmap, return null
     if (timesPerDay.containsKey(day) == false)
     {
         return null;

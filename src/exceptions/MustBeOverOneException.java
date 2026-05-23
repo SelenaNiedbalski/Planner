@@ -1,4 +1,3 @@
-
 package exceptions;
 
 /**
@@ -14,7 +13,7 @@ package exceptions;
  * 
  * Version/date: 29 April 2026
  * 
- * Responsibilities of class: To represent an exception that is thrown when the value of minimum credits, maxiumum credits, or the number of interested classes is less than 1
+ * Responsibilities of class: To represent an exception that is thrown when the value of minimum credits or the number of interested classes is less than 1
  * 
  * MustBeOverOneException is-an Exception
  */

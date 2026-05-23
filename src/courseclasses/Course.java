@@ -171,6 +171,15 @@ public abstract class Course
 	}
 
 	/**
+	 * Purpose: To set the course's weekly time block from a completed WeeklyTimeBlock object (completed timeblock one)
+	 * @param newWeeklyTimeBlock The new weekly time block for the course
+	 */
+	public void setCourseTimeBlock(WeeklyTimeBlock newWeeklyTimeBlock)
+	{
+		courseWeeklyTimeBlock = newWeeklyTimeBlock;
+	}
+	
+	/**
 	 * Purpose: To set the weekly time block for the course using raw data values (not a completed time block)
 	 * 
 	 * @param newDaysOfTheWeek  The new days the class meets during
@@ -420,7 +429,7 @@ public abstract class Course
 		this.addPointsForCourseRequired();
 		this.subtractPointsForWrongCampusLocation(desiredCampusLocation);
 		this.subtractPointsForCourseDifficulty();
-		this.nonMajorSpecificCourseCalculationMessage(studentsMajorDistinction);
+		this.nonMajorSpecificCourseCalculationMessage(studentsMajorDistinction); // Placeholder for parameter message
 		return courseScore;
 	}
 
@@ -456,15 +465,7 @@ public abstract class Course
 				+ "Campus Location: " + courseCampusLocation
 				+ " Credits: " + courseCredits;
 				
-				
 	}
 
-	/**
-	 * Purpose: To set the course's weekly time block from a completed WeeklyTimeBlock object
-	 * @param newWeeklyTimeBlock The new weekly time block for the course
-	 */
-	public void setCourseTimeBlock(WeeklyTimeBlock newWeeklyTimeBlock)
-	{
-		courseWeeklyTimeBlock = newWeeklyTimeBlock;
-	}
+
 }

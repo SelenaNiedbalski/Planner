@@ -31,17 +31,19 @@ import schedules.WeeklyTimeBlock;
 public class CourseRepository
 {
 	private List<PartialCourse> storedClasses; // A course repository has-many partial courses
-	private Path topThreeSchedulesDestinationPath; // A course repository has-a destination path to save the top three schedules to
+	private Path topThreeSchedulesDestinationPath; // A course repository has-a destination path
+	private UserDataRepository userDataRepository; // A course repository has-a user data repository
 	
 	/**
 	 * Purpose: To construct a CourseRepository a default empty storedClasses list and the given userData repository to grab the destination schedule path
 	 * @param userDataRepository The user data repository to grab the destination schedule path from
 	 * 
 	 */
-	public CourseRepository(UserDataRepository userDataRepository)
+	public CourseRepository(UserDataRepository newUserDataRepository)
 	{
 		storedClasses = null;
-		topThreeSchedulesDestinationPath = userDataRepository.getTopThreeSchedulesDestinationPath();
+		topThreeSchedulesDestinationPath = null;
+		userDataRepository = newUserDataRepository;
 	}
 	
 	
@@ -114,14 +116,22 @@ public class CourseRepository
 	        finalCourses.add(newCourse);
 	    }
 
-	    // ✅ CLEAR AFTER BUILDING
+	    // Clear out stored classes after they're used to build final courses
 	    storedClasses.clear();
 
 	    return finalCourses;
 	}
 	
 	// Getters
-
+	/**
+	 * Purpose: To set the top three schedules destination path based on the user data repository
+	 * @param userDataRepository The user data repository to grab the destination schedule path from
+	 */
+	public void setTopThreeSchedulesDestinationPath()
+	{
+		topThreeSchedulesDestinationPath = userDataRepository.getTopThreeSchedulesDestinationPath();
+	}
+	
 	/**
 	 * Purpose: To return the path where the top three schedules file will be saved to
 	 * @return topThreeSchedulesDestinationPath The path where the top three schedules file will be saved to

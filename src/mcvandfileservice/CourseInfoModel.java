@@ -2,6 +2,8 @@ package mcvandfileservice;
 
 import java.nio.file.Path;
 
+import exceptions.EmptyTextboxException;
+
 /**
  * Lead Author(s):
  * @author Selena Niedbalski
@@ -54,10 +56,18 @@ public class CourseInfoModel
 	/**
 	 * Purpose: To set the course name that the student will input
 	 * @param newCourseName The new course name
+	 * @throws EmptyTextboxException if the new course name is null (which means the student did not input a course name in the textbox and left it empty)
 	 */
-	public void setCourseName(String newCourseName)
+	public void setCourseName(String newCourseName) throws EmptyTextboxException
 	{
+		if (newCourseName != null)
+		{
 		courseName = newCourseName;
+		}
+		else
+		{
+			throw new EmptyTextboxException();
+		}
 	}
 	
 	/**

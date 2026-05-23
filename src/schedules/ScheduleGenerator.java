@@ -1,13 +1,11 @@
 package schedules;
 
-import java.time.Duration;
-import java.time.LocalTime;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
-
 import courseclasses.Course;
 import mcvandfileservice.FileService;
 import mcvandfileservice.ScheduleGeneratorRepository;
@@ -37,9 +35,9 @@ public class ScheduleGenerator
 	private Random randomizer; // A schedule generator model has-a randomizer
 	private int minCredits; // A schedule generator model has-a minimum amount of credits
 	private int maxCredits; // A schedule generator model has-a maximum amount of credits
-	private Duration minBreakTime; // A schedule generator model has-a minimum break time
-	private Duration maxBreakTime; // A schedule generator model has-a maximum break time
-	private WeeklyTimeBlock desiredStartAndEndTime; // A schedule generator model has-a desired start and end time for eachday of the week
+	private Long minBreakTime; // A schedule generator model has-a minimum break time
+	private Long maxBreakTime; // A schedule generator model has-a maximum break time
+	private HashMap<DayOfWeek, WeeklyTimeBlock> desiredStartAndEndTime; // A schedule generator model has-a desired start and end time for eachday of the week
 	private String desiredCampusLocation; // A schedule generator model has-a desired campus location
 	private String studentsMajorDistinction; // A schedule generator model has-a student's major distinction (STEM, non-STEM, undecided)
 	private ScheduleGeneratorRepository scheduleGeneratorRepository; // A schedule generator model has-a schedule generator repository
@@ -141,7 +139,7 @@ public class ScheduleGenerator
 		// Drop schedule score to zero if it's outside of required credits
 		if (this.withinCredits(schedule) == false)
 		{
-			schedule.setScheduleScore(0.0);
+			schedule.setScheduleScore(-300.0);
 		}
 		else
 		{

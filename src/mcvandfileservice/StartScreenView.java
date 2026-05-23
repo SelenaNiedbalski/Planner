@@ -44,7 +44,7 @@ public class StartScreenView extends JFrame
     public StartScreenView()
     {
         setTitle("Start Screen");
-        setSize(600, 700);
+        setSize(700, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

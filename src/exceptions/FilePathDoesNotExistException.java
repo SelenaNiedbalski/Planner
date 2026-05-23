@@ -27,6 +27,6 @@ public class FilePathDoesNotExistException extends Exception
 	 */
 	public FilePathDoesNotExistException()
 	{
-		super("The file path does not exist.");
+		super(" The file path for the top three schedules destination does not exist. Navigate to folder, right click the folder, and select \"Copy as Path\" to get the correct path.");
 	}
 }

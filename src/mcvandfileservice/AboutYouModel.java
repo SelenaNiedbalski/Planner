@@ -2,6 +2,8 @@ package mcvandfileservice;
 
 import java.util.List;
 
+import exceptions.MustBeOverOneException;
+
 /**
  * Lead Author(s):
  * @author Selena Niedbalski
@@ -15,7 +17,8 @@ import java.util.List;
  * 
  * Version/date: 29 April 2026
  * 
- * Responsibilities of class: 
+ * Responsibilities of class: To represent the information about the student that will be used to create top schedules for them which will include their major distinction
+ * their number of courses they will input, and the courses they struggle with
  * 
  */
 
@@ -59,10 +62,18 @@ public class AboutYouModel
 	/**
 	 * Purpose: To set the number of courses the student will input
 	 * @param newNumOfCoursesStudentWillInput The number of courses the student will input
+	 * @throws MustBeOverOneException if the number of courses the student will input is not over 1
 	 */
-	public void setNumOfCoursesStudentWillInput(int newNumOfCoursesStudentWillInput)
+	public void setNumOfCoursesStudentWillInput(int newNumOfCoursesStudentWillInput) throws MustBeOverOneException
 	{
-		numOfCoursesStudentWillInput = newNumOfCoursesStudentWillInput;
+		if (newNumOfCoursesStudentWillInput > 1)
+		{
+			numOfCoursesStudentWillInput = newNumOfCoursesStudentWillInput;
+		}
+		else
+		{
+			throw new MustBeOverOneException();
+		}
 	}
 
 	/**

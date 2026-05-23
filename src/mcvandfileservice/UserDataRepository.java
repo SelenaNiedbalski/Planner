@@ -1,7 +1,8 @@
 package mcvandfileservice;
 
 import java.nio.file.Path;
-import java.time.Duration;
+import java.time.DayOfWeek;
+import java.util.HashMap;
 import java.util.List;
 import schedules.WeeklyTimeBlock;
 
@@ -18,8 +19,8 @@ import schedules.WeeklyTimeBlock;
  * 
  * Version/date: 29 April 2026
  * 
- * Responsibilities of class: 
- * 
+ * Responsibilities of class: To permanently store all user infomration input in the views to be used later
+ * This class handles NO checking of exceptions or errors, only stores AFTER that's been done in app controller
  */
 
 public class UserDataRepository
@@ -27,9 +28,9 @@ public class UserDataRepository
 	// Instance Variables
 	private int minRequiredCredits;
 	private int maxRequiredCredits;
-	private Duration minDesiredBreakTime;
-	private Duration maxDesiredBreakTime;
-	private WeeklyTimeBlock desiredStartAndEndTime;
+	private Long minDesiredBreakTime;
+	private Long maxDesiredBreakTime;
+	private HashMap<DayOfWeek, WeeklyTimeBlock> desiredStartAndEndTime;
 	private String desiredCampusLocation;
 	private String studentsMajorDistinction;
 	private final Path topThreeSchedulesDestinationPath;
@@ -44,14 +45,15 @@ public class UserDataRepository
 	// Constructors
 	/**
 	 * Purpose: To construct a UserDataRepository with default values
+	 * (all values will be updated as they are saved inside methods for the models)
 	 * 
 	 */
 	public UserDataRepository()
 	{
 		minRequiredCredits = 0;
 		maxRequiredCredits = 0;
-		minDesiredBreakTime = Duration.ZERO;
-		maxDesiredBreakTime = Duration.ZERO;
+		minDesiredBreakTime = null;
+		maxDesiredBreakTime = null;
 		desiredStartAndEndTime = null;
 		desiredCampusLocation = null;
 		studentsMajorDistinction = null;
@@ -62,38 +64,38 @@ public class UserDataRepository
 		struggleCourses = null;
 		availableClassesRetrievalPath = null;
 		courseType = null;
-		
 	}
 	
 	
 	/**
-	 * Purpose: To store the info from the app controller for the credits view (for min and max required credits)
-	 * @param newMinRequiredCredits The minimum required credits for the user
-	 * @param newMaxRequiredCredits The maximum required credits for the user
-	 */
-	public void saveCredits(int newMinRequiredCredits, int newMaxRequiredCredits)
-	{
-		minRequiredCredits = newMinRequiredCredits;
-		maxRequiredCredits = newMaxRequiredCredits;
-	}
-	
-	/**
-	 * Purpose: To store the info from the app controller for the wishlist view (for the min and max desired break time,
-	 * the desired start and end time, the desired campus location, and the top three schedules destination path)
-	 * @param newMinDesiredBreakTime The minimum desired break time for the user
-	 * @param newMaxDesiredBreakTime The maximum desired break time for the user
+	 * Purpose: To store the info from the app controller for the wishlist view
+	 * @param newMinDesired break time for the user * @param newMinDesiredBreakTime The minimum desired break time for the user
 	 * @param newDesiredStartAndEndTime The desired start and end time for the user
 	 * @param newDesiredCampusLocation The desired campus location for the user
 	 * @param newTopThreeSchedulesDestinationPath The destination path for the top three schedules for the user
 	 */
-	 public void saveWishlist(Duration newMinDesiredBreakTime, Duration newMaxDesiredBreakTime, WeeklyTimeBlock newDesiredStartAndEndTime, 
-			 String newDesiredCampusLocation, Path newTopThreeSchedulesDestinationPath)
-	 {
-		 minDesiredBreakTime = newMinDesiredBreakTime;
-		 maxDesiredBreakTime = newMaxDesiredBreakTime;
-		 desiredStartAndEndTime = newDesiredStartAndEndTime;
-		 desiredCampusLocation = newDesiredCampusLocation;
-	 }
+	public void saveWishlist(Long newMinDesiredBreakTime, Long newMaxDesiredBreakTime,
+	        HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime,
+	        String newDesiredCampusLocation, Path newTopThreeSchedulesDestinationPath)
+	{
+	    minDesiredBreakTime = newMinDesiredBreakTime;
+	    maxDesiredBreakTime = newMaxDesiredBreakTime;
+	    desiredStartAndEndTime = newDesiredStartAndEndTime;
+	    desiredCampusLocation = newDesiredCampusLocation;
+	}
+
+	
+	/**
+	 * Purpose: To store the info from the app controller for the credits view (for min and max credits for the user * Purpose: To store the info from the app controller for the credits view (for min and max required credits)
+	 * @param newMaxRequiredCredits The maximum required credits for the user
+	 */
+	public void saveCredits(int newMinRequiredCredits, int newMaxRequiredCredits)
+	{
+	    minRequiredCredits = newMinRequiredCredits;
+	    maxRequiredCredits = newMaxRequiredCredits;
+	}
+
+
 	 
 	 /**
 	  * Purpose: To store the info from the app controller for the about you view (for the students major distinction, 
@@ -124,27 +126,6 @@ public class UserDataRepository
 		availableClassesRetrievalPath = newAvailableClassesRetrievalPath;
 		courseType = newCourseType;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/**
@@ -187,34 +168,35 @@ public class UserDataRepository
 	 * Purpose: To return the minimum desired break time for the user based on the user's input in the AboutYouModel	
 	 * @return minDesiredBreakTime The minimum desired break time for the user
 	 */
-	public Duration getMinDesiredBreakTime()
+	public Long getMinDesiredBreakTime()
 	{
 		return minDesiredBreakTime;
 	}
 	
 	/**
-	 * Purpose: To set the minimum desired break time for the user based on the user's input in the AboutYouModel
-	 * @param newMinDesiredBreakTime The new minimum desired break time for the user
+	 * Purpose: To set the minimum desired break time
+	 * @param newMinDesiredBreakTime The new minimum desired break time
 	 */
-	public void setMinDesiredBreakTime(Duration newMinDesiredBreakTime)
+	public void setMinDesiredBreakTime(Long newMinDesiredBreakTime)
 	{
 		minDesiredBreakTime = newMinDesiredBreakTime;
+	   
 	}
 
 	/**
 	 * Purpose: To return the maximum desired break time for the user based on the user's input in the AboutYouModel
 	 * @return maxDesiredBreakTime The maximum desired break time for the user
 	 */
-	public Duration getMaxDesiredBreakTime()
+	public Long getMaxDesiredBreakTime()
 	{
 		return maxDesiredBreakTime;
 	}
 	
 	/**
-	 * Purpose: To set the maximum desired break time for the user based on the user's input in the AboutYouModel
-	 * @param newMaxDesiredBreakTime The new maximum desired break time for the user
+	 * Purpose: To set the maximum desired break time
+	 * @param newMaxDesiredBreakTime The new maximum desired break time
 	 */
-	public void setMaxDesiredBreakTime(Duration newMaxDesiredBreakTime)
+	public void setMaxDesiredBreakTime(Long newMaxDesiredBreakTime)
 	{
 		maxDesiredBreakTime = newMaxDesiredBreakTime;
 	}
@@ -223,20 +205,23 @@ public class UserDataRepository
 	 * Purpose: To return the desired start and end time for the user based on the user's input in the AboutYouModel
 	 * @return desiredStartAndEndTime The desired start and end time for the user
 	 */
-	public WeeklyTimeBlock getDesiredStartAndEndTime()
+	public HashMap<DayOfWeek, WeeklyTimeBlock> getDesiredStartAndEndTime()
 	{
 		return desiredStartAndEndTime;
 	}
 
 	/**
-	 * Purpose: To set the desired start and end time for the user based on the user's input in the AboutYouModel
-	 * @param newDesiredStartAndEndTime The new desired start and end time for the user
+	 * Purpose: To set the desired start and end time
+	 * @param newDesiredStartAndEndTime The new desired start and end time
 	 */
-	public void setDesiredStartAndEndTime(WeeklyTimeBlock newDesiredStartAndEndTime)
+	public void setDesiredStartAndEndTime(HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime)
 	{
-		desiredStartAndEndTime = newDesiredStartAndEndTime;
+	    desiredStartAndEndTime = newDesiredStartAndEndTime;
 	}
 
+	
+	
+	
 	/**
 	 * Purpose: To return the desired campus location for the user based on the user's input in the AboutYouModel
 	 * @return desiredCampusLocation The desired campus location for the user
@@ -388,6 +373,18 @@ public class UserDataRepository
 	public void setCourseType(String newCourseType)
 	{
 		courseType = newCourseType;
+	}
+
+
+	/**
+	 * Purpose: To clear the wishlist info stored in the UserDataRepository (for when the user wants to reset their wishlist by selecting back)
+	 */
+	public void clearWishlist()
+	{
+		minDesiredBreakTime = null;
+		maxDesiredBreakTime = null;
+		desiredStartAndEndTime = null;
+		desiredCampusLocation = null;		
 	}
 	
 }
