@@ -76,6 +76,7 @@ public class WishlistView extends JFrame
     private JButton saveButton;
     private JButton continueButton;
 
+    // Constructor
 	/**
 	 * Purpose: To construct a WishlistView
 	 */
@@ -84,16 +85,19 @@ public class WishlistView extends JFrame
         setTitle("Wishlist");
         setSize(700, 800);
         setLocationRelativeTo(null);
-
+        
+        // Background Panel
         BackgroundPanel backgroundPanel = new BackgroundPanel(
                 getClass().getResource("/images/Wishlist.png")
         );
         backgroundPanel.setLayout(new BorderLayout());
 
+        // Main Panel
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setOpaque(false);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(80, 80, 60, 80));
-
+        
+        // Colors and Fonts
         Color darkHotPink = new Color(170, 0, 85);
         Font instructionsAndLabelsFont = new Font("Sans Serif", Font.PLAIN, 12);
         Font buttonFont = new Font("Lucida Calligraphy", Font.PLAIN, 12);
@@ -190,7 +194,7 @@ public class WishlistView extends JFrame
         headerEnd.setFont(instructionsAndLabelsFont);
         headerEnd.setForeground(darkHotPink);
 
-        JLabel headerError = new JLabel("Error", SwingConstants.LEFT);
+        JLabel headerError = new JLabel("", SwingConstants.LEFT);
         headerError.setFont(instructionsAndLabelsFont);
         headerError.setForeground(darkHotPink);
 
@@ -926,7 +930,8 @@ public class WishlistView extends JFrame
 
 
 	/**
-	 * Purpose: To return the desired * @return topThreeSchedulesDestinationPath The desired share path for the top three schedules * Purpose: To return the desired share path for the top three schedules
+	 * Purpose: To return the desired share path for the top three schedules
+	 * @return topThreeSchedulesDestinationPath The desired share path for the top three schedules 
 	 */
 	public Path getTopThreeSchedulesDestinationPath()
 	{
@@ -949,58 +954,58 @@ public class WishlistView extends JFrame
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Monday
-	 * @param string The error message for the desired start and end time for Monday
+	 * @param errorMessage The error message for the desired start and end time for Monday
 	 */
-	public void setMonError(String string)
+	public void setMonError(String errorMessage)
 	{
-		monError.setText(string);		
+		monError.setText(errorMessage);		
 	}
 
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Tuesday
-	 * @param string The error message for the desired start and end time for Tuesday
+	 * @param errorMessage The error message for the desired start and end time for Tuesday
 	 */
-	public void setTuesError(String string)
+	public void setTuesError(String errorMessage)
 	{
-		tuesError.setText(string);				
+		tuesError.setText(errorMessage);				
 	}
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Wednesday
-	 * @param string The error message for the desired start and end time for Wednesday
+	 * @param errorMessage The error message for the desired start and end time for Wednesday
 	 */
-	public void setWedError(String string)
+	public void setWedError(String errorMessage)
 	{
-		wedError.setText(string);		
+		wedError.setText(errorMessage);		
 	}
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Thursday
-	 * @param string The error message for the desired start and end time for Thursday
+	 * @param errorMessage The error message for the desired start and end time for Thursday
 	 */
-	public void setThursError(String string)
+	public void setThursError(String errorMessage)
 	{
-		thursError.setText(string);		
+		thursError.setText(errorMessage);		
 	}
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Friday
-	 * @param string The error message for the desired start and end time for Friday
+	 * @param errorMessage The error message for the desired start and end time for Friday
 	 */
-	public void setFriError(String string)
+	public void setFriError(String errorMessage)
 	{
-		friError.setText(string);		
+		friError.setText(errorMessage);		
 	}
 
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Saturday
-	 * @param string The error message for the desired start and end time for Saturday
+	 * @param errorMessage The error message for the desired start and end time for Saturday
 	 */
-	public void setSatError(String string)
+	public void setSatError(String errorMessage)
 	{
-		satError.setText(string);		
+		satError.setText(errorMessage);		
 	}
 
 
@@ -1008,11 +1013,11 @@ public class WishlistView extends JFrame
 
 	/**
 	 * Purpose: To set the error message for the desired start and end time for Sunday
-	 * @param string The error message for the desired start and end time for Sunday
+	 * @param errorMessage The error message for the desired start and end time for Sunday
 	 */
-	public void setSunError(String string)
+	public void setSunError(String errorMessage)
 	{
-		sunError.setText(string);		
+		sunError.setText(errorMessage);		
 	}
 	
 	
@@ -1043,6 +1048,7 @@ public class WishlistView extends JFrame
 	 */
 	public void resetFields()
 	{
+		// Reset fields to default values
 	    monStartOfDay.setText("08:00");
 	    monEndOfDay.setText("16:00");
 

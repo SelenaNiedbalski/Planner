@@ -86,7 +86,8 @@ public class UserDataRepository
 
 	
 	/**
-	 * Purpose: To store the info from the app controller for the credits view (for min and max credits for the user * Purpose: To store the info from the app controller for the credits view (for min and max required credits)
+	 * Purpose: To store the info from the app controller for the credits view (for min and max required credits)
+	 * @param newMinRequiredCredits The minimum required credits for the user
 	 * @param newMaxRequiredCredits The maximum required credits for the user
 	 */
 	public void saveCredits(int newMinRequiredCredits, int newMaxRequiredCredits)
@@ -385,6 +386,47 @@ public class UserDataRepository
 		maxDesiredBreakTime = null;
 		desiredStartAndEndTime = null;
 		desiredCampusLocation = null;		
+	}
+
+
+	/**
+	 * Purpose: To clear the credits info stored in the UserDataRepository (for when the user wants to reset their credits info by selecting back)
+	 */
+	public void clearCredits()
+	{
+		minRequiredCredits = 0;
+		maxRequiredCredits = 0;
+	}
+
+
+	/**
+	 * Purpose: To clear the about you info stored in the UserDataRepository (for when the user wants to reset their about you info by selecting back)
+	 */
+	public void clearAboutYou()
+	{
+		studentsMajorDistinction = null;
+		numOfCoursesStudentWillInput = 0;
+		struggleCourses = null;		
+	}
+
+
+	/**
+	 * Purpose: To return the student's major distinction for the user based on the user's input in the AboutYouModel
+	 * @return studentsMajorDistinction The student's major distinction for the user
+	 */
+	public String getMajor()
+	{
+		return studentsMajorDistinction;
+	}
+
+
+	/**
+	 * Purpose: To return the number of courses the student will input based on the user's input in the AboutYouModel
+	 * @return numOfCoursesStudentWillInput The number of courses the student will input
+	 */
+	public int getNumCourses()
+	{
+		return numOfCoursesStudentWillInput;
 	}
 	
 }

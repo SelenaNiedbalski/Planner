@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import exceptions.EmptyTextboxException;
-import exceptions.EndTimeBeforeStartTimeException;
+import exceptions.EndTypeBeforeStartTypeException;
 import exceptions.FilePathDoesNotExistException;
-import exceptions.IncorrectTimeFormatException;
 import exceptions.MustBeOverOneException;
 import schedules.WeeklyTimeBlock;
 
@@ -79,7 +78,7 @@ public class WishlistModel
 	    } 
 	    else 
 	    {
-	        throw new MustBeOverOneException();
+	        throw new MustBeOverOneException("MinDesiredBreakTime value");
 	    }
 	}
 
@@ -97,7 +96,7 @@ public class WishlistModel
 	 * @param newMaxDesiredBreakTime The new maximum desired break time
 	 * @throws GreaterThanPreviousTimeException if the new maximum desired break time is less than the minimum desired break time 
 	 */
-	public void setMaxDesiredBreakTime(Long newMaxDesiredBreakTime) throws EndTimeBeforeStartTimeException
+	public void setMaxDesiredBreakTime(Long newMaxDesiredBreakTime) throws EndTypeBeforeStartTypeException
 	{
 	    if (newMaxDesiredBreakTime == null || minDesiredBreakTime == null
 	        || newMaxDesiredBreakTime >= minDesiredBreakTime)
@@ -106,7 +105,7 @@ public class WishlistModel
 	    }
 	    else
 	    {
-	        throw new EndTimeBeforeStartTimeException("MaxDesiredBreakTime", "MinDesiredBreakTime");
+	        throw new EndTypeBeforeStartTypeException("MaxDesiredBreakTime", "MinDesiredBreakTime");
 	    }
 	}
 
@@ -149,8 +148,8 @@ public class WishlistModel
 
 	                if (start != null && end != null && end.isBefore(start))
 	                {
-	                    EndTimeBeforeStartTimeException endTimeBeforeStartTimeException = new EndTimeBeforeStartTimeException("EndTime", "StartTime");
-	                    error.add("For " + day.toString() + ": " + endTimeBeforeStartTimeException.getMessage());
+	                    EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException("EndTime", "StartTime");
+	                    error.add("For " + day.toString() + ": " + endTypeBeforeStartTypeException.getMessage());
 	                }
 	            }
 	        }
@@ -165,10 +164,6 @@ public class WishlistModel
 	    // Add entries to the wishlist model
 	    desiredStartAndEndTime = newDesiredStartAndEndTime;
 	}
-	
-	
-	
-	
 	
 	/**
 	 * Purpose: To return the desired campus location
@@ -200,11 +195,11 @@ public class WishlistModel
 	
 	// Other Methods
 	/**
-	 * Purpose: To store the info from the app controller for the wishlist view (for the min and * Purpose: To store the info from the app controller for the wishlist view (for the min and max desired break time,
+	 * Purpose: To store the info from the app controller for the wishlist view		
 	 * @param newDesiredCampusLocation The desired campus location for the user
 	 * @param newTopThreeSchedulesDestinationPath The destination path for the top three schedules for the user
 	 * @param generalErrors A list of general error messages (non-time errors) to display in a popup
-	 * @return timeErrors A hashmaps of error messages for the desired start and end times 
+	 * @return timeErrors A hashmap of error messages for the desired start and end times 
 	 * (if any end times are before start times they're added to hashmap for that day)
 	 */
 	public HashMap<DayOfWeek, String> saveWishlist(Long newMinDesiredBreakTime,
@@ -234,8 +229,8 @@ public class WishlistModel
 	    if (newMaxDesiredBreakTime != null && newMinDesiredBreakTime != null
 	            && newMaxDesiredBreakTime < newMinDesiredBreakTime)
 	    {
-	        EndTimeBeforeStartTimeException endTimeBeforeStartTimeException = new EndTimeBeforeStartTimeException("MaxBreakTime", "MinBreakTime");
-	        generalErrors.add(endTimeBeforeStartTimeException.getMessage());
+	        EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException("MaxBreakTime", "MinBreakTime");
+	        generalErrors.add(endTypeBeforeStartTypeException.getMessage());
 	    }
 
 	    // Check desired start and end times
@@ -258,8 +253,8 @@ public class WishlistModel
 	                {
 	                    if (!end.isAfter(start))
 	                    {
-	                        EndTimeBeforeStartTimeException endTimeBeforeStartTimeException = new EndTimeBeforeStartTimeException("EndTime", "StartTime");
-	                        timeErrors.put(day, endTimeBeforeStartTimeException.getMessage());
+	                    	EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException("EndTime", "StartTime");
+	                        timeErrors.put(day, endTypeBeforeStartTypeException.getMessage());
 	                    }
 	                }
 	            }
@@ -296,7 +291,7 @@ public class WishlistModel
 	
 	
 	/**
-	 * Purpose: To clear the wishlist model of all information (for when the user wants to reset their wishlist)
+	 * Purpose: To clear the wishlist model of all information (for when the user hits back)
 	 */
 	public void clear()
 	{

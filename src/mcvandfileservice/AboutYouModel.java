@@ -1,8 +1,10 @@
 package mcvandfileservice;
 
+import java.util.HashMap;
 import java.util.List;
 
 import exceptions.MustBeOverOneException;
+import exceptions.NoRadioButtonSelectedException;
 
 /**
  * Lead Author(s):
@@ -43,10 +45,18 @@ public class AboutYouModel
 	/**
 	 * Purpose: To set the students major distinction
 	 * @param newStudentsMajorDistinction The students major distinction
+	 * @throws NoRadioButtonSelectedException if the students major distinction is null (if no radio button is selected)
 	 */
-	public void setStudentsMajorDistinction(String newStudentsMajorDistinction)
+	public void setStudentsMajorDistinction(String newStudentsMajorDistinction) throws NoRadioButtonSelectedException 
 	{
-		studentsMajorDistinction = newStudentsMajorDistinction;
+		if (newStudentsMajorDistinction != null)
+		{
+			studentsMajorDistinction = newStudentsMajorDistinction;
+		}
+		else
+		{
+			throw new NoRadioButtonSelectedException("major distinction");
+		}
 	}
 
 	/**
@@ -72,7 +82,7 @@ public class AboutYouModel
 		}
 		else
 		{
-			throw new MustBeOverOneException();
+			throw new MustBeOverOneException("Number of courses");	
 		}
 	}
 
@@ -90,8 +100,76 @@ public class AboutYouModel
 	 * @param newStruggleCourses The courses the student struggles with
 	 */
 	public void setStruggleCourses(List<String> newStruggleCourses)
+	{ 
+		if (newStruggleCourses != null)
+		{
+			struggleCourses = newStruggleCourses;
+		}
+		else
+		{
+			struggleCourses = null;
+		}
+	}
+	
+	/**
+	 * Purpose: To save the info from the app controller for the about you view
+	 * @param newStudentsMajorDistinction The students major distinction
+	 * @param newNumOfCoursesStudentWillInput The number of courses the student will input
+	 * @param newStruggleCourses The courses the student struggles with
+	 * @return aboutYouErrors A hashmap of error messages for the students major distinction and the number of courses the student will input
+	 */
+	public HashMap<String, String> saveAboutYou(String newStudentsMajorDistinction, int newNumOfCoursesStudentWillInput, List<String> newStruggleCourses)
 	{
-		struggleCourses = newStruggleCourses;
+		// Create a hashmap of error messages for the students major distinction and the number of courses the student will input
+		HashMap<String, String> aboutYouErrors = new HashMap<String, String>();
+		
+		// Check students major distinction input
+		if ( newStudentsMajorDistinction == null || newStudentsMajorDistinction.isEmpty())
+		{
+			NoRadioButtonSelectedException noRadioButtonSelectedException = new NoRadioButtonSelectedException("major distinction");
+			aboutYouErrors.put("studentsMajorDistinction", noRadioButtonSelectedException.getMessage());
+			studentsMajorDistinction = null;
+		}
+		else
+		{
+			studentsMajorDistinction = newStudentsMajorDistinction;
+		}
+		
+		// Check number of courses student will input
+		if (newNumOfCoursesStudentWillInput <= 1)
+		{
+			MustBeOverOneException mustBeOverOneException = new MustBeOverOneException("Number of courses");
+			aboutYouErrors.put("numOfCoursesStudentWillInput", mustBeOverOneException.getMessage());
+		}
+		else
+		{
+			
+			numOfCoursesStudentWillInput = newNumOfCoursesStudentWillInput;
+		
+		}
+		
+		// Check struggle courses input
+		if (newStruggleCourses != null)
+		{
+			struggleCourses = newStruggleCourses;
+		}
+		else
+		{
+			struggleCourses = null;
+		}
+		
+		return aboutYouErrors;
+	}
+
+	/**
+	 * Purpose: To clear the about you model of all information (for when the user hits back)
+	 */
+	public void clear()
+	{
+		studentsMajorDistinction = null;
+		numOfCoursesStudentWillInput = 0;
+		struggleCourses = null;
+		
 	}
 
 }

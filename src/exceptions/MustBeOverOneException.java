@@ -13,7 +13,7 @@ package exceptions;
  * 
  * Version/date: 29 April 2026
  * 
- * Responsibilities of class: To represent an exception that is thrown when the value of minimum credits or the number of interested classes is less than 1
+ * Responsibilities of class: To represent an exception that is thrown when the value of minimum credits or the number of interested classes is less than or equal to 1
  * 
  * MustBeOverOneException is-an Exception
  */
@@ -26,6 +26,6 @@ public class MustBeOverOneException extends Exception
 	 */
 	public MustBeOverOneException(String valueType)
 	{
-		super("" + valueType + " must be over one.");
+		super(valueType + " must be over one.");
 	}
 }

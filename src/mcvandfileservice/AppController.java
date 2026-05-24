@@ -112,13 +112,22 @@ public class AppController implements ActionListener
 		wishlistView.getBackButton().addActionListener(this);
 		wishlistView.getSaveButton().addActionListener(this);
 		wishlistView.getContinueButton().addActionListener(this);
+		
+		
+		// Add e to comp for CreditsView
+		creditsView.getBackButton().addActionListener(this);
+		creditsView.getSaveButton().addActionListener(this);
+		creditsView.getContinueButton().addActionListener(this);
+		
+
 	
 		// Add e to comp for AboutYouView
-
+		aboutYouView.getBackButton().addActionListener(this);
+		aboutYouView.getSaveButton().addActionListener(this);
+		aboutYouView.getContinueButton().addActionListener(this);
 		
 		// Add e to comp for CourseInfoView
 		
-		// Add e to comp for CreditsView
 		
 		// Add e to comp for ScheduleGeneratorView
 		
@@ -179,9 +188,62 @@ public class AppController implements ActionListener
 		{
 			continueWithWishlist();
 		}
+		else if(e.getSource() == creditsView.getBackButton())
+		{
+			// Show warning message to user that if they go back, their wishlist
+			// information will be lost and they will have to re-enter it if
+			// they want to save it
+			int result = JOptionPane.showConfirmDialog(null,
+					"Are you sure you want to go back? Your credits information will be lost and you will have to re-enter it if you want to save it.",
+					"Confirm", JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (result == JOptionPane.YES_OPTION)
+			{
+				// Clear the wishlist info from respository and model, dispose
+				// of the wishlist and set startscreen visible
+				clearCredits();
+				creditsView.dispose();
+				wishlistView.setVisible(true);
+			}
+		}
+		else if(e.getSource() == creditsView.getSaveButton())
+		{
+			saveCredits();
+		}
+		else if(e.getSource() == creditsView.getContinueButton())
+		{
+			continueWithCredits();
+		}
+		else if(e.getSource() == aboutYouView.getBackButton())
+		{
+			// Show warning message to user that if they go back, their about you
+			// information will be lost and they will have to re-enter it if
+			// they want to save it
+			int result = JOptionPane.showConfirmDialog(null,
+					"Are you sure you want to go back? Your about you information will be lost and you will have to re-enter it if you want to save it.",
+					"Confirm", JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (result == JOptionPane.YES_OPTION)
+			{
+				// Clear the about you info from respository and model, dispose
+				// of the about you view and set wishlist view visible
+				clearAboutYou();
+				aboutYouView.dispose();
+				creditsView.setVisible(true);
+			}
+		}
+		else if(e.getSource() == aboutYouView.getSaveButton())
+		{
+			saveAboutYou();
+		}
+		else if(e.getSource() == aboutYouView.getContinueButton())
+		{
+			continueWithAboutYou();
+		}
+		
 		else
 		{
-			// Handle other action events for other views here as you implement them
+			// Handle other action events for the rest of the views here
 		}
 	  }
 	
@@ -189,8 +251,10 @@ public class AppController implements ActionListener
 	// Getters and Setter that are getting changed
 
 
-	
+
+
 	// Other Methods
+	// Start Screen View
 	/**
 	 * Purpose: To start the app's process by closing out the start window and opening the 
 	 * wishlist window
@@ -205,6 +269,9 @@ public class AppController implements ActionListener
 		wishlistView.setVisible(true);
 	}
 	
+	
+	
+	// Wishlist View
 	/**
 	 * Purpose: To store all collected wishlist input data in one object
 	 * (helper class for collectWishlistInput() method)
@@ -231,7 +298,6 @@ public class AppController implements ActionListener
 	        this.path = path;
 	    }
 	}
-	
 	
 	/**
 	 * Purpose: To collect all wishlist input data from the view, including time blocks and format errors
@@ -493,7 +559,7 @@ public class AppController implements ActionListener
 	 */
 	public void saveWishlist()
 	{
-	    // Purpose: To collect all wishlist input data from the view
+	    // Collect all wishlist input data from the view
 	    WishlistInputData data = collectWishlistInput();
 
 	    try
@@ -548,7 +614,7 @@ public class AppController implements ActionListener
 
 	            JOptionPane.showMessageDialog(
 	                    null,
-	                    "Wishlist saved successfully!",
+	                    "\"Wishlist\" saved successfully!",
 	                    "Success",
 	                    JOptionPane.INFORMATION_MESSAGE);
 	        }
@@ -562,15 +628,13 @@ public class AppController implements ActionListener
 	                "Error",
 	                JOptionPane.ERROR_MESSAGE);
 	    }
-	}
-	
-	
+	}	
 	
 	/**
 	 * Purpose: To continue from the wishlist view to the about you view.
 	 * If the user did not change any previously-saved wishlist information, do not re-save it.
 	 * If the user changed anything, save the updated values to the wishlist model and repository.
-	 * If there are no errors and no exceptions, dispose of WishlistView and set AboutYouView visible.
+	 * If there are no errors and no exceptions, dispose of WishlistView and set CreditsView visible.
 	 */
 	private void continueWithWishlist()
 	{
@@ -655,7 +719,7 @@ public class AppController implements ActionListener
 
 	    try
 	    {
-	        // Purpose: To store general (non-time) errors for popup
+	        // Store general (non-time) errors for popup
 	        List<String> generalErrors = new ArrayList<String>();
 
 	        // Validate through model
@@ -704,7 +768,7 @@ public class AppController implements ActionListener
 	            }
 
 	            wishlistView.dispose();
-	            aboutYouView.setVisible(true);
+	            creditsView.setVisible(true);
 	        }
 	    }
 	    catch (Exception e)
@@ -717,8 +781,6 @@ public class AppController implements ActionListener
 	    }
 	}
 	
-	
-	
 	/**
 	 * Purpose: To clear out all values saved in the wishlist model and user repository
 	 * 
@@ -730,7 +792,10 @@ public class AppController implements ActionListener
 		userDataRepository.clearWishlist();
 	}
 	
-	// Purpose: To update error labels next to desired start and end time fields
+	/**
+	 * Purpose: To update error labels next to desired start and end time fields 
+	 * @param timeErrors A hashmap of error messages for the desired start and end time inputs, keyed by day of the week
+	 */
 	public void updateWishlistStartAndEndTimeErrors(HashMap<DayOfWeek, String> timeErrors)
 	{
 	    wishlistView.setMonError(timeErrors.getOrDefault(DayOfWeek.MONDAY, ""));
@@ -751,4 +816,271 @@ public class AppController implements ActionListener
 		wishlistView.revalidate();
 		wishlistView.repaint();
 	}
+	
+	
+	
+	
+	// Credits View
+	/**
+	 * Purpose: To save the values in the credits view to the credits model and repository
+	 * 
+	 */
+	public void saveCredits()
+	{
+		// Clear any previous error messages in the view
+		creditsView.setMinCreditsError("");
+		creditsView.setMaxCreditsError("");
+		
+		int minCreditsInput = creditsView.getMinCreditsInput();	
+		int maxCreditsInput = creditsView.getMaxCreditsInput();
+		try
+		{
+			HashMap<String, String> creditsErrors = creditsModel.saveCredits(minCreditsInput, maxCreditsInput);
+			updateCreditsErrors(creditsErrors);
+			updateCreditsView();
+			
+	        if(creditsErrors.isEmpty())
+	        {
+	        	// Save to repository
+	        	userDataRepository.saveCredits(minCreditsInput, maxCreditsInput);
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    "\"Credits\" saved successfully!",
+	                    "Success",
+	                    JOptionPane.INFORMATION_MESSAGE);
+	        }
+		}
+		catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(
+					null,
+					"An unexpected error occurred: " + e.getMessage(),
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	/**
+	 * Purpose: To save new/changed values in the credits view to the credits model and repository
+	 * and preserve any stored values that have not changed
+	 * 
+	 */
+	public void continueWithCredits()
+	{
+	    // Clear any previous error messages in the view
+	    creditsView.setMinCreditsError("");
+	    creditsView.setMaxCreditsError("");
+	    
+	    int minCreditsInput = creditsView.getMinCreditsInput();    
+	    int maxCreditsInput = creditsView.getMaxCreditsInput();
+	    
+	    try
+	    {
+	        HashMap<String, String> creditsErrors = creditsModel.saveCredits(minCreditsInput, maxCreditsInput);
+	        updateCreditsErrors(creditsErrors);
+	        updateCreditsView();
+	        
+	        if(creditsErrors.isEmpty())
+	        {
+	            int storedMinCredits = userDataRepository.getMinRequiredCredits();
+	            int storedMaxCredits = userDataRepository.getMaxRequiredCredits();
+	            
+	            boolean minChanged = (minCreditsInput != storedMinCredits);
+	            boolean maxChanged = (maxCreditsInput != storedMaxCredits);
+	            
+	            if(minChanged || maxChanged)
+	            {
+	                int minToSave = minChanged ? minCreditsInput : storedMinCredits;
+	                int maxToSave = maxChanged ? maxCreditsInput : storedMaxCredits;
+	                
+	                // Save to respository
+	                userDataRepository.saveCredits(minToSave, maxToSave);
+	                
+	                // Naviagation change
+	                creditsView.dispose();
+	                aboutYouView.setVisible(true);
+	            }
+	            else
+	            {
+	                // Navigation change
+	            	creditsView.dispose();	
+	            	aboutYouView.setVisible(true);
+	            }
+	        }
+	    }
+	    catch (Exception e)
+	    {
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
+	/**
+	 * Purpose: To clear out all values saved in the credits model and user repository
+	 */
+	private void clearCredits()
+	{
+		creditsModel.clear();
+		creditsView.resetFields();
+		userDataRepository.clearCredits();
+		
+	}
+	
+	/**
+	 * Purpose: To update error labels for the credits view
+	 * @param creditsErrors A hashmap of error messages for the minimum and maximum required credits inputs
+	 */
+	public void updateCreditsErrors(HashMap<String, String> creditsErrors)
+	{
+		creditsView.setMinCreditsError(creditsErrors.getOrDefault("minRequiredCredits", ""));
+		creditsView.setMaxCreditsError(creditsErrors.getOrDefault("maxRequiredCredits", ""));
+	}
+	
+	/**
+	 * Purpose: To update the creditsView UI
+	 *
+	 */
+	private void updateCreditsView()
+	{
+		creditsView.revalidate();
+		creditsView.repaint();
+	}
+	
+
+	// About You View
+	/**
+	 * Purpose: To save the values in the about you view to the about you model and repository
+	 */
+	public void saveAboutYou()
+	{
+		// Clear any previous error messages in the view
+		aboutYouView.setMajorError("");
+		aboutYouView.setNumCoursesError("");
+		
+		String majorInput = aboutYouView.getMajorInput();
+		List<String> struggleCoursesInput = aboutYouView.getStruggleCoursesInput();
+		int numCoursesInput = aboutYouView.getNumCoursesInput();
+		
+		try
+		{
+			HashMap<String, String> aboutYouErrors = aboutYouModel.saveAboutYou(majorInput, numCoursesInput, struggleCoursesInput);
+			updateAboutYouErrors(aboutYouErrors);
+			
+	        if(aboutYouErrors.isEmpty())
+	        {
+				updateAboutYouView();
+	        	
+	        	// Save to repository
+	        	userDataRepository.saveAboutYou(majorInput, numCoursesInput, struggleCoursesInput);
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    "\"About You\" saved successfully!",
+	                    "Success",
+	                    JOptionPane.INFORMATION_MESSAGE);
+	        }
+		}
+		catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(
+					null,
+					"An unexpected error occurred: " + e.getMessage(),
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	/**
+	 * Purpose: To continue from the about you view to the course info view
+	 */
+	public void continueWithAboutYou()
+	{
+		// Clear any previous error messages in the view
+		aboutYouView.setMajorError("");
+		aboutYouView.setNumCoursesError("");
+		
+		String majorInput = aboutYouView.getMajorInput();
+		List<String> struggleCoursesInput = aboutYouView.getStruggleCoursesInput();
+		int numCoursesInput = aboutYouView.getNumCoursesInput();
+		
+		try
+		{
+			HashMap<String, String> aboutYouErrors = aboutYouModel.saveAboutYou(majorInput, numCoursesInput, struggleCoursesInput);
+			updateAboutYouErrors(aboutYouErrors);
+			
+	        if(aboutYouErrors.isEmpty())
+	        {
+				updateAboutYouView();
+
+	            String storedMajor = userDataRepository.getMajor();
+	            int storedNumCourses = userDataRepository.getNumCourses();
+	            List<String> storedStruggleCourses = userDataRepository.getStruggleCourses();
+	            
+	            boolean majorChanged = (majorInput != null && !majorInput.equals(storedMajor)) || (majorInput == null && storedMajor != null);
+	            boolean numCoursesChanged = (numCoursesInput != storedNumCourses);
+	            boolean struggleCoursesChanged = (struggleCoursesInput != null && !struggleCoursesInput.equals(storedStruggleCourses)) || (struggleCoursesInput == null && storedStruggleCourses != null);
+	            
+	            if(majorChanged || numCoursesChanged || struggleCoursesChanged)
+	            {
+	                String majorToSave = majorChanged ? majorInput : storedMajor;
+	                int numCoursesToSave = numCoursesChanged ? numCoursesInput : storedNumCourses;
+	                List<String> struggleCoursesToSave = struggleCoursesChanged ? struggleCoursesInput : storedStruggleCourses;
+	                
+	                // Save to respository
+	                userDataRepository.saveAboutYou(majorToSave, numCoursesToSave, struggleCoursesToSave);
+	                
+	                // Naviagation change
+	                aboutYouView.dispose();
+	                courseInfoView.setVisible(true);
+	            }
+	            else
+	            {
+	                // Navigation change
+	            	aboutYouView.dispose();	
+	            	courseInfoView.setVisible(true);
+	            }
+	        }
+	    }
+	    catch (Exception e)
+	    {
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
+	/**
+	 * Purpose: To clear out all values saved in the about you model and user repository
+	 */
+	public void clearAboutYou()
+	{
+		aboutYouModel.clear();
+		aboutYouView.resetFields();
+		userDataRepository.clearAboutYou();
+	}
+	
+	/**
+	 * Purpose: To update error labels for the about you view
+	 */
+	public void updateAboutYouErrors(HashMap<String, String> aboutYouErrors)
+	{
+		aboutYouView.setMajorError(aboutYouErrors.getOrDefault("studentsMajorDistinction", ""));
+		aboutYouView.setNumCoursesError(aboutYouErrors.getOrDefault("numOfCoursesStudentWillInput", ""));
+	}
+	
+	/**
+	 * Purpose: To update the about you view UI
+	 */
+	private void updateAboutYouView()
+	{
+		aboutYouView.revalidate();
+		aboutYouView.repaint();
+	}
+	
+	
+
 }

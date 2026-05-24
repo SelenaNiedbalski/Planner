@@ -18,15 +18,15 @@ package exceptions;
  * MaxBreakLessThanMinException is-an Exception
  */
 
-public class EndTimeBeforeStartTimeException extends Exception
+public class EndTypeBeforeStartTypeException extends Exception
 {
 	/**
 	 * Constructs a MustBeOverOneException with a default message that takes parameters for time type
-	 * @startTimeType The type of start time
-	 * @endTimeType The type of end time
+	 * @param startType The type of start value
+	 * @param endType The type of end value
 	 */
-	public EndTimeBeforeStartTimeException(String startTimeType, String endTimeType)
+	public EndTypeBeforeStartTypeException(String startType, String endType)
 	{
-		super("" + startTimeType + "  must be greater than " + endTimeType + ".");
+		super("" + startType + "  must be greater than " + endType + ".");
 	}
 }
