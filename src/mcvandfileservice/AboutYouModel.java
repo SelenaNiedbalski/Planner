@@ -128,7 +128,6 @@ public class AboutYouModel
 		{
 			NoRadioButtonSelectedException noRadioButtonSelectedException = new NoRadioButtonSelectedException("major distinction");
 			aboutYouErrors.put("studentsMajorDistinction", noRadioButtonSelectedException.getMessage());
-			studentsMajorDistinction = null;
 		}
 		else
 		{
@@ -143,9 +142,7 @@ public class AboutYouModel
 		}
 		else
 		{
-			
 			numOfCoursesStudentWillInput = newNumOfCoursesStudentWillInput;
-		
 		}
 		
 		// Check struggle courses input
@@ -169,7 +166,6 @@ public class AboutYouModel
 		studentsMajorDistinction = null;
 		numOfCoursesStudentWillInput = 0;
 		struggleCourses = null;
-		
 	}
 
 }

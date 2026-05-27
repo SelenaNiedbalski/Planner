@@ -2,20 +2,25 @@ package mcvandfileservice;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.BiFunction;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
+import courseclasses.Course;
 import exceptions.IncorrectTimeFormatException;
 import schedules.ScheduleGenerator;
 import schedules.WeeklyTimeBlock;
+import sounds.SoundPlayer;
 
 /**
  * Lead Author(s):
@@ -43,7 +48,6 @@ public class AppController implements ActionListener
 	private AboutYouView aboutYouView; // An app controller has-an about you view
 	private CourseInfoView courseInfoView; // An app controller has-a course info view
 	private CreditsView creditsView; // An app controller has-a credits view
-	private ScheduleGeneratorView scheduleGeneratorView; // An app controller has-a schedule generator view
 	private WishlistView wishlistView; // An app controller has-a wishlist view
 	private StartScreenView startScreenView; // An app controller has-a start screen view
 	private LoadingScreenView loadingScreenView; // An app controller has-a loading screen view
@@ -58,26 +62,41 @@ public class AppController implements ActionListener
 	// IV Repositories
 	private UserDataRepository userDataRepository; // An app controller has-a user data repository
 	private CourseRepository courseRepository; // An app controller has-a course data repository
+	private ScheduleGeneratorRepository scheduleGeneratorRepository; // An app controller has-a schedule generator repository
+	// IV File Service
+	private FileService fileService; // An app controller has-a file service
 	
+	// Sound IVs
+	private SoundPlayer soundPlayer;	
+	
+	
+	
+	
+	// Constructor
 	/**
 	 * Purpose: To construct an AppController with the given app views and app models
 	 * @param newStartScreenView The new start screen view
 	 * @param newAboutYouView The about you view 
 	 * @param newCourseInfoView The course info view
 	 * @param newCreditsView The credits view
-	 * @param newScheduleGeneratorView The schedule generator view
 	 * @param newWishlistView The wishlist view
-	 * @param newLoadingScreenView The new loading screen view
 	 * @param newAboutYouModel The about you model
 	 * @param newCourseInfoModel The course info model
 	 * @param newCreditsModel The credits model
 	 * @param newScheduleGenerator The schedule generator model
 	 * @param newWishlistModel The wishlist model
+	 * @param newFileService The file service
+	 * @param newUserDataRepository The user data repository
+	 * @param newCourseRepository The course repository
+	 * @param newScheduleGeneratorRepository The schedule generator repository
+	 * @param newLoadingScreenView The loading screen view
 	 */
 	public AppController(StartScreenView newStartScreenView, AboutYouView newAboutYouView, CourseInfoView newCourseInfoView, 
-			CreditsView newCreditsView, ScheduleGeneratorView newScheduleGeneratorView, WishlistView newWishlistView, 
-			LoadingScreenView newLoadingScreenView,AboutYouModel newAboutYouModel, CourseInfoModel newCourseInfoModel, 
-			CreditsModel newCreditsModel, ScheduleGenerator newScheduleGenerator, WishlistModel newWishlistModel)
+			CreditsView newCreditsView, WishlistView newWishlistView, LoadingScreenView newLoadingScreenView,
+			AboutYouModel newAboutYouModel, CourseInfoModel newCourseInfoModel, 
+			CreditsModel newCreditsModel, ScheduleGenerator newScheduleGenerator, WishlistModel newWishlistModel, 
+			FileService newFileService, UserDataRepository newUserDataRepository, CourseRepository newCourseRepository, 
+			ScheduleGeneratorRepository newScheduleGeneratorRepository)
 	{
 		super();
 		
@@ -86,7 +105,6 @@ public class AppController implements ActionListener
 		aboutYouView = newAboutYouView;
 		courseInfoView = newCourseInfoView;
 		creditsView = newCreditsView;
-		scheduleGeneratorView = newScheduleGeneratorView;
 		wishlistView = newWishlistView;
 		loadingScreenView = newLoadingScreenView;
 		
@@ -95,13 +113,20 @@ public class AppController implements ActionListener
 		aboutYouView.setAppController(this);
 		courseInfoView.setAppController(this);
 		creditsView.setAppController(this);
-		scheduleGeneratorView.setAppController(this);
 		wishlistView.setAppController(this);
 		loadingScreenView.setAppController(this);
 		
-		// Create new repositories
-		userDataRepository = new UserDataRepository();
-		courseRepository = new CourseRepository(userDataRepository);
+		
+		
+		// Create new repositories, file service, and schedule generator
+		userDataRepository = newUserDataRepository;
+		courseRepository = newCourseRepository;
+		scheduleGeneratorRepository = newScheduleGeneratorRepository;
+		fileService = newFileService;
+		scheduleGenerator = newScheduleGenerator;
+		
+		
+		
 		
 		// Add action events to each JComponent within each view (Add e to comp for)
 		// Add e to comp for StartScreenView
@@ -127,12 +152,13 @@ public class AppController implements ActionListener
 		aboutYouView.getContinueButton().addActionListener(this);
 		
 		// Add e to comp for CourseInfoView
+		courseInfoView.getBackButton().addActionListener(this);
+		courseInfoView.getCSVButton().addActionListener(this);
+		courseInfoView.getSaveButton().addActionListener(this);
+		courseInfoView.getNextButton().addActionListener(this);
+		courseInfoView.getBuildPlannerButton().addActionListener(this);
 		
 		
-		// Add e to comp for ScheduleGeneratorView
-		
-		
-		// Add e to comp for LoadingScreenView
 		
 		
 		
@@ -240,6 +266,40 @@ public class AppController implements ActionListener
 		{
 			continueWithAboutYou();
 		}
+		else if(e.getSource() == courseInfoView.getBackButton())
+		{
+			// Show warning message to user that if they go back, their course info
+			// information will be lost and they will have to re-enter it if
+			// they want to save it
+			int result = JOptionPane.showConfirmDialog(null,
+					"Are you sure you want to go back? All course information will be lost and you will have to re-enter it.",
+					"Confirm", JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+			if (result == JOptionPane.YES_OPTION)
+			{
+				// Clear the course info from respository and model, dispose
+				// of the course info view and set about you view visible
+				clearCourseInfo();
+				courseInfoView.dispose();
+				aboutYouView.setVisible(true);
+			}
+		}
+		else if(e.getSource() == courseInfoView.getCSVButton())
+		{
+			fileService.copyTemplateCSVToTopThreeDestination();
+		}
+		else if(e.getSource() == courseInfoView.getSaveButton())
+		{
+			saveCourseInfo();
+		}
+		else if(e.getSource() == courseInfoView.getNextButton())
+		{
+			continueWithCourseInfo();
+		}
+		else if(e.getSource() == courseInfoView.getBuildPlannerButton())
+		{
+			buildSchedule();
+		}
 		
 		else
 		{
@@ -248,7 +308,10 @@ public class AppController implements ActionListener
 	  }
 	
 	
+
+
 	// Getters and Setter that are getting changed
+
 
 
 
@@ -766,7 +829,7 @@ public class AppController implements ActionListener
 	                        data.campus,
 	                        data.path);
 	            }
-
+	            fileService.setTopThreeSchedulesDestinationPath(data.path);
 	            wishlistView.dispose();
 	            creditsView.setVisible(true);
 	        }
@@ -1031,12 +1094,30 @@ public class AppController implements ActionListener
 	                // Save to respository
 	                userDataRepository.saveAboutYou(majorToSave, numCoursesToSave, struggleCoursesToSave);
 	                
+	                // Update course info model with number of courses so that it can validate the number of courses the student will input in the course info view
+	                courseInfoModel.setTotalCourses(numCoursesToSave);
+	                courseInfoView.setTotalCourses(numCoursesToSave);
+	                int currentCourseNum = courseInfoModel.getCurrentCourse();
+	                
+	                // Update view to reflect num course
+	                courseInfoView.setCourseNumLabel(currentCourseNum);
+	                
+	                
 	                // Naviagation change
 	                aboutYouView.dispose();
 	                courseInfoView.setVisible(true);
 	            }
 	            else
 	            {
+	            	// Update course info model with number of courses so that it can validate the number of courses the student will input in the course info view
+	                int newNumCourses = userDataRepository.getNumOfCoursesStudentWillInput();
+	            	courseInfoModel.setTotalCourses(newNumCourses);
+	                int currentCourseNum = courseInfoModel.getCurrentCourse();
+	                
+	                // Update view to reflect num course
+	                courseInfoView.setTotalCourses(newNumCourses);
+	                courseInfoView.setCourseNumLabel(currentCourseNum);
+	            	
 	                // Navigation change
 	            	aboutYouView.dispose();	
 	            	courseInfoView.setVisible(true);
@@ -1065,6 +1146,7 @@ public class AppController implements ActionListener
 	
 	/**
 	 * Purpose: To update error labels for the about you view
+	 * @param aboutYouErrors A hashmap of error messages for the about you view inputs
 	 */
 	public void updateAboutYouErrors(HashMap<String, String> aboutYouErrors)
 	{
@@ -1082,5 +1164,927 @@ public class AppController implements ActionListener
 	}
 	
 	
+	
+	// Course Info View
+	/**
+	 * Purpose: To save the values in the course info view to the course info model and repository
+	 */
+	public void saveCourseInfo()
+	{
+	    // Clear any previous error messages in the view (same pattern as saveAboutYou)
+	    courseInfoView.setCourseNameError("");
+	    courseInfoView.setStudentRequiredCourseError("");
+	    courseInfoView.setCourseTypeError("");
+
+	    // Collect inputs from the view
+	    String courseNameInput = courseInfoView.getCourseName();
+	    if (courseNameInput != null && courseNameInput.trim().isEmpty())
+	    {
+	        courseNameInput = null;
+	    }
+
+	    Boolean requiredInput = courseInfoView.getStudentRequiredCourse();
+	    String courseTypeInput = courseInfoView.getCourseType();
+	    Path retrievalPathInput = courseInfoView.getAvailableClassesRetrievalPath();
+
+	    // Pull total courses from repository (adjust getter name if yours differs)
+	    int totalCoursesInput = userDataRepository.getNumOfCoursesStudentWillInput(); 
+
+	    try
+	    {
+	        // Collect general (popup) errors (model uses this for path errors)
+	        List<String> generalErrors = new ArrayList<String>();
+
+	        // Validate + save into model (but not repository yet)
+	        HashMap<String, String> courseInfoErrors =
+	                courseInfoModel.saveCourseInfo(
+	                        totalCoursesInput,
+	                        courseNameInput,
+	                        requiredInput,
+	                        courseTypeInput,
+	                        retrievalPathInput,
+	                        generalErrors);
+
+	        // Update field-level errors in the view
+	        updateCourseInfoErrors(courseInfoErrors);
+
+	        // Show general errors in a popup if any exist (same idea as wishlist template)
+	        if (!generalErrors.isEmpty())
+	        {
+	            StringBuilder errorMessage = new StringBuilder();
+	            for (String errMsg : generalErrors)
+	            {
+	                errorMessage.append(errMsg).append("\n");
+	            }
+
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    errorMessage.toString(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
+
+	        // If there are no errors, update view + save to repository + success popup
+	        if (courseInfoErrors.isEmpty() && generalErrors.isEmpty())
+	        {
+	            updateCourseInfoView();
+
+	            // Save to repository
+	            userDataRepository.saveCourseInfo(courseNameInput, requiredInput, retrievalPathInput, courseTypeInput);
+	         
+
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    "\"Course Info\" saved successfully!",
+	                    "Success",
+	                    JOptionPane.INFORMATION_MESSAGE);
+	        }
+	    }
+	    catch (Exception e)
+	    {
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
+	
+	
+	/**
+	 * Purpose: To save new/changed values in the course info view to the course info model and repository
+	 * and preserve any stored values that have not changed, then continue to next course until the last one
+	 * 
+	 */
+	public void continueWithCourseInfo()
+	{
+	    // Clear any previous error messages in the view
+	    courseInfoView.setCourseNameError("");
+	    courseInfoView.setStudentRequiredCourseError("");
+	    courseInfoView.setCourseTypeError("");
+
+	    // Collect inputs from the view
+	    String courseNameInput = courseInfoView.getCourseName();
+	    if (courseNameInput != null && courseNameInput.trim().isEmpty())
+	    {
+	        courseNameInput = null;
+	    }
+
+	    Boolean requiredInput = courseInfoView.getStudentRequiredCourse();
+	    String courseTypeInput = courseInfoView.getCourseType();
+	    Path retrievalPathInput = courseInfoView.getAvailableClassesRetrievalPath();
+
+	    // Pull stored values from repository
+	    String storedCourseName = userDataRepository.getCourseName();
+	    Boolean storedRequired = userDataRepository.isStudentRequiredCourse();
+	    String storedCourseType = userDataRepository.getCourseType();
+	    Path storedPath = userDataRepository.getAvailableClassesRetrievalPath();
+
+	    try
+	    {
+	        // Collect general (popup) errors
+	        List<String> generalErrors = new ArrayList<String>();
+
+	        // Validate + save into model (not repository yet)
+	        HashMap<String, String> courseInfoErrors =
+	                courseInfoModel.saveCourseInfo(
+	                        userDataRepository.getNumOfCoursesStudentWillInput(),
+	                        courseNameInput,
+	                        requiredInput,
+	                        courseTypeInput,
+	                        retrievalPathInput,
+	                        generalErrors);
+
+	        // Update field-level errors in the view
+	        updateCourseInfoErrors(courseInfoErrors);
+
+	        // Show general errors in popup
+	        if (!generalErrors.isEmpty())
+	        {
+	            StringBuilder errorMessage = new StringBuilder();
+	            for (String errMsg : generalErrors)
+	            {
+	                errorMessage.append(errMsg).append("\n");
+	            }
+
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    errorMessage.toString(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
+
+	        // If validation passes
+	        if (courseInfoErrors.isEmpty() && generalErrors.isEmpty())
+	        {
+	            updateCourseInfoView();
+
+	            // Determine what changed
+	            boolean courseNameChanged =
+	                    (courseNameInput != null && !courseNameInput.equals(storedCourseName)) ||
+	                    (courseNameInput == null && storedCourseName != null);
+
+	            boolean requiredChanged =
+	                    (requiredInput != null && !requiredInput.equals(storedRequired)) ||
+	                    (requiredInput == null && storedRequired != null);
+
+	            boolean courseTypeChanged =
+	                    (courseTypeInput != null && !courseTypeInput.equals(storedCourseType)) ||
+	                    (courseTypeInput == null && storedCourseType != null);
+
+	            boolean pathChanged =
+	                    (retrievalPathInput != null && !retrievalPathInput.equals(storedPath)) ||
+	                    (retrievalPathInput == null && storedPath != null);
+
+	            if (courseNameChanged || requiredChanged || courseTypeChanged || pathChanged)
+	            {
+	                String courseNameToSave = courseNameChanged ? courseNameInput : storedCourseName;
+	                Boolean requiredToSave = requiredChanged ? requiredInput : storedRequired;
+	                String courseTypeToSave = courseTypeChanged ? courseTypeInput : storedCourseType;
+	                Path pathToSave = pathChanged ? retrievalPathInput : storedPath;
+
+	                // Save to repository
+	                userDataRepository.saveCourseInfo(
+	                        courseNameToSave,
+	                        requiredToSave,
+	                        pathToSave,
+	                        courseTypeToSave
+	                );
+	            }
+	            
+	            // File service reads class info and creates partial course objects
+	            Path currentAvailClasses = userDataRepository.getAvailableClassesRetrievalPath();
+	            fileService.setCourseRepository(courseRepository);
+	            fileService.readAvailableClassesFile(currentAvailClasses);
+	            
+	            // Build final course objects based on partial course info and user input and save to schedule generator
+	            
+	            // Store each course type as a difficulty and coursetypedefined (to make it STEM, Liberal Arts, Professional, or Creative Arts And Electives)
+	            double difficultyScore = 0.0;
+	            String courseTypeDefined = null;
+	            
+	            if (courseTypeInput == "Biology")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Chemistry")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Physics")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Environmental Science")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Science")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Computer Science")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Information Technology")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Computer Infomration Systems")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Cybersecurity and Information Assurance")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Data Science and Analytics")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Software Engineering and Development")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Computer Engineering")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Tech")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Civil Engineering")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Mechanical Engineering")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Electrical Engineering")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Chemical Engineering")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Engineering")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Core Math")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Pure Math")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Applied Math")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Math")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "History")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Literature")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Philosophy")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Psychology")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Sociology")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Political Science")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Justice Administration")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Other Liberal Arts")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Business")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Healthcare")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Law")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Education")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Vocational")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Agriculture")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Other Professional")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Visual Arts and Design")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Foreign Language")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Culinary Arts")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Communication")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Performing Arts")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Physical Education and Nutrition")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            	
+	            
+	            List<Course> finalClassesBuiltForCourse = courseRepository.buildFinalCourses(courseNameInput, courseTypeDefined, requiredInput, difficultyScore);
+	            scheduleGenerator.addCompletedCoursesToCoursePool(finalClassesBuiltForCourse);
+	            	            
+
+	            // Move to next course OR next view
+	            int currentCourse = courseInfoModel.updateCurrentCourse();
+	            int totalCourses = userDataRepository.getNumOfCoursesStudentWillInput();
+
+	            if (currentCourse < totalCourses)
+	            {
+	                // Update the view for the next course
+	                courseInfoView.setCourseNumLabel(currentCourse);
+	                clearCourseInfo();
+	                updateCourseInfoView();
+	            }
+	            else
+	            {
+	                // Update view 
+	                // Update the view for the next course
+	                courseInfoView.setCourseNumLabel(currentCourse);
+	                clearCourseInfo();
+	                courseInfoView.getNextButton().setVisible(false);
+	                courseInfoView.getBuildPlannerButton().setVisible(true);
+	                updateCourseInfoView();
+	            }
+	        }
+	    }
+	    catch (Exception e)
+	    {
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
+	
+	/**
+	 * Purpose: To build schedules and return top three
+	 * 
+	 */
+	private void buildSchedule()
+	{
+	    // Clear any previous error messages in the view
+	    courseInfoView.setCourseNameError("");
+	    courseInfoView.setStudentRequiredCourseError("");
+	    courseInfoView.setCourseTypeError("");
+
+	    // Collect inputs from the view
+	    String courseNameInput = courseInfoView.getCourseName();
+	    if (courseNameInput != null && courseNameInput.trim().isEmpty())
+	    {
+	        courseNameInput = null;
+	    }
+
+	    Boolean requiredInput = courseInfoView.getStudentRequiredCourse();
+	    String courseTypeInput = courseInfoView.getCourseType();
+	    Path retrievalPathInput = courseInfoView.getAvailableClassesRetrievalPath();
+
+	    // Pull stored values from repository
+	    String storedCourseName = userDataRepository.getCourseName();
+	    Boolean storedRequired = userDataRepository.isStudentRequiredCourse();
+	    String storedCourseType = userDataRepository.getCourseType();
+	    Path storedPath = userDataRepository.getAvailableClassesRetrievalPath();
+
+	    try
+	    {
+	        // Collect general (popup) errors
+	        List<String> generalErrors = new ArrayList<String>();
+
+	        // Validate + save into model (not repository yet)
+	        HashMap<String, String> courseInfoErrors =
+	                courseInfoModel.saveCourseInfo(
+	                        userDataRepository.getNumOfCoursesStudentWillInput(),
+	                        courseNameInput,
+	                        requiredInput,
+	                        courseTypeInput,
+	                        retrievalPathInput,
+	                        generalErrors);
+
+	        // Update field-level errors in the view
+	        updateCourseInfoErrors(courseInfoErrors);
+
+	        // Show general errors in popup
+	        if (!generalErrors.isEmpty())
+	        {
+	            StringBuilder errorMessage = new StringBuilder();
+	            for (String errMsg : generalErrors)
+	            {
+	                errorMessage.append(errMsg).append("\n");
+	            }
+
+	            JOptionPane.showMessageDialog(
+	                    null,
+	                    errorMessage.toString(),
+	                    "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	        }
+
+	        // If validation passes
+	        if (courseInfoErrors.isEmpty() && generalErrors.isEmpty())
+	        {
+	            updateCourseInfoView();
+
+	            // Determine what changed
+	            boolean courseNameChanged =
+	                    (courseNameInput != null && !courseNameInput.equals(storedCourseName)) ||
+	                    (courseNameInput == null && storedCourseName != null);
+
+	            boolean requiredChanged =
+	                    (requiredInput != null && !requiredInput.equals(storedRequired)) ||
+	                    (requiredInput == null && storedRequired != null);
+
+	            boolean courseTypeChanged =
+	                    (courseTypeInput != null && !courseTypeInput.equals(storedCourseType)) ||
+	                    (courseTypeInput == null && storedCourseType != null);
+
+	            boolean pathChanged =
+	                    (retrievalPathInput != null && !retrievalPathInput.equals(storedPath)) ||
+	                    (retrievalPathInput == null && storedPath != null);
+
+	            if (courseNameChanged || requiredChanged || courseTypeChanged || pathChanged)
+	            {
+	                String courseNameToSave = courseNameChanged ? courseNameInput : storedCourseName;
+	                Boolean requiredToSave = requiredChanged ? requiredInput : storedRequired;
+	                String courseTypeToSave = courseTypeChanged ? courseTypeInput : storedCourseType;
+	                Path pathToSave = pathChanged ? retrievalPathInput : storedPath;
+
+	                // Save to repository
+	                userDataRepository.saveCourseInfo(
+	                        courseNameToSave,
+	                        requiredToSave,
+	                        pathToSave,
+	                        courseTypeToSave
+	                );
+	            }
+	            
+	            // File service reads class info and creates partial course objects
+	            Path currentAvailClasses = userDataRepository.getAvailableClassesRetrievalPath();
+	            fileService.setCourseRepository(courseRepository);
+	            fileService.readAvailableClassesFile(currentAvailClasses);
+	            
+	            // Build final course objects based on partial course info and user input and save to schedule generator
+	            
+	            // Store each course type as a difficulty and coursetypedefined (to make it STEM, Liberal Arts, Professional, or Creative Arts And Electives)
+	            double difficultyScore = 0.0;
+	            String courseTypeDefined = null;
+	            
+	            if (courseTypeInput == "Biology")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Chemistry")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Physics")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Environmental Science")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Science")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Computer Science")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Information Technology")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Computer Infomration Systems")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Cybersecurity and Information Assurance")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Data Science and Analytics")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Software Engineering and Development")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Computer Engineering")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Tech")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Civil Engineering")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Mechanical Engineering")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Electrical Engineering")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Chemical Engineering")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Engineering")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Core Math")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Pure Math")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Applied Math")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "Other Math")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "STEM";
+	            }
+	            else if (courseTypeInput == "History")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Literature")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Philosophy")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Psychology")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Sociology")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Political Science")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Justice Administration")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Other Liberal Arts")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Liberal Arts";
+	            }
+	            else if (courseTypeInput == "Business")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Healthcare")
+	            {
+	            	difficultyScore = 5.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Law")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Education")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Vocational")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Agriculture")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Other Professional")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Professional";
+	            }
+	            else if (courseTypeInput == "Visual Arts and Design")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Foreign Language")
+	            {
+	            	difficultyScore = 4.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Culinary Arts")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Communication")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Performing Arts")
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else if (courseTypeInput == "Physical Education and Nutrition")
+	            {
+	            	difficultyScore = 2.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            else
+	            {
+	            	difficultyScore = 3.0;
+	            	courseTypeDefined = "Creative Arts and Electives";
+	            }
+	            	
+	            List<Course> finalClassesBuiltForCourse = courseRepository.buildFinalCourses(courseNameInput, courseTypeDefined, requiredInput, difficultyScore);
+	            scheduleGenerator.addCompletedCoursesToCoursePool(finalClassesBuiltForCourse);
+
+	            // Add schedule generator repository to file service and setup schedule generator
+	            fileService.setScheduleGeneratorRepository(scheduleGeneratorRepository);
+	            scheduleGenerator.setScheduleGeneratorReposAndFileService(userDataRepository, scheduleGeneratorRepository, fileService);
+
+	            // Close the courseInfoView and open the loading screen view
+	            courseInfoView.setVisible(false);
+	            loadingScreenView.setVisible(true);
+
+	            // Start playing loading music
+	            soundPlayer = new SoundPlayer();
+	            soundPlayer.playLoopingPlaylist();
+
+	            // RUN HEAVY WORK IN BACKGROUND THREAD
+	            new Thread(() ->
+	            {
+	                // Build schedules
+	                scheduleGenerator.generateTopThreeSchedules(30);
+
+	                // Set top three schedules BEFORE switching back to UI thread
+	                fileService.setTopThreeSchedules();
+
+	                // Switch back to UI thread for UI updates
+	                SwingUtilities.invokeLater(() ->
+	                {
+	                    // Stop sound and close loading screen
+	                    soundPlayer.stop();
+	                    loadingScreenView.dispose();
+
+	                    fileService.topThreeToCSV();
+
+	                    // Show success popup
+	                    JOptionPane.showMessageDialog(
+	                            null,
+	                            "Schedules built successfully! Check your files for the top three schedules generated.",
+	                            "Success",
+	                            JOptionPane.INFORMATION_MESSAGE
+	                    );
+	                });
+
+	            }).start();
+	        }
+	    }
+	    catch (Exception e)
+	    {
+	        JOptionPane.showMessageDialog(
+	                null,
+	                "An unexpected error occurred: " + e.getMessage(),
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
+	
+	
+	
+	/**
+	 * Purpose: To play music during schedule generation
+	 * @param filePath The file path of the sound to play
+	 * @return The Clip object representing the playing sound, which can be stopped later
+	 */
+	public Clip playLoopingSound(String filePath)
+	{
+	    try
+	    {
+	    	AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+	    	        getClass().getResource("sounds/Loading Music.wav")
+	    	);
+
+
+	        Clip clip = AudioSystem.getClip();
+	        clip.open(audioStream);
+
+	        clip.loop(Clip.LOOP_CONTINUOUSLY); 
+	        clip.start();
+
+	        return clip; 
+	    }
+	    catch (Exception e)
+	    {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+	
+
+	/**
+	 * Purpose: To clear out all values saved in the course info model and user repository
+	 */
+	public void clearCourseInfo()
+	{
+		courseInfoModel.clear();
+		courseInfoView.resetFields();
+		userDataRepository.clearCourseInfo();
+		scheduleGenerator.clearCoursePool();
+		courseRepository.clearCourses();
+	}
+	
+	/**
+	 * Purpose: To update error labels for the course info view
+	 * @param courseInfoErrors A hashmap of error messages for the course info view inputs
+	 */
+	public void updateCourseInfoErrors(HashMap<String, String> courseInfoErrors)
+	{
+		courseInfoView.setCourseNameError(courseInfoErrors.getOrDefault("courseName", ""));
+		courseInfoView.setStudentRequiredCourseError(courseInfoErrors.getOrDefault("studentRequiredCourse", ""));
+		courseInfoView.setCourseTypeError(courseInfoErrors.getOrDefault("courseType", ""));
+	}
+	
+	/**
+	 * Purpose: To update the course info view UI
+	 */
+	private void updateCourseInfoView()
+	{
+		courseInfoView.revalidate();
+		courseInfoView.repaint();
+	}
+	
+	
+
+	
 
 }
+
+
+
+
+
+

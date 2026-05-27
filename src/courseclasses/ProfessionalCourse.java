@@ -54,7 +54,7 @@ public class ProfessionalCourse extends Course
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassDuration        The new length of time the class meets
+	 * @param newClassEndTime        The new lndength of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth
@@ -69,14 +69,14 @@ public class ProfessionalCourse extends Course
 	 */
 	public ProfessionalCourse(String newCourseName, String newCourseID,
 			List<DayOfWeek> newDaysOfTheWeek, LocalTime newClassStartTime,
-			Duration newClassDuration, String newCourseCampusLocation,
+			LocalTime newClassEndTime, String newCourseCampusLocation,
 			int newCourseCredits, double newCourseDifficulty,
 			boolean updatedCourseRequired, String newInstructorName,
 			double newInstructorRMPScore, String newCourseType,
 			boolean updatedStruggleCourse)
 	{
 		super(newCourseName, newCourseID, newDaysOfTheWeek, newClassStartTime,
-				newClassDuration, newCourseCampusLocation, newCourseCredits,
+				newClassEndTime, newCourseCampusLocation, newCourseCredits,
 				newCourseDifficulty, updatedCourseRequired, newInstructorName,
 				newInstructorRMPScore, "Professional", updatedStruggleCourse);
 	}

@@ -6,8 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+
+import javax.swing.SwingUtilities;
+
 import courseclasses.Course;
 import mcvandfileservice.FileService;
+import mcvandfileservice.LoadingScreenView;
 import mcvandfileservice.ScheduleGeneratorRepository;
 import mcvandfileservice.UserDataRepository;
 /**
@@ -42,32 +46,58 @@ public class ScheduleGenerator
 	private String studentsMajorDistinction; // A schedule generator model has-a student's major distinction (STEM, non-STEM, undecided)
 	private ScheduleGeneratorRepository scheduleGeneratorRepository; // A schedule generator model has-a schedule generator repository
 	private FileService fileService; // A schedule generator model has-a file service
-	
+	private UserDataRepository userDataRepository; // A schedule generator model has-a user data repository
+	private LoadingScreenView loadingScreen; // A schedule generator model has-a loading screen
 	
 	
 	// Constructors
 	/**
 	 * Purpose: To create a schedule generator object that has parameter values
-	 * @param userDataRepository The user data repository 
-	 * @param newScheduleGeneratorRepository The schedule generator repository
-	 * @param newFileService The file service
+	 * @param newLoadingScreen The loading screen to set the schedule generator's loading screen instance variable to
 	 */
-	public ScheduleGenerator(UserDataRepository userDataRepository, ScheduleGeneratorRepository newScheduleGeneratorRepository, FileService newFileService)
+	public ScheduleGenerator(LoadingScreenView newLoadingScreen)
 	{
 		allCourses = null;
 		topThreeSchedules = null;
 		randomizer = null;
-		minCredits = userDataRepository.getMinRequiredCredits();
-		maxCredits = userDataRepository.getMaxRequiredCredits();
-		minBreakTime = userDataRepository.getMinDesiredBreakTime();
-		maxBreakTime = userDataRepository.getMaxDesiredBreakTime();
-		desiredStartAndEndTime = userDataRepository.getDesiredStartAndEndTime();
-		desiredCampusLocation = userDataRepository.getDesiredCampusLocation();
-		studentsMajorDistinction = userDataRepository.getStudentsMajorDistinction();
+		loadingScreen = newLoadingScreen;
+	}
+	
+	/**
+	 * Purpose: To set the info for the min and max credits, break times, desired start and end times, desired campus location, and student's major distinction from the user data repository
+	 * @param newUserDataRepository The user data repository to grab the info from
+	 * @param newScheduleGeneratorRepository The schedule generator repository to set the schedule generator repository instance variable to
+	 * @param newFileService The file service to set the file service instance variable to
+	 */
+	public void setScheduleGeneratorReposAndFileService(UserDataRepository newUserDataRepository, ScheduleGeneratorRepository newScheduleGeneratorRepository, FileService newFileService)
+	{
+		minCredits = newUserDataRepository.getMinRequiredCredits();
+		maxCredits = newUserDataRepository.getMaxRequiredCredits();
+		minBreakTime = newUserDataRepository.getMinDesiredBreakTime();
+		maxBreakTime = newUserDataRepository.getMaxDesiredBreakTime();
+		desiredStartAndEndTime = newUserDataRepository.getDesiredStartAndEndTime();
+		desiredCampusLocation = newUserDataRepository.getDesiredCampusLocation();
+		studentsMajorDistinction = newUserDataRepository.getStudentsMajorDistinction();
 		scheduleGeneratorRepository = newScheduleGeneratorRepository;
 		fileService = newFileService;
 	}
 	
+	/**
+	 * Purpose: To add completed courses to the schedule generator's course pool
+	 * @param completedCourses The list of completed courses to add to the schedule generator's course pool
+	 */
+	public void addCompletedCoursesToCoursePool(List<Course> completedCourses)
+	{
+		if (allCourses == null)
+		{
+			allCourses = new ArrayList<>();
+		}
+		
+		for (Course course : completedCourses)
+		{
+			allCourses.add(course);
+		}
+	}
 	
 	// Getters and Setters
 	/**
@@ -117,11 +147,11 @@ public class ScheduleGenerator
 	
 	/**
 	 * Purpose: To set the top 3 schedules for test purposes ONLY
-	 * @param topSchedulesTest5 The list of 3 schedules to set as the top 3 schedules for testing purposes
+	 * @param newopSchedules The list of 3 schedules to set as the top 3 schedules for testing purposes
 	 */
-	public void setTopThreeSchedules(List<Schedule> topSchedulesTest5)
+	public void setTopThreeSchedules(List<Schedule> newTopSchedules)
 	{
-		topThreeSchedules = (List<Schedule>) topSchedulesTest5;
+		topThreeSchedules = newTopSchedules;
 	}
 	
 	
@@ -162,7 +192,7 @@ public class ScheduleGenerator
 	 */
 	private boolean withinCredits(Schedule schedule)
 	{
-		if ((schedule.getTotalCredits()) >= minCredits || schedule.getTotalCredits() <= maxCredits)
+		if ((schedule.getTotalCredits()) >= minCredits && schedule.getTotalCredits() <= maxCredits)
 		{
 			return true;
 		}
@@ -247,24 +277,34 @@ public class ScheduleGenerator
 	{
 	    // List to store all generated schedules
 	    List<Schedule> possibleSchedules = new ArrayList<>();
+	    
+	    
+	    // Counter for attempts to generate schedules (for debugging or future use if needed)
+	    int attempts = 0;
+	    int maxAttempts = maxSchedules * 20;
 
-	    // Keep generating until we reach the desired number of schedules
-	    while (possibleSchedules.size() < maxSchedules)
+	    while (possibleSchedules.size() < maxSchedules && attempts < maxAttempts)
 	    {
-	        // Create a new empty schedule
-	        Schedule schedule = new Schedule();
+	        attempts++;
 
-	        // Randomly add courses to schedule
+	        Schedule schedule = new Schedule();
 	        this.addRandomCoursesToSchedule(schedule);
 
-	        // Only keep schedules that meet minimum credit requirement
 	        if (schedule.getTotalCredits() >= minCredits)
 	        {
 	            possibleSchedules.add(schedule);
 	        }
-	        // If it doesn't meet minCredits, it is discarded and loop continues
+
+	        int current = possibleSchedules.size();
+
+	        SwingUtilities.invokeLater(() ->
+	        {
+	            loadingScreen.setProgress(current, maxSchedules);
+	        });
 	    }
+
 	    return possibleSchedules;
+
 	}
 
 	
@@ -301,6 +341,37 @@ public class ScheduleGenerator
 	    scheduleGeneratorRepository.addTopThreeSchedules(topThreeSchedules);
 	    
 	    return topThreeSchedules;
+	}
+
+	/**
+	 * Purpose: To clear the course pool if the user selects back button on course info view
+	 * 
+	 */
+	public void clearCoursePool()
+	{
+		if (allCourses != null)
+		{
+			allCourses.clear();
+		}		
+	}
+	
+	/**
+	 * Purpose: To check if a schedule with the same courses already exists in the list of schedules
+	 * @param list The list of schedules to check against
+	 * @param newSchedule The new schedule being considered for addition to the list
+	 * @return true if a schedule with the same courses already exists, false otherwise
+	 */
+	private boolean scheduleExists(List<Schedule> list, Schedule newSchedule)
+	{
+	    for (Schedule existing : list)
+	    {
+	        if (existing.getCurrentScheduleCourses()
+	                .equals(newSchedule.getCurrentScheduleCourses()))
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 	
 }

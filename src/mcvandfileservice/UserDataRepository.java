@@ -60,7 +60,7 @@ public class UserDataRepository
 		topThreeSchedulesDestinationPath = null;
 		numOfCoursesStudentWillInput = 0;
 		courseName = null;
-		studentRequiredCourse = true;
+		studentRequiredCourse = false;
 		struggleCourses = null;
 		availableClassesRetrievalPath = null;
 		courseType = null;
@@ -406,7 +406,7 @@ public class UserDataRepository
 	{
 		studentsMajorDistinction = null;
 		numOfCoursesStudentWillInput = 0;
-		struggleCourses = null;		
+		struggleCourses = null;	
 	}
 
 
@@ -427,6 +427,18 @@ public class UserDataRepository
 	public int getNumCourses()
 	{
 		return numOfCoursesStudentWillInput;
+	}
+
+
+	/**
+	 * Purpose: To clear the course info stored in the UserDataRepository (for when the user wants to reset their course info by selecting back)
+	 */
+	public void clearCourseInfo()
+	{
+		courseName = null;
+		studentRequiredCourse = false;
+		availableClassesRetrievalPath = null;
+		courseType = null;
 	}
 	
 }

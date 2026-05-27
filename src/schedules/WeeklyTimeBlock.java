@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 
-import exceptions.MustBeOverOneException;
 /**
  * Lead Author(s):
  * 
@@ -53,6 +52,7 @@ public class WeeklyTimeBlock
 		daysOfTheWeek = newDaysOfTheWeek;
 		classStartTime = newClassStartTime;
 		classEndTime = newClassEndTime;
+		timesPerDay = new HashMap<>();
 
 		if (classStartTime != null && classEndTime != null)
 		{
@@ -64,13 +64,14 @@ public class WeeklyTimeBlock
 		}
 	}
 
+
 	// Getters and Setters
 	/**
 	 * Purpose: To set the weekly time block
 	 * 
 	 * @param newDaysOfTheWeek The new days of the week that the class meets on
-	 * @param newStart         The new start time of the class
-	 * @param newDuration      The new length of the class time
+	 * @param newClassStartTime        The new start time of the class
+	 * @param newClassEndTime           The new end time of the class
 	 */
 	public void setWeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek, LocalTime newClassStartTime, LocalTime newClassEndTime)
 	{

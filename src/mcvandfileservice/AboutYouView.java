@@ -140,7 +140,7 @@ public class AboutYouView extends JFrame
 	    JPanel mainPanel = new JPanel();
 	    mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 	    mainPanel.setOpaque(false);
-	    mainPanel.setBorder(BorderFactory.createEmptyBorder(100, 30, 40, 30));
+	    mainPanel.setBorder(BorderFactory.createEmptyBorder(60, 30, 40, 30));
 	    
 	    // Colors and Fonts
 	    Color darkHotPink = new Color(170, 0, 85);
@@ -148,11 +148,10 @@ public class AboutYouView extends JFrame
 	    Font buttonFont = new Font("Lucida Calligraphy", Font.PLAIN, 12);
 	    Font errorFont = new Font("Sans Serif", Font.ITALIC, 8);
 	    
-	    // Top spacing before major section
-	    mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 	    
 	    // Top Panel (includes major)
 	    JPanel panel1 = new JPanel();
+	    panel1.add(Box.createRigidArea(new Dimension(0, 40)));
 	    panel1.setOpaque(false);
 	    
 	    panel1.add(Box.createHorizontalStrut(100));           
@@ -160,7 +159,6 @@ public class AboutYouView extends JFrame
 	    JPanel majorPanel = new JPanel();    
 	    majorPanel.setOpaque(false);
 	    majorPanel.setLayout(new BoxLayout(majorPanel, BoxLayout.Y_AXIS));
-	    
 	    JLabel majorLabel = new JLabel("What is your major distinction?");
 	    majorLabel.setFont(instructionsAndLabelsFont);
 	    majorLabel.setForeground(darkHotPink);
@@ -173,7 +171,8 @@ public class AboutYouView extends JFrame
 	    theSTEMButton = new JRadioButton("STEM");
 	    theLiberalArtsButton = new JRadioButton("Liberal Arts");
 	    theUndecidedButton = new JRadioButton("Undecided");
-
+	    
+	    
 	    majorButtonGroup = new ButtonGroup();
 	    majorButtonGroup.add(theSTEMButton);
 	    majorButtonGroup.add(theLiberalArtsButton);
@@ -187,9 +186,9 @@ public class AboutYouView extends JFrame
 	        rb.setForeground(darkHotPink);
 	        majorRadioButtonsPanel.add(rb);
 	    }
+	    
 
 	    majorPanel.add(majorRadioButtonsPanel);
-	    panel1.add(majorPanel);
 	    
 	    JPanel majorErrorPanel = new JPanel();
 	    majorErrorPanel.setOpaque(false);
@@ -199,7 +198,7 @@ public class AboutYouView extends JFrame
 	    
 	    majorError = new JLabel(" ");
 	    majorError.setFont(errorFont);
-	    majorError.setForeground(darkHotPink);
+	    majorError.setForeground(Color.RED);
 	    
 	    majorError.setPreferredSize(new Dimension(180, 14));
 	    majorError.setMaximumSize(new Dimension(180, 14));
@@ -207,8 +206,19 @@ public class AboutYouView extends JFrame
 	    majorErrorPanel.add(majorError);
 
         panel1.add(Box.createHorizontalStrut(5));
-	    panel1.add(majorErrorPanel);
-	    
+
+        JPanel innerPanel1 = new JPanel();
+        innerPanel1.setOpaque(false);
+        innerPanel1.setLayout(new BoxLayout(innerPanel1, BoxLayout.X_AXIS));
+
+        innerPanel1.add(Box.createHorizontalStrut(100));
+        innerPanel1.add(majorPanel);
+        innerPanel1.add(Box.createHorizontalStrut(5));
+        innerPanel1.add(majorErrorPanel);
+
+        panel1.add(innerPanel1);
+        
+        
 	    mainPanel.add(panel1);
 	    mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 	    
@@ -298,14 +308,15 @@ public class AboutYouView extends JFrame
 	        checkboxesPanel.add(cb);
 	    }
 
+	    // Scroll Pane for Checkboxes
 	    JScrollPane scrollPane = new JScrollPane(checkboxesPanel);
 	    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 	    scrollPane.setOpaque(false);
 	    scrollPane.getViewport().setOpaque(false);
 	    scrollPane.setBorder(BorderFactory.createLineBorder(darkHotPink, 2));
-	    scrollPane.setPreferredSize(new Dimension(300, 250));
-	    scrollPane.setMaximumSize(new Dimension(300, 250));
+	    scrollPane.setPreferredSize(new Dimension(300, 280));
+	    scrollPane.setMaximumSize(new Dimension(300, 280));
 	    scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 	    strugglePanel.add(scrollPane);
@@ -333,6 +344,7 @@ public class AboutYouView extends JFrame
 	    panel3.add(Box.createRigidArea(new Dimension(10, 0)));
 
 	    numCourses = new JTextField(5);
+	    numCourses.setText("4");
 	    numCourses.setPreferredSize(new Dimension(45, 25));
 	    numCourses.setMaximumSize(new Dimension(45, 25));
 	    panel3.add(numCourses);
@@ -345,7 +357,7 @@ public class AboutYouView extends JFrame
 
 	    numCoursesError = new JLabel(" ");
 	    numCoursesError.setFont(errorFont);
-	    numCoursesError.setForeground(darkHotPink);
+	    numCoursesError.setForeground(Color.RED);
 	    numCoursesError.setPreferredSize(new Dimension(150, 14));
 	    numCoursesError.setMaximumSize(new Dimension(150, 14));
 
@@ -475,7 +487,7 @@ public class AboutYouView extends JFrame
 		otherCreativeArtsAndElectivesCheckbox.setSelected(false);
 		
 		// Reset num courses field
-		numCourses.setText("");
+		numCourses.setText("4");
 		
 		// Clear error labels
 		majorError.setText("");

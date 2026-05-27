@@ -23,7 +23,6 @@ import courseclasses.Course;
  * Responsibilities of class: To represent a schedule with many classes that a student can take
  * 
  */
-
 public class Schedule
 {
 	// Instance Variables
@@ -42,8 +41,8 @@ public class Schedule
 	 */
 	public Schedule()
 	{
-		currentScheduleCourses = null;
-		currentScheduleTimes = null;
+		currentScheduleCourses = new ArrayList<>();
+		currentScheduleTimes = new ArrayList<>();
 		scheduleScore = 0.0;
 		totalCredits = 0;
 		numSTEMCourses = 0;
@@ -525,56 +524,68 @@ public class Schedule
      * (a hashmap containing a weekly time block for each day)
      * @return scheduleScore The new scheduleScore
      */
-	public double calculateStartAndEndTimeDeviation(HashMap<DayOfWeek, WeeklyTimeBlock> desiredTimesPerDay)
+	public double calculateStartAndEndTimeDeviation(
+			HashMap<DayOfWeek, WeeklyTimeBlock> desiredTimesPerDay)
 	{
-	    HashMap<DayOfWeek, LocalTime> earliestTimes = this.getEarliestStartTimeForEachDay();
-	    HashMap<DayOfWeek, LocalTime> latestTimes = this.getLatestEndTimeForEachDay();
+		HashMap<DayOfWeek, LocalTime> earliestTimes = this
+				.getEarliestStartTimeForEachDay();
+		HashMap<DayOfWeek, LocalTime> latestTimes = this
+				.getLatestEndTimeForEachDay();
 
-	    for (DayOfWeek day : earliestTimes.keySet())
-	    {
-	        LocalTime scheduleEarliest = earliestTimes.get(day);
-	        LocalTime scheduleLatest = latestTimes.get(day);
+		for (DayOfWeek day : earliestTimes.keySet())
+		{
+			LocalTime scheduleEarliest = earliestTimes.get(day);
+			LocalTime scheduleLatest = latestTimes.get(day);
 
-	        // Get that day's specific time block
-	        WeeklyTimeBlock desiredBlock = desiredTimesPerDay.get(day);
+			// Get that day's specific time block
+			WeeklyTimeBlock desiredBlock = desiredTimesPerDay.get(day);
 
-	        if (desiredBlock != null)
-	        {
-	            LocalTime desiredStart = desiredBlock.getClassStartTime();
-	            LocalTime desiredEnd = desiredBlock.getClassEndTime();
+			// If day start and end are blank and nulll values were created in a
+			// block
+			if (desiredBlock == null)
+			{
+				if (scheduleEarliest != null && scheduleLatest != null)
+				{
+					scheduleScore -= 300;
+				}
+			}
+			else
+			{
+				LocalTime desiredStart = desiredBlock.getClassStartTime();
+				LocalTime desiredEnd = desiredBlock.getClassEndTime();
 
-	            // If student left the day blank (both null) but schedule has a class that day, subtract 300 points
-	            if (desiredStart == null && desiredEnd == null)
-	            {
-	                if (scheduleEarliest != null && scheduleLatest != null)
-	                {
-	                    scheduleScore -= 300;
-	                }
-	            }
+				// Days are blank and block was created with null times
+				if (desiredStart == null && desiredEnd == null)
+				{
+					if (scheduleEarliest != null && scheduleLatest != null)
+					{
+						scheduleScore -= 300;
+					}
+				}
 
-	            // Only compare times if both are filled
-	            else if (desiredStart != null && desiredEnd != null)
-	            {
-	                // Starts earlier than desired
-	                if (scheduleEarliest != null && scheduleEarliest.isBefore(desiredStart))
-	                {
-	                    Duration difference = Duration.between(scheduleEarliest, desiredStart);
-	                    scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
-	                }
+				// Compare times
+				else if (desiredStart != null && desiredEnd != null)
+				{
+					if (scheduleEarliest != null
+							&& scheduleEarliest.isBefore(desiredStart))
+					{
+						Duration difference = Duration.between(scheduleEarliest,
+								desiredStart);
+						scheduleScore -= (difference.toMinutes() / 10.0);
+					}
 
-	                // Ends later than desired
-	                if (scheduleLatest != null && scheduleLatest.isAfter(desiredEnd))
-	                {
-	                    Duration difference = Duration.between(desiredEnd, scheduleLatest);
-	                    scheduleScore = scheduleScore - (difference.toMinutes() / 10.0);
-	                }
-	            }
-	        }
-	    }
-
-	    return scheduleScore;
+					if (scheduleLatest != null
+							&& scheduleLatest.isAfter(desiredEnd))
+					{
+						Duration difference = Duration.between(desiredEnd,
+								scheduleLatest);
+						scheduleScore -= (difference.toMinutes() / 10.0);
+					}
+				}
+			}
+		}
+		return scheduleScore;
 	}
-
 	
 	/**
 	 * Purpose: To subtract points from the scheduleScore for each numSTEMCourse count over 3

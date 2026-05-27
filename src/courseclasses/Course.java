@@ -3,7 +3,6 @@ package courseclasses;
 import schedules.WeeklyTimeBlock;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.Duration;
 import java.util.List;
 
 /**
@@ -85,7 +84,7 @@ public abstract class Course
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassDuration        The new length of time the class meets
+	 * @param newClassEndTime        The new length of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth
@@ -101,7 +100,7 @@ public abstract class Course
 	 */
 	public Course(String newCourseName, String newCourseID,
 			List<DayOfWeek> newDaysOfTheWeek, LocalTime newClassStartTime,
-			Duration newClassDuration, String newCourseCampusLocation,
+			LocalTime newClassEndTime, String newCourseCampusLocation,
 			int newCourseCredits, double newCourseDifficulty,
 			boolean updatedCourseRequired, String newInstructorName,
 			double newInstructorRMPScore, String newCourseType,
@@ -110,7 +109,7 @@ public abstract class Course
 		courseName = newCourseName;
 		courseID = newCourseID;
 		courseWeeklyTimeBlock = new WeeklyTimeBlock(newDaysOfTheWeek,
-				newClassStartTime, newClassDuration);
+				newClassStartTime, newClassEndTime);
 		courseCampusLocation = newCourseCampusLocation;
 		courseCredits = newCourseCredits;
 		courseDifficulty = newCourseDifficulty;
@@ -184,13 +183,13 @@ public abstract class Course
 	 * 
 	 * @param newDaysOfTheWeek  The new days the class meets during
 	 * @param newClassStartTime The new time the class starts at
-	 * @param newClassDuration  The new length of time the class meets
+	 * @param newClassEndTime  The new end time for the class
 	 */
 	public void setWeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek,
-			LocalTime newClassStartTime, Duration newClassDuration)
+			LocalTime newClassStartTime, LocalTime newClassEndTime)
 	{
 		courseWeeklyTimeBlock.setWeeklyTimeBlock(newDaysOfTheWeek,
-				newClassStartTime, newClassDuration);
+				newClassStartTime, newClassEndTime);
 	}
 
 	/**

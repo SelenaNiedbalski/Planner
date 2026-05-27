@@ -1,7 +1,6 @@
 package courseclasses;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class CreativeArtsAndElectivesCourse extends Course
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassDuration        The new length of time the class meets
+	 * @param newClassEndTime        The new end of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth
@@ -71,14 +70,14 @@ public class CreativeArtsAndElectivesCourse extends Course
 	 */
 	public CreativeArtsAndElectivesCourse(String newCourseName,
 			String newCourseID, List<DayOfWeek> newDaysOfTheWeek,
-			LocalTime newClassStartTime, Duration newClassDuration,
+			LocalTime newClassStartTime, LocalTime newClassEndTime,
 			String newCourseCampusLocation, int newCourseCredits,
 			double newCourseDifficulty, boolean updatedCourseRequired,
 			String newInstructorName, double newInstructorRMPScore,
 			String newCourseType, boolean updatedStruggleCourse)
 	{
 		super(newCourseName, newCourseID, newDaysOfTheWeek, newClassStartTime,
-				newClassDuration, newCourseCampusLocation, newCourseCredits,
+				newClassEndTime, newCourseCampusLocation, newCourseCredits,
 				newCourseDifficulty, updatedCourseRequired, newInstructorName,
 				newInstructorRMPScore, "Creative Arts and Electives",
 				updatedStruggleCourse);

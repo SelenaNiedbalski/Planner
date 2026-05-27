@@ -7,6 +7,7 @@ import java.util.List;
 import courseclasses.Course;
 import courseclasses.CreativeArtsAndElectivesCourse;
 import courseclasses.LiberalArtsCourse;
+import courseclasses.PartialCourse;
 import courseclasses.ProfessionalCourse;
 import courseclasses.STEMCourse;
 import schedules.WeeklyTimeBlock;
@@ -64,7 +65,7 @@ public class CourseRepository
 		PartialCourse newCourse = new PartialCourse(courseID,
 				courseWeeklyTimeBlock, courseInstructor, courseRMPScore,
 				courseCampus, courseCredits);
-
+		storedClasses = new ArrayList<>();
 		storedClasses.add(newCourse);
 	}
 	
@@ -77,7 +78,7 @@ public class CourseRepository
 	 * @return finalCourses The list of course objects created based on the partial info from partial course and input info from user input
 	 * 
 	 */
-	public List<Course> buildFinalCourses(String courseType, boolean required, double difficulty)
+	public List<Course> buildFinalCourses(String courseName, String courseType, boolean required, double difficulty)
 	{
 	    List<Course> finalCourses = new ArrayList<>();
 
@@ -102,7 +103,7 @@ public class CourseRepository
 	            newCourse = new CreativeArtsAndElectivesCourse();
 	        }
 
-
+	        newCourse.setCourseName(courseName);
 			newCourse.setCourseID(pc.getCourseID());
 			newCourse.setCourseTimeBlock(pc.getTimeBlock());
 			newCourse.setInstructorName(pc.getInstructor());
@@ -139,6 +140,20 @@ public class CourseRepository
 	public Path getTopThreeSchedulesDestinationPath()
 	{
 		return topThreeSchedulesDestinationPath;
+	}
+
+
+
+	/**
+	 * Purpose: To clear the stored classes in the course repository if the user hits back on the course info view
+	 * 
+	 */
+	public void clearCourses()
+	{
+		if (storedClasses != null)
+		{
+			storedClasses.clear();
+		}		
 	}
 	
 }

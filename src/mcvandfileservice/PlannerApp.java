@@ -31,28 +31,28 @@ public class PlannerApp
 		AboutYouView aboutYouView = new AboutYouView();
 		CourseInfoView courseInfoView = new CourseInfoView();
 		LoadingScreenView loadingScreenView = new LoadingScreenView();
-		ScheduleGeneratorView scheduleGeneratorView = new ScheduleGeneratorView();
 		
 		// Initialize repositories and File Service
 		UserDataRepository userDataRepository = new UserDataRepository();
 		CourseRepository courseRepository = new CourseRepository(userDataRepository);
 		ScheduleGeneratorRepository scheduleGeneratorRepository = new ScheduleGeneratorRepository();
-		FileService fileService = new FileService(scheduleGeneratorRepository, courseRepository);
+		FileService fileService = new FileService(userDataRepository);
 		
 		
 		// Initialize app models
 		WishlistModel wishlistModel = new WishlistModel();
 		CreditsModel creditsModel = new CreditsModel();
 		AboutYouModel aboutYouModel = new AboutYouModel();
-		CourseInfoModel courseInfoModel = new CourseInfoModel(aboutYouModel);
-		ScheduleGenerator scheduleGenerator = new ScheduleGenerator(userDataRepository, scheduleGeneratorRepository, fileService);
+		CourseInfoModel courseInfoModel = new CourseInfoModel();
+		ScheduleGenerator scheduleGenerator = new ScheduleGenerator(loadingScreenView);
 		
 		
 		// Initialize app controller
 		AppController appController = new AppController(startScreenView,
-				aboutYouView, courseInfoView, creditsView,
-				scheduleGeneratorView, wishlistView, loadingScreenView,
-				aboutYouModel, courseInfoModel, creditsModel, scheduleGenerator,
-				wishlistModel);
+				aboutYouView, courseInfoView, creditsView, wishlistView,
+				loadingScreenView, aboutYouModel, courseInfoModel, creditsModel,
+				scheduleGenerator, wishlistModel, fileService,
+				userDataRepository, courseRepository,
+				scheduleGeneratorRepository);
 	}
 }

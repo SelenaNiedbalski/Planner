@@ -118,7 +118,7 @@ public class CreditsView extends JFrame
 	    minCreditsPanel.add(minCreditsInput);
 	    minCreditsError = new JLabel("");
 	    minCreditsError.setFont(errorFont);
-	    minCreditsError.setForeground(darkHotPink);
+	    minCreditsError.setForeground(Color.RED);
 	    minCreditsError.setPreferredSize(new Dimension(260, 16));
 	    minCreditsError.setMinimumSize(new Dimension(260, 16));
 	    minCreditsError.setMaximumSize(new Dimension(260, 16));
@@ -144,7 +144,7 @@ public class CreditsView extends JFrame
 	    maxCreditsPanel.add(maxCreditsInput);
 	    maxCreditsError = new JLabel("");
 	    maxCreditsError.setFont(errorFont);
-	    maxCreditsError.setForeground(darkHotPink);
+	    maxCreditsError.setForeground(Color.RED);
 	    maxCreditsError.setPreferredSize(new Dimension(260, 16));
 	    maxCreditsError.setMinimumSize(new Dimension(260, 16));
 	    maxCreditsError.setMaximumSize(new Dimension(260, 16));

@@ -76,6 +76,10 @@ public class WishlistView extends JFrame
     private JButton saveButton;
     private JButton continueButton;
 
+    
+    
+    
+    
     // Constructor
 	/**
 	 * Purpose: To construct a WishlistView
@@ -194,6 +198,7 @@ public class WishlistView extends JFrame
         headerEnd.setFont(instructionsAndLabelsFont);
         headerEnd.setForeground(darkHotPink);
 
+        // Place holder for the top row of errors column
         JLabel headerError = new JLabel("", SwingConstants.LEFT);
         headerError.setFont(instructionsAndLabelsFont);
         headerError.setForeground(darkHotPink);
@@ -223,7 +228,7 @@ public class WishlistView extends JFrame
         monEndOfDay.setMaximumSize(timeFieldMax);
         monError = new JLabel("", SwingConstants.LEFT);
         monError.setFont(errorFont);
-        monError.setForeground(darkHotPink);
+        monError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(monLabel));
         dayLabelsPanel.add(Box.createVerticalStrut(6));
@@ -245,7 +250,7 @@ public class WishlistView extends JFrame
         tuesEndOfDay.setMaximumSize(timeFieldMax);
         tuesError = new JLabel("", SwingConstants.LEFT);
         tuesError.setFont(errorFont);
-        tuesError.setForeground(darkHotPink);
+        tuesError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(tuesLabel));
         dayLabelsPanel.add(Box.createVerticalStrut(6));
@@ -267,7 +272,7 @@ public class WishlistView extends JFrame
         wedEndOfDay.setMaximumSize(timeFieldMax);
         wedError = new JLabel("", SwingConstants.LEFT);
         wedError.setFont(errorFont);
-        wedError.setForeground(darkHotPink);
+        wedError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(wedLabel));
         dayLabelsPanel.add(Box.createVerticalStrut(6));
@@ -289,7 +294,7 @@ public class WishlistView extends JFrame
         thursEndOfDay.setMaximumSize(timeFieldMax);
         thursError = new JLabel("", SwingConstants.LEFT);
         thursError.setFont(errorFont);
-        thursError.setForeground(darkHotPink);
+        thursError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(thursLabel));
         dayLabelsPanel.add(Box.createVerticalStrut(6));
@@ -302,7 +307,7 @@ public class WishlistView extends JFrame
         friLabel.setFont(instructionsAndLabelsFont);
         friLabel.setForeground(darkHotPink);
         friStartOfDay = new JTextField(4);
-        friStartOfDay.setText("08:00");
+        friStartOfDay.setText("12:00");
         friStartOfDay.setPreferredSize(timeFieldMax);
         friStartOfDay.setMaximumSize(timeFieldMax);
         friEndOfDay = new JTextField(4);
@@ -311,7 +316,7 @@ public class WishlistView extends JFrame
         friEndOfDay.setMaximumSize(timeFieldMax);
         friError = new JLabel("", SwingConstants.LEFT);
         friError.setFont(errorFont);
-        friError.setForeground(darkHotPink);
+        friError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(friLabel));
         dayLabelsPanel.add(Box.createVerticalStrut(6));
@@ -324,16 +329,16 @@ public class WishlistView extends JFrame
         satLabel.setFont(instructionsAndLabelsFont);
         satLabel.setForeground(darkHotPink);
         satStartOfDay = new JTextField(4);
-        satStartOfDay.setText("08:00");
+        satStartOfDay.setText("");
         satStartOfDay.setPreferredSize(timeFieldMax);
         satStartOfDay.setMaximumSize(timeFieldMax);
         satEndOfDay = new JTextField(4);
-        satEndOfDay.setText("16:00");
+        satEndOfDay.setText("");
         satEndOfDay.setPreferredSize(timeFieldMax);
         satEndOfDay.setMaximumSize(timeFieldMax);
         satError = new JLabel("", SwingConstants.LEFT);
         satError.setFont(errorFont);
-        satError.setForeground(darkHotPink);
+        satError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(satLabel));
         dayLabelsPanel.add(Box.createVerticalStrut(6));
@@ -346,16 +351,16 @@ public class WishlistView extends JFrame
         sunLabel.setFont(instructionsAndLabelsFont);
         sunLabel.setForeground(darkHotPink);
         sunStartOfDay = new JTextField(4);
-        sunStartOfDay.setText("08:00");
+        sunStartOfDay.setText("");
         sunStartOfDay.setPreferredSize(timeFieldMax);
         sunStartOfDay.setMaximumSize(timeFieldMax);
         sunEndOfDay = new JTextField(4);
-        sunEndOfDay.setText("16:00");
+        sunEndOfDay.setText("");
         sunEndOfDay.setPreferredSize(timeFieldMax);
         sunEndOfDay.setMaximumSize(timeFieldMax);
         sunError = new JLabel("", SwingConstants.LEFT);
         sunError.setFont(errorFont);
-        sunError.setForeground(darkHotPink);
+        sunError.setForeground(Color.RED);
 
         dayLabelsPanel.add(fixedRowCell.apply(sunLabel));
         timetablePanel.add(fit.apply(sunStartOfDay));
@@ -935,18 +940,23 @@ public class WishlistView extends JFrame
 	 */
 	public Path getTopThreeSchedulesDestinationPath()
 	{
-	    if (topThreeSchedulesDestinationPath.getText().isEmpty())
+	    String pathText = topThreeSchedulesDestinationPath.getText();
+
+	    // Remove leading and trailing spaces
+	    pathText = pathText.trim();
+
+	    // Check if empty after trimming
+	    if (pathText.isEmpty())
 	    {
 	        return null;
 	    }
-
-	    String pathText = topThreeSchedulesDestinationPath.getText();
 
 	    // Remove quotation marks if user entered them
 	    pathText = pathText.replace("\"", "");
 
 	    return Path.of(pathText);
 	}
+
 
 
 
@@ -1061,14 +1071,14 @@ public class WishlistView extends JFrame
 	    thursStartOfDay.setText("08:00");
 	    thursEndOfDay.setText("16:00");
 
-	    friStartOfDay.setText("08:00");
+	    friStartOfDay.setText("12:00");
 	    friEndOfDay.setText("16:00");
 
-	    satStartOfDay.setText("08:00");
-	    satEndOfDay.setText("16:00");
+	    satStartOfDay.setText("");
+	    satEndOfDay.setText("");
 
-	    sunStartOfDay.setText("08:00");
-	    sunEndOfDay.setText("16:00");
+	    sunStartOfDay.setText("");
+	    sunEndOfDay.setText("");
 
 	    minBreakTime.setText("10");
 	    maxBreakTime.setText("120");
