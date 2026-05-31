@@ -502,12 +502,12 @@ public class Schedule
 						if (breakMinutes < minDesiredBreakMinutes)
 						{
 							long diff = minDesiredBreakMinutes - breakMinutes;
-							scheduleScore -= diff / 10.0;
+							scheduleScore -= diff / 5.0;
 						}
 						else if (breakMinutes > maxDesiredBreakMinutes)
 						{
 							long diff = breakMinutes - maxDesiredBreakMinutes;
-							scheduleScore -= diff / 10.0;
+							scheduleScore -= diff / 5.0;
 						}
 					}
 				}
@@ -571,7 +571,7 @@ public class Schedule
 					{
 						Duration difference = Duration.between(scheduleEarliest,
 								desiredStart);
-						scheduleScore -= (difference.toMinutes() / 10.0);
+						scheduleScore -= (difference.toMinutes() / 2.0);
 					}
 
 					if (scheduleLatest != null
@@ -579,7 +579,7 @@ public class Schedule
 					{
 						Duration difference = Duration.between(desiredEnd,
 								scheduleLatest);
-						scheduleScore -= (difference.toMinutes() / 10.0);
+						scheduleScore -= (difference.toMinutes() / 2.0);
 					}
 				}
 			}
@@ -599,7 +599,7 @@ public class Schedule
 			double numSTEMCoursesOverThree = numSTEMCourses - 3.0;
 
 			// Calculation to subtract from schedule score
-			double pointsToSubtract = numSTEMCoursesOverThree * 5.0;
+			double pointsToSubtract = numSTEMCoursesOverThree * 7.0;
 			scheduleScore -= pointsToSubtract;
 		}
 
@@ -618,7 +618,7 @@ public class Schedule
 			double numStruggleCoursesOverOne = numStruggleCourses - 1.0;
 
 			// Calculation to subtract from schedule score
-			double pointsToSubtract = numStruggleCoursesOverOne * 5.0;
+			double pointsToSubtract = numStruggleCoursesOverOne * 7.0;
 			scheduleScore -= pointsToSubtract;
 		}
 

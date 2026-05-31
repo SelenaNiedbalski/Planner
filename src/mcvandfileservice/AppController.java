@@ -2,7 +2,6 @@ package mcvandfileservice;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -90,13 +89,14 @@ public class AppController implements ActionListener
 	 * @param newCourseRepository The course repository
 	 * @param newScheduleGeneratorRepository The schedule generator repository
 	 * @param newLoadingScreenView The loading screen view
+	 * @param newSoundPlayer The sound player for music
 	 */
 	public AppController(StartScreenView newStartScreenView, AboutYouView newAboutYouView, CourseInfoView newCourseInfoView, 
 			CreditsView newCreditsView, WishlistView newWishlistView, LoadingScreenView newLoadingScreenView,
 			AboutYouModel newAboutYouModel, CourseInfoModel newCourseInfoModel, 
 			CreditsModel newCreditsModel, ScheduleGenerator newScheduleGenerator, WishlistModel newWishlistModel, 
 			FileService newFileService, UserDataRepository newUserDataRepository, CourseRepository newCourseRepository, 
-			ScheduleGeneratorRepository newScheduleGeneratorRepository)
+			ScheduleGeneratorRepository newScheduleGeneratorRepository, SoundPlayer newSoundPlayer)
 	{
 		super();
 		
@@ -125,7 +125,8 @@ public class AppController implements ActionListener
 		fileService = newFileService;
 		scheduleGenerator = newScheduleGenerator;
 		
-		
+		// Set the sound player and play music
+		soundPlayer = newSoundPlayer;
 		
 		
 		// Add action events to each JComponent within each view (Add e to comp for)
@@ -1364,12 +1365,12 @@ public class AppController implements ActionListener
 	            double difficultyScore = 0.0;
 	            String courseTypeDefined = null;
 	            
-	            if (courseTypeInput == "Biology")
+	            if (courseTypeInput.equals("Biology"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Chemistry")
+	            else if (courseTypeInput.equals("Chemistry"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
@@ -1379,202 +1380,202 @@ public class AppController implements ActionListener
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Environmental Science")
+	            else if (courseTypeInput.equals("Environmental Science"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Other Science")
+	            else if (courseTypeInput.equals("Other Science"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Computer Science")
+	            else if (courseTypeInput.equals("Computer Science"))
 	            {
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Information Technology")
+	            else if (courseTypeInput.equals("Information Technology"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Computer Infomration Systems")
+	            else if (courseTypeInput.equals("Computer Information Systems"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Cybersecurity and Information Assurance")
+	            else if(courseTypeInput.equals("Cybersecurity and Information Assurance"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Data Science and Analytics")
+	            else if (courseTypeInput.equals("Data Science and Analytics"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Software Engineering and Development")
+	            else if (courseTypeInput.equals("Software Engineering and Development"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Computer Engineering")
+	            else if (courseTypeInput.equals("Computer Engineering"))
 	            {
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Other Tech")
+	            else if (courseTypeInput.equals("Other Tech"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Civil Engineering")
+	            else if (courseTypeInput.equals("Civil Engineering"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Mechanical Engineering")
+	            else if (courseTypeInput.equals("Mechanical Engineering"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Electrical Engineering")
+	            else if (courseTypeInput.equals("Electrical Engineering"))
 	            {
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Chemical Engineering")
+	            else if (courseTypeInput.equals("Chemical Engineering"))
 	            {
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Other Engineering")
+	            else if (courseTypeInput.equals("Other Engineering"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Core Math")
+	            else if (courseTypeInput.equals("Core Math"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Pure Math")
+	            else if (courseTypeInput.equals("Pure Math"))
 	            {
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Applied Math")
+	            else if (courseTypeInput.equals("Applied Math"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "Other Math")
+	            else if (courseTypeInput.equals("Other Math"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "STEM";
 	            }
-	            else if (courseTypeInput == "History")
+	            else if (courseTypeInput.equals("History"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Literature")
+	            else if (courseTypeInput.equals("Literature"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Philosophy")
+	            else if (courseTypeInput.equals("Philosophy"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Psychology")
+	            else if (courseTypeInput.equals("Psychology"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Sociology")
+	            else if (courseTypeInput.equals("Sociology"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Political Science")
+	            	else if (courseTypeInput.equals("Political Science"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Justice Administration")
+	            else if (courseTypeInput.equals("Justice Administration"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Other Liberal Arts")
+	            	else if (courseTypeInput.equals("Other Liberal Arts"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Liberal Arts";
 	            }
-	            else if (courseTypeInput == "Business")
+	            else if (courseTypeInput.equals("Business"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Healthcare")
+	            else if (courseTypeInput.equals("Healthcare"))
 	            {
 	            	difficultyScore = 5.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Law")
+		        else if (courseTypeInput.equals("Law"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Education")
+	            else if (courseTypeInput.equals("Education"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Vocational")
+	            else if (courseTypeInput.equals("Vocational"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Agriculture")
+	            else if (courseTypeInput.equals("Agriculture"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Other Professional")
+	            else if (courseTypeInput.equals("Other Professional"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Professional";
 	            }
-	            else if (courseTypeInput == "Visual Arts and Design")
+	            else if (courseTypeInput.equals("Visual Arts and Design"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "Creative Arts and Electives";
 	            }
-	            else if (courseTypeInput == "Foreign Language")
+	            else if (courseTypeInput.equals("Foreign Language"))
 	            {
 	            	difficultyScore = 4.0;
 	            	courseTypeDefined = "Creative Arts and Electives";
 	            }
-	            else if (courseTypeInput == "Culinary Arts")
+	            else if (courseTypeInput.equals("Culinary Arts"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Creative Arts and Electives";
 	            }
-	            else if (courseTypeInput == "Communication")
+	            else if (courseTypeInput.equals("Communication"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "Creative Arts and Electives";
 	            }
-	            else if (courseTypeInput == "Performing Arts")
+	            else if (courseTypeInput.equals("Performing Arts"))
 	            {
 	            	difficultyScore = 3.0;
 	            	courseTypeDefined = "Creative Arts and Electives";
 	            }
-	            else if (courseTypeInput == "Physical Education and Nutrition")
+	            else if (courseTypeInput.equals("Physical Education and Nutrition"))
 	            {
 	            	difficultyScore = 2.0;
 	            	courseTypeDefined = "Creative Arts and Electives";
@@ -1588,7 +1589,7 @@ public class AppController implements ActionListener
 	            
 	            List<Course> finalClassesBuiltForCourse = courseRepository.buildFinalCourses(courseNameInput, courseTypeDefined, requiredInput, difficultyScore);
 	            scheduleGenerator.addCompletedCoursesToCoursePool(finalClassesBuiltForCourse);
-	            	            
+	            
 
 	            // Move to next course OR next view
 	            int currentCourse = courseInfoModel.updateCurrentCourse();
@@ -1961,25 +1962,27 @@ public class AppController implements ActionListener
 
 	            // Add schedule generator repository to file service and setup schedule generator
 	            fileService.setScheduleGeneratorRepository(scheduleGeneratorRepository);
-	            scheduleGenerator.setScheduleGeneratorReposAndFileService(userDataRepository, scheduleGeneratorRepository, fileService);
-
+	            scheduleGenerator.setScheduleGeneratorReposAndFileService(userDataRepository, scheduleGeneratorRepository);
+	            
+	          
+	            
+	            
 	            // Close the courseInfoView and open the loading screen view
 	            courseInfoView.setVisible(false);
 	            loadingScreenView.setVisible(true);
 
 	            // Start playing loading music
-	            soundPlayer = new SoundPlayer();
 	            soundPlayer.playLoopingPlaylist();
-
-	            // RUN HEAVY WORK IN BACKGROUND THREAD
+	            
+	            // New thread to stop music/loading screen code from playout of sync with schedule generation
 	            new Thread(() ->
 	            {
 	                // Build schedules
-	                scheduleGenerator.generateTopThreeSchedules(30);
+	                scheduleGenerator.generateTopThreeSchedules(25000); //Up to 25,0000 worked
 
 	                // Set top three schedules BEFORE switching back to UI thread
 	                fileService.setTopThreeSchedules();
-
+	            
 	                // Switch back to UI thread for UI updates
 	                SwingUtilities.invokeLater(() ->
 	                {
@@ -2053,7 +2056,6 @@ public class AppController implements ActionListener
 		courseInfoModel.clear();
 		courseInfoView.resetFields();
 		userDataRepository.clearCourseInfo();
-		scheduleGenerator.clearCoursePool();
 		courseRepository.clearCourses();
 	}
 	

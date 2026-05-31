@@ -158,6 +158,7 @@ public class FileService
 
                     if (!line.isEmpty())
                     {
+
                         String[] values = line.split("\\s*,\\s*");
 
                         String courseID = getValue(values, colIndex, "Course ID");
@@ -170,7 +171,6 @@ public class FileService
 
                         WeeklyTimeBlock courseWeeklyTimeBlock = null;
 
-                        // Validate days and time before building the weekly time block
                         if (daysStr != null && !daysStr.trim().isEmpty() &&
                             timeStr != null && !timeStr.trim().isEmpty())
                         {
@@ -180,22 +180,14 @@ public class FileService
                             }
                             catch (Exception e)
                             {
-                                // Report invalid schedule data without stopping the file read
                                 System.out.println("Invalid time format, row skipped: " + line);
                                 e.printStackTrace();
                             }
                         }
-                        else
-                        {
-                            // Report rows that do not include complete schedule information to debug
-                           // System.out.println("Row missing days/time, skipped: " + line);
-                        }
 
-                        // Store the class info only when a valid weekly time block exists
                         if (courseWeeklyTimeBlock != null)
                         {
                             courseRepository.storeClassInfo(
-                            	
                                 courseID,
                                 courseWeeklyTimeBlock,
                                 courseInstructor,
@@ -203,6 +195,7 @@ public class FileService
                                 courseCampus,
                                 courseCredits
                             );
+
                         }
                     }
                 }
@@ -212,7 +205,6 @@ public class FileService
         }
         catch (FileNotFoundException e)
         {
-            // Report an invalid file path when the input file cannot be found
             System.err.println("Error: The file could not be found at path: " + availableClassesFilePath);
             e.printStackTrace();
         }
@@ -401,30 +393,6 @@ public class FileService
     {
         List<String> createdFilePaths = new ArrayList<>();
 
-        System.out.println("Entered topThreeToCSV");
-
-        // Ensure schedules exist before proceeding
-        if (topThreeSchedules == null || topThreeSchedules.isEmpty())
-        {
-            System.out.println("No schedules available to write.");
-            return;
-        }
-
-        // Ensure destination path exists
-        if (topThreeSchedulesDestinationPath == null)
-        {
-            System.out.println("Destination path is null.");
-            return;
-        }
-
-        File dir = topThreeSchedulesDestinationPath.toFile();
-
-        if (!dir.exists())
-        {
-            System.out.println("Destination folder does not exist. Creating...");
-            dir.mkdirs();
-        }
-
         // Determine how many schedules to write (up to 3)
         int numSchedulesToWrite = Math.min(3, topThreeSchedules.size());
 
@@ -434,46 +402,54 @@ public class FileService
 
             Schedule schedule = topThreeSchedules.get(i);
 
+            String baseFileName = "Schedule_" + (i + 1);
             String filePath = topThreeSchedulesDestinationPath.toString()
-                    + "/Schedule_" + (i + 1) + ".csv";
+                    + "/" + baseFileName + ".csv";
 
             File outputFile = new File(filePath);
+
+            // If file already exists, create a copy filename
+            int copyNum = 1;
+            while (outputFile.exists())
+            {
+                filePath = topThreeSchedulesDestinationPath.toString()
+                        + "/" + baseFileName + " copy" + copyNum + ".csv";
+                outputFile = new File(filePath);
+                copyNum++;
+            }
 
             System.out.println("Writing file to: " + outputFile.getAbsolutePath());
 
             try (PrintWriter writer = new PrintWriter(outputFile))
             {
-            	writer.println("Days,Start Time,End Time,Course Name,Course ID,Instructor,RMP,Campus,Credits");
+                writer.println("Day,StartTime,EndTime,CourseName,CourseID,Instructor,RMP,Campus,Credits");
 
                 List<Course> courses = schedule.getCurrentScheduleCourses();
 
                 if (courses != null && !courses.isEmpty())
                 {
-                	for (Course course : courses)
-                	{
-                	    WeeklyTimeBlock block = course.getCourseWeeklyTimeBlock();
+                    for (Course course : courses)
+                    {
+                        WeeklyTimeBlock block = course.getCourseWeeklyTimeBlock();
 
-                	    List<DayOfWeek> days = block.getDaysOfTheWeek();
-                	    LocalTime start = block.getClassStartTime();
-                	    LocalTime end = block.getClassEndTime();
+                        List<DayOfWeek> days = block.getDaysOfTheWeek();
+                        LocalTime start = block.getClassStartTime();
+                        LocalTime end = block.getClassEndTime();
 
+                        String combinedDays = buildDaysString(days);
 
-                	    // Combine all days into one string
-                	    String combinedDays = buildDaysString(days);
-
-                	    writer.println(
-                	            combinedDays + "," +
-                	            start + "," +
-                	            end + "," +
-                	            course.getCourseName() + "," +
-                	            course.getCourseID() + "," +
-                	            course.getInstructorName() + "," +
-                	            course.getInstructorRMPScore() + "," +
-                	            course.getCourseCampusLocation() + "," +
-                	            course.getCourseCredits()
-                	    );
-                	}
-                	
+                        writer.println(
+                                combinedDays + "," +
+                                start + "," +
+                                end + "," +
+                                course.getCourseName() + "," +
+                                course.getCourseID() + "," +
+                                course.getInstructorName() + "," +
+                                course.getInstructorRMPScore() + "," +
+                                course.getCourseCampusLocation() + "," +
+                                course.getCourseCredits()
+                        );
+                    }
                 }
                 else
                 {
@@ -504,6 +480,7 @@ public class FileService
             System.out.println("ScheduleGeneratorRepository is null.");
         }
     }
+
     
     /**
      * Purpose: To save the CSV template file to the top three schedules destination path

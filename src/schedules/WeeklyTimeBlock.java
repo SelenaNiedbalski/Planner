@@ -92,7 +92,7 @@ public class WeeklyTimeBlock
 	
 	/**
 	 * Purpose: To return the days stored in the time block
-	 * return daysOfTheWeek The days stored in the weekly time block when the
+	 * @return daysOfTheWeek The days stored in the weekly time block when the
 	 * class meets
 	 */
 	public List<DayOfWeek> getDaysOfTheWeek()
@@ -102,7 +102,7 @@ public class WeeklyTimeBlock
 
 	/**
 	 * Purpose: To return the start time of the class in the weekly time block
-	 * return classStartTime The start time of when the class meets
+	 * @return classStartTime The start time of when the class meets
 	 */
 	public LocalTime getClassStartTime()
 	{
@@ -111,7 +111,7 @@ public class WeeklyTimeBlock
 
 	/**
 	 * Purpose: To return the end time of the class in the weekly time block
-	 * return classEndTime The end time of when the class concludes
+	 * @return classEndTime The end time of when the class concludes
 	 */
 	public LocalTime getClassEndTime()
 	{
@@ -121,7 +121,7 @@ public class WeeklyTimeBlock
 	/**
 	 * Purpose: To return the length of time the class meets in the weekly time
 	 * block
-	 * return classDuration The duration of class
+	 * @return classDuration The duration of class
 	 */
 	public Duration getClassDuration()
 	{

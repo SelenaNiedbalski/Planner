@@ -324,5 +324,16 @@ class ScheduleGeneratorTest
 	            seen.add(key);
 	        }
 	    }
+	    
+	    @Test
+	    public void testTopThreeSchedulesAreSortedCorrectly()
+	    {
+	        List<Schedule> result = scheduleGenerator.generateTopThreeSchedules(30);
+
+	        for (int i = 1; i < result.size(); i++)
+	        {
+	            assertTrue(result.get(i - 1).getScheduleScore() >= result.get(i).getScheduleScore());
+	        }
+	    }
 
 }

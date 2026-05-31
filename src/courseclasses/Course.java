@@ -368,8 +368,25 @@ public abstract class Course
 	 */
 	public double addPointsForRMPScore()
 	{
-		courseScore += instructorRMPScore;
-		return courseScore;
+	    double averageRMP = 2.5;
+
+	    if (instructorRMPScore > 0)
+	    {
+	        double deviation = instructorRMPScore - averageRMP;
+
+	        if (deviation >= 0)
+	        {
+	            // reward good instructors normally
+	            courseScore += deviation;
+	        }
+	        else
+	        {
+	            // punish bad instructors more strongly
+	            courseScore += deviation * 3.0;
+	        }
+	    }
+
+	    return courseScore;
 	}
 
 	/**
@@ -380,7 +397,7 @@ public abstract class Course
 	{
 		if (courseRequired)
 		{
-			courseScore += 5;
+			courseScore += 10;
 		}
 		return courseScore;
 	}
@@ -396,7 +413,7 @@ public abstract class Course
 	public double subtractPointsForWrongCampusLocation(
 			String desiredCampusLocation)
 	{
-		if (courseCampusLocation != desiredCampusLocation)
+		if (!courseCampusLocation.equals(desiredCampusLocation))
 		{
 			courseScore -= 5;
 		}
@@ -424,6 +441,8 @@ public abstract class Course
 	public double calculateCourseScore(String desiredCampusLocation,
 			String studentsMajorDistinction)
 	{
+		// Reset course score to 0 before calculating
+		courseScore = 0.0;
 		this.addPointsForRMPScore();
 		this.addPointsForCourseRequired();
 		this.subtractPointsForWrongCampusLocation(desiredCampusLocation);

@@ -59,14 +59,20 @@ public class CourseRepository
 	 * @param newCourseCredits The course credits
 	 */
 	public void storeClassInfo(String courseID,
-			WeeklyTimeBlock courseWeeklyTimeBlock, String courseInstructor,
-			double courseRMPScore, String courseCampus, int courseCredits)
+	        WeeklyTimeBlock courseWeeklyTimeBlock, String courseInstructor,
+	        double courseRMPScore, String courseCampus, int courseCredits)
 	{
-		PartialCourse newCourse = new PartialCourse(courseID,
-				courseWeeklyTimeBlock, courseInstructor, courseRMPScore,
-				courseCampus, courseCredits);
-		storedClasses = new ArrayList<>();
-		storedClasses.add(newCourse);
+	    PartialCourse newCourse = new PartialCourse(courseID,
+	            courseWeeklyTimeBlock, courseInstructor, courseRMPScore,
+	            courseCampus, courseCredits);
+
+	    // ONLY initialize if null (so we don’t wipe previous rows)
+	    if (storedClasses == null)
+	    {
+	        storedClasses = new ArrayList<>();
+	    }
+
+	    storedClasses.add(newCourse);
 	}
 	
 	
@@ -81,6 +87,7 @@ public class CourseRepository
 	public List<Course> buildFinalCourses(String courseName, String courseType, boolean required, double difficulty)
 	{
 	    List<Course> finalCourses = new ArrayList<>();
+
 
 	    for (PartialCourse pc : storedClasses)
 	    {
@@ -104,12 +111,12 @@ public class CourseRepository
 	        }
 
 	        newCourse.setCourseName(courseName);
-			newCourse.setCourseID(pc.getCourseID());
-			newCourse.setCourseTimeBlock(pc.getTimeBlock());
-			newCourse.setInstructorName(pc.getInstructor());
-			newCourse.setInstructorRMPScore(pc.getRmpScore());
-			newCourse.setCourseCampusLocation(pc.getCampus());
-			newCourse.setCourseCredits(pc.getCredits());
+	        newCourse.setCourseID(pc.getCourseID());
+	        newCourse.setCourseTimeBlock(pc.getTimeBlock());
+	        newCourse.setInstructorName(pc.getInstructor());
+	        newCourse.setInstructorRMPScore(pc.getRmpScore());
+	        newCourse.setCourseCampusLocation(pc.getCampus());
+	        newCourse.setCourseCredits(pc.getCredits());
 
 	        newCourse.setCourseDifficulty(difficulty);
 	        newCourse.setCourseRequired(required);
@@ -117,11 +124,16 @@ public class CourseRepository
 	        finalCourses.add(newCourse);
 	    }
 
+
 	    // Clear out stored classes after they're used to build final courses
 	    storedClasses.clear();
 
 	    return finalCourses;
 	}
+	
+	
+	
+	
 	
 	// Getters
 	/**

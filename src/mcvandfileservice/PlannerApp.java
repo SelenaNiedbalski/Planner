@@ -1,6 +1,7 @@
 package mcvandfileservice;
 
 import schedules.ScheduleGenerator;
+import sounds.SoundPlayer;
 
 /**
  * Lead Author(s):
@@ -46,6 +47,9 @@ public class PlannerApp
 		CourseInfoModel courseInfoModel = new CourseInfoModel();
 		ScheduleGenerator scheduleGenerator = new ScheduleGenerator(loadingScreenView);
 		
+		// Initialize sound player for music
+        SoundPlayer soundPlayer = new SoundPlayer();
+
 		
 		// Initialize app controller
 		AppController appController = new AppController(startScreenView,
@@ -53,6 +57,6 @@ public class PlannerApp
 				loadingScreenView, aboutYouModel, courseInfoModel, creditsModel,
 				scheduleGenerator, wishlistModel, fileService,
 				userDataRepository, courseRepository,
-				scheduleGeneratorRepository);
+				scheduleGeneratorRepository, soundPlayer);
 	}
 }

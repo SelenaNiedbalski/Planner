@@ -13,8 +13,8 @@ import java.util.Random;
 
 public class SoundPlayer
 {
+	private Random random = new Random();
     private Clip clip;
-    private int currentIndex = 0;
 
     private String[] soundFiles = {
             "/sounds/Bad.wav",
@@ -38,7 +38,11 @@ public class SoundPlayer
     };
     
     private boolean isStopped = false;
+    private int currentIndex = random.nextInt(soundFiles.length);
 
+    
+    
+    
     /** 
      * Purpose: To play a random sound from the playlist and then continue to play
      * 
@@ -63,14 +67,19 @@ public class SoundPlayer
             clip = AudioSystem.getClip();
             clip.open(audioStream);
 
-            // Change to next when its finished
             clip.addLineListener(event ->
             {
-                if (event.getType() == LineEvent.Type.STOP && !isStopped)
+                if (event.getType() == LineEvent.Type.STOP && !isStopped && !clip.isRunning())
                 {
                     clip.close();
 
-                    // next sound logic
+                    currentIndex++;
+
+                    if (currentIndex >= soundFiles.length)
+                    {
+                        currentIndex = 0;
+                    }
+
                     playNext();
                 }
             });

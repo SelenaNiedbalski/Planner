@@ -383,7 +383,7 @@ public class WishlistView extends JFrame
 
         JTextArea breakTimesInstructionsLabel = new JTextArea(
                 "Input your ideal minimum and maximum time for your breaks       in minutes "
-                        + "(Ex. 2 hours would be 120). Break time must be at least 1 minute."
+                        + "(Ex. 3 hours would be 180). Break time must be at least 1 minute."
         );
         breakTimesInstructionsLabel.setFont(instructionsAndLabelsFont);
         breakTimesInstructionsLabel.setForeground(darkHotPink);
@@ -420,7 +420,7 @@ public class WishlistView extends JFrame
         maxBreakTimeLabel.setFont(instructionsAndLabelsFont);
         maxBreakTimeLabel.setForeground(darkHotPink);
         maxBreakTime = new JTextField(4);
-        maxBreakTime.setText("120");
+        maxBreakTime.setText("180");
         maxBreakTime.setMaximumSize(breakTimeSize);
         maxBreakTime.setPreferredSize(breakTimeSize);
 
@@ -1081,7 +1081,7 @@ public class WishlistView extends JFrame
 	    sunEndOfDay.setText("");
 
 	    minBreakTime.setText("10");
-	    maxBreakTime.setText("120");
+	    maxBreakTime.setText("180");
 
 	    campusLocation.setText("");
 	    topThreeSchedulesDestinationPath.setText("");
