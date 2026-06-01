@@ -18,11 +18,12 @@ import java.util.List;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- *         Version/date: 29 April 2026
+ *         Version/date: 31 May 2026
  * 
  *         Responsibilities of class: To represent a liberal arts course, which
- *         is a type of course. This class does not have any additional
- *         attributes or methods beyond those inherited from the Course class.
+ *         is a type of Course. This is also a type of course that inherits
+ *         methods from major-specific as it represents a category of classes
+ *         within a major distinction
  * 
  *         LiberalArtsCourse is-a course
  *         LiberalArtsCourse is-a major-specific course
@@ -61,7 +62,7 @@ public class LiberalArtsCourse extends Course implements MajorSpecific
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassEndTime        The new end of time the class meets
+	 * @param newClassEndTime         The new end of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth
@@ -125,7 +126,9 @@ public class LiberalArtsCourse extends Course implements MajorSpecific
 	{
 		this.addPointsForRMPScore();
 		this.addPointsForCourseRequired();
-		this.addPointsForMajorSpecificCourse(studentsMajorDistinction); // Variation for polymorphism
+		this.addPointsForMajorSpecificCourse(studentsMajorDistinction); // Variation
+																		// for
+																		// polymorphism
 		this.subtractPointsForWrongCampusLocation(desiredCampusLocation);
 		this.subtractPointsForCourseDifficulty();
 		return courseScore;

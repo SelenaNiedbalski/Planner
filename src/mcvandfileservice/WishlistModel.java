@@ -15,30 +15,57 @@ import schedules.WeeklyTimeBlock;
 
 /**
  * Lead Author(s):
+ * 
  * @author Selena Niedbalski
  * 
  * 
- * References:
- *         Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented Problem Solving.
+ *         References:
+ *         Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented
+ *         Problem Solving.
  *         Retrieved from
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- * Version/date: 29 April 2026
+ *         Version/date: 31 May 2026
  * 
- * Responsibilities of class: 
+ *         Responsibilities of class: To represent the wishlist information for
+ *         the user, including the desired break times, desired start and end
+ *         times, desired campus location, and destination path for the top
+ *         three schedules. This class also includes methods to save the
+ *         wishlist information and clear it when necessary.
  * 
  */
 
 public class WishlistModel
 {
 	// Instance Variables
-	private Long minDesiredBreakTime;
-	private Long maxDesiredBreakTime;
-	private HashMap<DayOfWeek, WeeklyTimeBlock> desiredStartAndEndTime;
-	private String desiredCampusLocation;
-	private Path topThreeSchedulesDestinationPath;
-	
+	private Long minDesiredBreakTime; // A wishlist model has-a minimum desired
+										// break time (in minutes) between
+										// classes
+	private Long maxDesiredBreakTime; // A wishlist model has-a maximum desired
+										// break time (in minutes) between
+										// classes
+	private HashMap<DayOfWeek, WeeklyTimeBlock> desiredStartAndEndTime; // A
+																		// wishlist
+																		// model
+																		// has-a
+																		// desired
+																		// start
+																		// and
+																		// end
+																		// time
+																		// for
+																		// each
+																		// day
+																		// of
+																		// the
+																		// week
+	private String desiredCampusLocation; // A wishlist model has-a desired
+											// campus location
+	private Path topThreeSchedulesDestinationPath; // A wishlist model has-a
+													// destination path for the
+													// top three schedules
+
 	// Constructor
 	/**
 	 * Purpose: To construct a WishlistModel with default values
@@ -52,130 +79,150 @@ public class WishlistModel
 		topThreeSchedulesDestinationPath = null;
 	}
 
-	
-	
 	// Getters and Setters
 	/**
 	 * Purpose: To return the minimum desired break time
+	 * 
 	 * @return minDesiredBreakTime The minimum desired break time
 	 */
 	public Long getMinDesiredBreakTime()
 	{
 		return minDesiredBreakTime;
 	}
-	
+
 	/**
 	 * Purpose: To set the minimum desired break time
+	 * 
 	 * @param newMinDesiredBreakTime The new minimum desired break time
-	 * @throws MustBeOverOneException if the new minimum desired break time is less than 1 minute 
+	 * @throws MustBeOverOneException if the new minimum desired break time is
+	 *                                less than 1 minute
 	 */
-	public void setMinDesiredBreakTime(Long newMinDesiredBreakTime) throws MustBeOverOneException 
+	public void setMinDesiredBreakTime(Long newMinDesiredBreakTime)
+			throws MustBeOverOneException
 	{
-	    // If the new minimum desired break time is null or is greater than or equal to 1 minute
-	    if (newMinDesiredBreakTime == null || newMinDesiredBreakTime > 1L) 
-	    {
-	        minDesiredBreakTime = newMinDesiredBreakTime;
-	    } 
-	    else 
-	    {
-	        throw new MustBeOverOneException("MinDesiredBreakTime value");
-	    }
+		// If the new minimum desired break time is null or is greater than or
+		// equal to 1 minute
+		if (newMinDesiredBreakTime == null || newMinDesiredBreakTime > 1L)
+		{
+			minDesiredBreakTime = newMinDesiredBreakTime;
+		}
+		else
+		{
+			throw new MustBeOverOneException("MinDesiredBreakTime value");
+		}
 	}
 
 	/**
 	 * Purpose: To return the maximum desired break time
+	 * 
 	 * @return maxDesiredBreakTime The maximum desired break time
 	 */
 	public Long getMaxDesiredBreakTime()
 	{
 		return maxDesiredBreakTime;
 	}
-	
+
 	/**
 	 * Purpose: To set the maximum desired break time
+	 * 
 	 * @param newMaxDesiredBreakTime The new maximum desired break time
-	 * @throws GreaterThanPreviousTimeException if the new maximum desired break time is less than the minimum desired break time 
+	 * @throws GreaterThanPreviousTimeException if the new maximum desired break
+	 *                                          time is less than the minimum
+	 *                                          desired break time
 	 */
-	public void setMaxDesiredBreakTime(Long newMaxDesiredBreakTime) throws EndTypeBeforeStartTypeException
+	public void setMaxDesiredBreakTime(Long newMaxDesiredBreakTime)
+			throws EndTypeBeforeStartTypeException
 	{
-	    if (newMaxDesiredBreakTime == null || minDesiredBreakTime == null
-	        || newMaxDesiredBreakTime >= minDesiredBreakTime)
-	    {
-	        maxDesiredBreakTime = newMaxDesiredBreakTime;
-	    }
-	    else
-	    {
-	        throw new EndTypeBeforeStartTypeException("MaxDesiredBreakTime", "MinDesiredBreakTime");
-	    }
+		if (newMaxDesiredBreakTime == null || minDesiredBreakTime == null
+				|| newMaxDesiredBreakTime >= minDesiredBreakTime)
+		{
+			maxDesiredBreakTime = newMaxDesiredBreakTime;
+		}
+		else
+		{
+			throw new EndTypeBeforeStartTypeException("MaxDesiredBreakTime",
+					"MinDesiredBreakTime");
+		}
 	}
 
 	/**
 	 * Purpose: To return the desired start and end time
+	 * 
 	 * @return desiredStartAndEndTime The desired start and end time
 	 */
 	public HashMap<DayOfWeek, WeeklyTimeBlock> getDesiredStartAndEndTime()
 	{
 		return desiredStartAndEndTime;
 	}
-	
+
 	/**
 	 * Purpose: To set the desired start and end time
+	 * 
 	 * @param newDesiredStartAndEndTime The new desired start and end time
-	 * @param generalErrors A list of general error messages (non-time errors) to display in a popup
+	 * @param generalErrors             A list of general error messages
+	 *                                  (non-time errors) to display in a popup
 	 */
-	public void setDesiredStartAndEndTime(HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime, List<String> generalErrors)
+	public void setDesiredStartAndEndTime(
+			HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime,
+			List<String> generalErrors)
 	{
-	    // Create list array of error messages to store (for general popup)
-	    List<String> error = new ArrayList<String>();
-	    
-	    // If the generalErrors list is null, create it so errors can still be added
-	    if (generalErrors == null)
-	    {
-	        generalErrors = new ArrayList<String>();
-	    }
-	    
-	    // Check desired start and end times
-	    if (newDesiredStartAndEndTime != null)
-	    {
-	        for (DayOfWeek day : newDesiredStartAndEndTime.keySet())
-	        {
-	            WeeklyTimeBlock timeBlock = newDesiredStartAndEndTime.get(day);
+		// Create list array of error messages to store (for general popup)
+		List<String> error = new ArrayList<String>();
 
-	            if (timeBlock != null)
-	            {
-	                LocalTime start = timeBlock.getClassStartTime();
-	                LocalTime end = timeBlock.getClassEndTime();
+		// If the generalErrors list is null, create it so errors can still be
+		// added
+		if (generalErrors == null)
+		{
+			generalErrors = new ArrayList<String>();
+		}
 
-	                if (start != null && end != null && end.isBefore(start))
-	                {
-	                    EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException("EndTime", "StartTime");
-	                    error.add("For " + day.toString() + ": " + endTypeBeforeStartTypeException.getMessage());
-	                }
-	            }
-	        }
-	    }
-	    
-	    // Add error messages to generalErrors list instead of throwing exception
-	    for (String errMsg : error)
-	    {
-	        generalErrors.add(errMsg);
-	    }
-	    
-	    // Add entries to the wishlist model
-	    desiredStartAndEndTime = newDesiredStartAndEndTime;
+		// Check desired start and end times
+		if (newDesiredStartAndEndTime != null)
+		{
+			for (DayOfWeek day : newDesiredStartAndEndTime.keySet())
+			{
+				WeeklyTimeBlock timeBlock = newDesiredStartAndEndTime.get(day);
+
+				if (timeBlock != null)
+				{
+					LocalTime start = timeBlock.getClassStartTime();
+					LocalTime end = timeBlock.getClassEndTime();
+
+					if (start != null && end != null && end.isBefore(start))
+					{
+						EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException(
+								"EndTime", "StartTime");
+						error.add("For " + day.toString() + ": "
+								+ endTypeBeforeStartTypeException.getMessage());
+					}
+				}
+			}
+		}
+
+		// Add error messages to generalErrors list instead of throwing
+		// exception
+		for (String errMsg : error)
+		{
+			generalErrors.add(errMsg);
+		}
+
+		// Add entries to the wishlist model
+		desiredStartAndEndTime = newDesiredStartAndEndTime;
 	}
-	
+
 	/**
 	 * Purpose: To return the desired campus location
+	 * 
 	 * @return desiredCampusLocation The desired campus location
 	 */
 	public String getDesiredCampusLocation()
 	{
 		return desiredCampusLocation;
 	}
-	
+
 	/**
 	 * Purpose: To set the desired campus location
+	 * 
 	 * @param newDesiredCampusLocation The new desired campus location
 	 */
 	public void setDesiredCampusLocation(String newDesiredCampusLocation)
@@ -185,113 +232,132 @@ public class WishlistModel
 
 	/**
 	 * Purpose: To return the destination path for the top three schedules
-	 * @return topThreeSchedulesDestinationPath The destination path for the top three schedules
+	 * 
+	 * @return topThreeSchedulesDestinationPath The destination path for the top
+	 *         three schedules
 	 */
 	public Path getTopThreeSchedulesDestinationPath()
 	{
 		return topThreeSchedulesDestinationPath;
 	}
 
-	
 	// Other Methods
 	/**
-	 * Purpose: To store the info from the app controller for the wishlist view		
-	 * @param newDesiredCampusLocation The desired campus location for the user
-	 * @param newTopThreeSchedulesDestinationPath The destination path for the top three schedules for the user
-	 * @param generalErrors A list of general error messages (non-time errors) to display in a popup
-	 * @return timeErrors A hashmap of error messages for the desired start and end times 
-	 * (if any end times are before start times they're added to hashmap for that day)
+	 * Purpose: To store the info from the app controller for the wishlist view
+	 * 
+	 * @param newDesiredCampusLocation            The desired campus location
+	 *                                            for the user
+	 * @param newTopThreeSchedulesDestinationPath The destination path for the
+	 *                                            top three schedules for the
+	 *                                            user
+	 * @param generalErrors                       A list of general error
+	 *                                            messages (non-time errors) to
+	 *                                            display in a popup
+	 * @return timeErrors A hashmap of error messages for the desired start and
+	 *         end times
+	 *         (if any end times are before start times they're added to hashmap
+	 *         for that day)
 	 */
 	public HashMap<DayOfWeek, String> saveWishlist(Long newMinDesiredBreakTime,
-	        Long newMaxDesiredBreakTime,
-	        HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime,
-	        String newDesiredCampusLocation,
-	        Path newTopThreeSchedulesDestinationPath,
-	        List<String> generalErrors)
+			Long newMaxDesiredBreakTime,
+			HashMap<DayOfWeek, WeeklyTimeBlock> newDesiredStartAndEndTime,
+			String newDesiredCampusLocation,
+			Path newTopThreeSchedulesDestinationPath,
+			List<String> generalErrors)
 	{
-	    // Create hashmap of error messages for the desired start and end times
-	    HashMap<DayOfWeek, String> timeErrors = new HashMap<>();
+		// Create hashmap of error messages for the desired start and end times
+		HashMap<DayOfWeek, String> timeErrors = new HashMap<>();
 
-	    // If the generalErrors list is null, create it so errors can still be added
-	    if (generalErrors == null)
-	    {
-	        generalErrors = new ArrayList<String>();
-	    }
+		// If the generalErrors list is null, create it so errors can still be
+		// added
+		if (generalErrors == null)
+		{
+			generalErrors = new ArrayList<String>();
+		}
 
-	    // Check min desired break time
-	    if (newMinDesiredBreakTime != null && newMinDesiredBreakTime <= 1L)
-	    {
-	        MustBeOverOneException mustBeOverOneException = new MustBeOverOneException("MinBreakTime value");
-	        generalErrors.add(mustBeOverOneException.getMessage());
-	    }
+		// Check min desired break time
+		if (newMinDesiredBreakTime != null && newMinDesiredBreakTime <= 1L)
+		{
+			MustBeOverOneException mustBeOverOneException = new MustBeOverOneException(
+					"MinBreakTime value");
+			generalErrors.add(mustBeOverOneException.getMessage());
+		}
 
-	    // Check max desired break time
-	    if (newMaxDesiredBreakTime != null && newMinDesiredBreakTime != null
-	            && newMaxDesiredBreakTime < newMinDesiredBreakTime)
-	    {
-	        EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException("MaxBreakTime", "MinBreakTime");
-	        generalErrors.add(endTypeBeforeStartTypeException.getMessage());
-	    }
+		// Check max desired break time
+		if (newMaxDesiredBreakTime != null && newMinDesiredBreakTime != null
+				&& newMaxDesiredBreakTime < newMinDesiredBreakTime)
+		{
+			EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException(
+					"MaxBreakTime", "MinBreakTime");
+			generalErrors.add(endTypeBeforeStartTypeException.getMessage());
+		}
 
-	    // Check desired start and end times
-	    if (newDesiredStartAndEndTime != null)
-	    {
-	        for (DayOfWeek day : newDesiredStartAndEndTime.keySet())
-	        {
-	            WeeklyTimeBlock timeBlock = newDesiredStartAndEndTime.get(day);
+		// Check desired start and end times
+		if (newDesiredStartAndEndTime != null)
+		{
+			for (DayOfWeek day : newDesiredStartAndEndTime.keySet())
+			{
+				WeeklyTimeBlock timeBlock = newDesiredStartAndEndTime.get(day);
 
-	            if (timeBlock != null)
-	            {
-	                LocalTime start = timeBlock.getClassStartTime();
-	                LocalTime end = timeBlock.getClassEndTime();
+				if (timeBlock != null)
+				{
+					LocalTime start = timeBlock.getClassStartTime();
+					LocalTime end = timeBlock.getClassEndTime();
 
-	                if ((start == null && end != null) || (start != null && end == null))
-	                {
-	                    timeErrors.put(day, "Both boxes must be blanked out if one is.");
-	                }
-	                else if (start != null && end != null)
-	                {
-	                    if (!end.isAfter(start))
-	                    {
-	                    	EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException("EndTime", "StartTime");
-	                        timeErrors.put(day, endTypeBeforeStartTypeException.getMessage());
-	                    }
-	                }
-	            }
-	        }
-	    }
+					if ((start == null && end != null)
+							|| (start != null && end == null))
+					{
+						timeErrors.put(day,
+								"Both boxes must be blanked out if one is.");
+					}
+					else if (start != null && end != null)
+					{
+						if (!end.isAfter(start))
+						{
+							EndTypeBeforeStartTypeException endTypeBeforeStartTypeException = new EndTypeBeforeStartTypeException(
+									"EndTime", "StartTime");
+							timeErrors.put(day, endTypeBeforeStartTypeException
+									.getMessage());
+						}
+					}
+				}
+			}
+		}
 
-	    // Check top three schedules destination path
-	    if (newTopThreeSchedulesDestinationPath == null)
-	    {
-	        EmptyTextboxException emptyTextBoxException = new EmptyTextboxException("top three schedules destination path");
-	        generalErrors.add(emptyTextBoxException.getMessage());
-	    }
+		// Check top three schedules destination path
+		if (newTopThreeSchedulesDestinationPath == null)
+		{
+			EmptyTextboxException emptyTextBoxException = new EmptyTextboxException(
+					"top three schedules destination path");
+			generalErrors.add(emptyTextBoxException.getMessage());
+		}
 
-	    if (newTopThreeSchedulesDestinationPath != null
-	            && (!newTopThreeSchedulesDestinationPath.toFile().exists()
-	            || !newTopThreeSchedulesDestinationPath.toFile().isDirectory()))
-	    {
-	        FilePathDoesNotExistException filePathDoesNotExistException = new FilePathDoesNotExistException();
-	        generalErrors.add(filePathDoesNotExistException.getMessage());
-	    }
+		if (newTopThreeSchedulesDestinationPath != null
+				&& (!newTopThreeSchedulesDestinationPath.toFile().exists()
+						|| !newTopThreeSchedulesDestinationPath.toFile()
+								.isDirectory()))
+		{
+			FilePathDoesNotExistException filePathDoesNotExistException = new FilePathDoesNotExistException();
+			generalErrors.add(filePathDoesNotExistException.getMessage());
+		}
 
-	    // Add valid entries to the wishlist model
-	    if (timeErrors.isEmpty() && generalErrors.isEmpty())
-	    {
-	        minDesiredBreakTime = newMinDesiredBreakTime;
-	        maxDesiredBreakTime = newMaxDesiredBreakTime;
-	        desiredStartAndEndTime = newDesiredStartAndEndTime;
-	        desiredCampusLocation = newDesiredCampusLocation;
-	        topThreeSchedulesDestinationPath = newTopThreeSchedulesDestinationPath;
-	    }
+		// Add valid entries to the wishlist model
+		if (timeErrors.isEmpty() && generalErrors.isEmpty())
+		{
+			minDesiredBreakTime = newMinDesiredBreakTime;
+			maxDesiredBreakTime = newMaxDesiredBreakTime;
+			desiredStartAndEndTime = newDesiredStartAndEndTime;
+			desiredCampusLocation = newDesiredCampusLocation;
+			topThreeSchedulesDestinationPath = newTopThreeSchedulesDestinationPath;
+		}
 
-	    return timeErrors;
+		return timeErrors;
 	}
-	
-	
+
 	/**
-	 * Purpose: To clear the wishlist model of all information (for when the user hits back)
+	 * Purpose: To clear the wishlist model of all information (for when the
+	 * user hits back)
+	 * 
 	 */
 	public void clear()
 	{

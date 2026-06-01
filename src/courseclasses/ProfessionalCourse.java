@@ -1,7 +1,6 @@
 package courseclasses;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- *         Version/date: 29 April 2026
+ *         Version/date: 31 May 2026
  * 
  *         Responsibilities of class: To represent a professional course, which
  *         is a type of course. It inherits from the Course class and does not
@@ -54,7 +53,7 @@ public class ProfessionalCourse extends Course
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassEndTime        The new lndength of time the class meets
+	 * @param newClassEndTime         The new lndength of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth

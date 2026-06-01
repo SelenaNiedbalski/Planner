@@ -18,10 +18,12 @@ import java.util.List;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- *         Version/date: 29 April 2026
+ *         Version/date: 31 May 2026
  * 
- *         Responsibilities of class: To represent a course that a student can
- *         take. This class is abstract
+ *         Responsibilities of class: To represent a course as a base model that
+ *         stores its details (like name, schedule, instructor, and difficulty)
+ *         and calculates a score based on how well it fits a student’s
+ *         preferences.
  * 
  */
 
@@ -36,8 +38,9 @@ public abstract class Course
 	private int courseCredits; // A course has-a number of credits it is worth
 	private double courseDifficulty; // A course has-a number that represents
 										// its difficulty level
-	private boolean courseRequired = true; // A course has-a value indicating if it is
-									// a required course or not
+	private boolean courseRequired = true; // A course has-a value indicating if
+											// it is
+	// a required course or not
 	private double courseScore; // A course has-a course score
 	private String instructorName; // A course has-an instructor's name
 	private double instructorRMPScore; // A course has-an instructor's
@@ -45,8 +48,9 @@ public abstract class Course
 	private String courseType; // A course has-a course type (STEM, Liberal
 								// Arts, Professional, or Creative Arts and
 								// Electives)
-	private boolean struggleCourse = true; // A course has-a value indicating if it is
-									// a struggle course or not
+	private boolean struggleCourse = true; // A course has-a value indicating if
+											// it is
+	// a struggle course or not
 
 	// Constructors
 	/**
@@ -84,7 +88,7 @@ public abstract class Course
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassEndTime        The new length of time the class meets
+	 * @param newClassEndTime         The new length of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth
@@ -124,7 +128,8 @@ public abstract class Course
 	// Getters and Setters
 	/**
 	 * Purpose: To return the course name
-	 * return courseName The name of the course
+	 * 
+	 * @return courseName The name of the course
 	 */
 	public String getCourseName()
 	{
@@ -143,7 +148,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the course ID
-	 * return courseID The ID string for the course
+	 * 
+	 * @return courseID The ID string for the course
 	 */
 	public String getCourseID()
 	{
@@ -162,7 +168,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the weekly time block for the course
-	 * return weeklyTimeBlock The weekly course meeting times
+	 * 
+	 * @return weeklyTimeBlock The weekly course meeting times
 	 */
 	public WeeklyTimeBlock getCourseWeeklyTimeBlock()
 	{
@@ -170,20 +177,23 @@ public abstract class Course
 	}
 
 	/**
-	 * Purpose: To set the course's weekly time block from a completed WeeklyTimeBlock object (completed timeblock one)
+	 * Purpose: To set the course's weekly time block from a completed
+	 * WeeklyTimeBlock object (completed timeblock one)
+	 * 
 	 * @param newWeeklyTimeBlock The new weekly time block for the course
 	 */
 	public void setCourseTimeBlock(WeeklyTimeBlock newWeeklyTimeBlock)
 	{
 		courseWeeklyTimeBlock = newWeeklyTimeBlock;
 	}
-	
+
 	/**
-	 * Purpose: To set the weekly time block for the course using raw data values (not a completed time block)
+	 * Purpose: To set the weekly time block for the course using raw data
+	 * values (not a completed time block)
 	 * 
 	 * @param newDaysOfTheWeek  The new days the class meets during
 	 * @param newClassStartTime The new time the class starts at
-	 * @param newClassEndTime  The new end time for the class
+	 * @param newClassEndTime   The new end time for the class
 	 */
 	public void setWeeklyTimeBlock(List<DayOfWeek> newDaysOfTheWeek,
 			LocalTime newClassStartTime, LocalTime newClassEndTime)
@@ -194,7 +204,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the campus location for the course
-	 * return courseCampusLocation The campus location for the course
+	 * 
+	 * @return courseCampusLocation The campus location for the course
 	 */
 	public String getCourseCampusLocation()
 	{
@@ -213,7 +224,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the amount of credits the course is worth
-	 * return courseCredits The number of credits the course is worth
+	 * 
+	 * @return courseCredits The number of credits the course is worth
 	 */
 	public int getCourseCredits()
 	{
@@ -232,7 +244,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the course difficulty number
-	 * return courseDifficulty The number of the course's difficulty rating
+	 * 
+	 * @return courseDifficulty The number of the course's difficulty rating
 	 */
 	public double getCourseDifficulty()
 	{
@@ -252,7 +265,9 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the boolean value of if a course is required or not
-	 * return courseRequired The boolean value of if a course is required or not
+	 * 
+	 * @return courseRequired The boolean value of if a course is required or
+	 *         not
 	 */
 	public boolean getCourseRequired()
 	{
@@ -272,7 +287,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the current score of the course
-	 * return courseScore The overall score of the course
+	 * 
+	 * @return courseScore The overall score of the course
 	 */
 	public double getCourseScore()
 	{
@@ -291,7 +307,8 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the name of the instructor for the course
-	 * return instructorName The name of the course's instructor
+	 * 
+	 * @return instructorName The name of the course's instructor
 	 */
 	public String getInstructorName()
 	{
@@ -331,7 +348,8 @@ public abstract class Course
 	/**
 	 * Purpose: To return the type of the course (STEM, Liberal Arts,
 	 * Professional, or Creative Arts and Electives)
-	 * return courseType The type of course
+	 * 
+	 * @return courseType The type of course
 	 */
 	public String getCourseType()
 	{
@@ -364,34 +382,36 @@ public abstract class Course
 	/**
 	 * Purpose: To add points to the course score for the amount of the RMP
 	 * score of the course's instructor
-	 * return courseScore The updated course score
+	 * 
+	 * @return courseScore The updated course score
 	 */
 	public double addPointsForRMPScore()
 	{
-	    double averageRMP = 2.5;
+		double averageRMP = 2.5;
 
-	    if (instructorRMPScore > 0)
-	    {
-	        double deviation = instructorRMPScore - averageRMP;
+		if (instructorRMPScore > 0)
+		{
+			double deviation = instructorRMPScore - averageRMP;
 
-	        if (deviation >= 0)
-	        {
-	            // reward good instructors normally
-	            courseScore += deviation;
-	        }
-	        else
-	        {
-	            // punish bad instructors more strongly
-	            courseScore += deviation * 3.0;
-	        }
-	    }
+			if (deviation >= 0)
+			{
+				// reward good instructors normally
+				courseScore += deviation;
+			}
+			else
+			{
+				// punish bad instructors more strongly
+				courseScore += deviation * 3.0;
+			}
+		}
 
-	    return courseScore;
+		return courseScore;
 	}
 
 	/**
 	 * Purpose: To add points to the course score if the course is required
-	 * return courseScore The updated course score
+	 * 
+	 * @return courseScore The updated course score
 	 */
 	public double addPointsForCourseRequired()
 	{
@@ -408,7 +428,7 @@ public abstract class Course
 	 * 
 	 * @param desiredCampusLocation The campus location the student wants their
 	 *                              courses to be at
-	 *                              return courseScore The updated course score
+	 * @return courseScore The updated course score
 	 */
 	public double subtractPointsForWrongCampusLocation(
 			String desiredCampusLocation)
@@ -423,7 +443,8 @@ public abstract class Course
 	/**
 	 * Purpose: To subtract points from the course score for the amount of the
 	 * course difficulty score
-	 * return courseScore The updated course score
+	 * 
+	 * @return courseScore The updated course score
 	 */
 	public double subtractPointsForCourseDifficulty()
 	{
@@ -447,7 +468,10 @@ public abstract class Course
 		this.addPointsForCourseRequired();
 		this.subtractPointsForWrongCampusLocation(desiredCampusLocation);
 		this.subtractPointsForCourseDifficulty();
-		this.nonMajorSpecificCourseCalculationMessage(studentsMajorDistinction); // Placeholder for parameter message
+		this.nonMajorSpecificCourseCalculationMessage(studentsMajorDistinction); // Placeholder
+																					// for
+																					// parameter
+																					// message
 		return courseScore;
 	}
 
@@ -456,9 +480,9 @@ public abstract class Course
 	 * major-specific method is not run
 	 * 
 	 * @param studentsMajorDistinction The student's major type
-	 *                                 return string A message indicating the
-	 *                                 calculateCourseScore without the
-	 *                                 major-specific method is run
+	 * @return string A message indicating the
+	 *         calculateCourseScore without the
+	 *         major-specific method is run
 	 */
 	public String nonMajorSpecificCourseCalculationMessage(
 			String studentsMajorDistinction)
@@ -471,19 +495,17 @@ public abstract class Course
 
 	/**
 	 * Purpose: To return the course info as a string
-	 * return toString The course info
+	 * 
+	 * @return toString The course info
 	 */
 	@Override
 	public String toString()
 	{
 		return "Weekly Time Block: " + courseWeeklyTimeBlock.toString()
-				+ " Course: " + courseName +" Course ID " + courseID
-				+ " Instructor: " + instructorName
-				+ " RMP Score: " + instructorRMPScore
-				+ "Campus Location: " + courseCampusLocation
-				+ " Credits: " + courseCredits;
-				
+				+ " Course: " + courseName + " Course ID " + courseID
+				+ " Instructor: " + instructorName + " RMP Score: "
+				+ instructorRMPScore + "Campus Location: "
+				+ courseCampusLocation + " Credits: " + courseCredits;
+
 	}
-
-
 }

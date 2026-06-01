@@ -17,12 +17,13 @@ import java.util.List;
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- *         Version/date: 29 April 2026
+ *         Version/date: 31 May 2026
  * 
  *         Responsibilities of class: To represent a Creative Arts and Electives
  *         Course, which is a type of Course. This class does not have any
- *         additional attributes or methods beyond those inherited from the
- *         Course class.
+ *         additional methods beyond those inherited from the
+ *         Course class and is only created to represent a specificially scored
+ *         course type
  * 
  *         CreativeArtsAndElectivesCourse is-a Course
  */
@@ -55,7 +56,7 @@ public class CreativeArtsAndElectivesCourse extends Course
 	 * @param newCourseID             The new course ID
 	 * @param newDaysOfTheWeek        The new days the class meets during
 	 * @param newClassStartTime       The new time the class starts at
-	 * @param newClassEndTime        The new end of time the class meets
+	 * @param newClassEndTime         The new end of time the class meets
 	 * @param newcourseCampusLocation The new campus location for the course
 	 * @param newCourseCredits        The new amount of credits the course is
 	 *                                worth

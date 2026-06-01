@@ -2,28 +2,34 @@ package exceptions;
 
 /**
  * Lead Author(s):
+ * 
  * @author Selena Niedbalski
  * 
  * 
- * References:
- *         Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented Problem Solving.
+ *         References:
+ *         Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented
+ *         Problem Solving.
  *         Retrieved from
  *         https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
  * 
  * 
- * Version/date: 29 April 2026
+ *         Version/date: 31 May 2026
  * 
- * Responsibilities of class: To represent an exception that is thrown when the value of minimum credits, maxiumum credits, or the number of interested classes is less than 1
+ *         Responsibilities of class: To represent an exception that is thrown
+ *         when the value of minimum credits, maxiumum credits, or the number of
+ *         interested classes is less than 1
  * 
- * MaxBreakLessThanMinException is-an Exception
+ *         MaxBreakLessThanMinException is-an Exception
  */
 
 public class EndTypeBeforeStartTypeException extends Exception
 {
 	/**
-	 * Constructs a MustBeOverOneException with a default message that takes parameters for time type
+	 * Constructs a MustBeOverOneException with a default message that takes
+	 * parameters for time type
+	 * 
 	 * @param startType The type of start value
-	 * @param endType The type of end value
+	 * @param endType   The type of end value
 	 */
 	public EndTypeBeforeStartTypeException(String startType, String endType)
 	{
