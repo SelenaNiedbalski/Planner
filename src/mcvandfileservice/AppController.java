@@ -1978,7 +1978,7 @@ public class AppController implements ActionListener
 	            new Thread(() ->
 	            {
 	                // Build schedules
-	                scheduleGenerator.generateTopThreeSchedules(25000); //Up to 25,0000 worked
+	                scheduleGenerator.generateTopThreeSchedules(25000); //Up to 30,0000 worked
 
 	                // Set top three schedules BEFORE switching back to UI thread
 	                fileService.setTopThreeSchedules();
@@ -2078,15 +2078,6 @@ public class AppController implements ActionListener
 		courseInfoView.revalidate();
 		courseInfoView.repaint();
 	}
-	
-	
-
-	
-
 }
-
-
-
-
 
 

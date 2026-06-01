@@ -348,6 +348,17 @@ public class ScheduleGenerator
 	    // Track start time
 	    long startTime = System.currentTimeMillis();
 
+	    // Variables for recent-rate time estimation
+	    long lastUpdateTime = startTime;
+	    int lastScheduleCount = 0;
+	    double recentAvgTimePerSchedule = 0;
+
+	    // Track last displayed time (mutable for lambda)
+	    final long[] lastDisplayedSeconds = { -1 };
+
+	    // Track last UI update time to throttle updates
+	    final long[] lastUiUpdateTime = { startTime };
+
 	    while (possibleSchedules.size() < maxSchedules && attempts < maxAttempts)
 	    {
 	        attempts++;
@@ -363,32 +374,63 @@ public class ScheduleGenerator
 	            possibleSchedules.add(schedule);
 	        }
 
-	        // Progress based on attempts
 	        int attemptsCopy = attempts;
-	        int maxAttemptsCopy = maxAttempts;
 
-	        long elapsedTime = System.currentTimeMillis() - startTime;
-
-	        // Progress percent
-	        double progress = attemptsCopy / (double) maxAttemptsCopy;
-
-	        // Estimate total time
-	        long estimatedTotalTime = (long) (elapsedTime / Math.max(progress, 0.0001));
-
-	        // Remaining time
-	        long remainingTime = estimatedTotalTime - elapsedTime;
-
-	        SwingUtilities.invokeLater(() ->
+	        if (attemptsCopy % 25 == 0)
 	        {
-	            loadingScreen.setProgress(attemptsCopy, maxAttemptsCopy);
-	            loadingScreen.setTimeRemaining(remainingTime);
-	        });
+	            long now = System.currentTimeMillis();
+	            int schedulesDone = possibleSchedules.size();
+
+	            // Update recent rate only when new schedules are added
+	            if (schedulesDone > lastScheduleCount)
+	            {
+	                long timeDiff = now - lastUpdateTime;
+	                int scheduleDiff = schedulesDone - lastScheduleCount;
+
+	                double currentRate = timeDiff / (double) scheduleDiff;
+
+	                if (recentAvgTimePerSchedule == 0)
+	                {
+	                    recentAvgTimePerSchedule = currentRate;
+	                }
+	                else
+	                {
+	                    // Light smoothing to stabilize estimate
+	                    recentAvgTimePerSchedule =
+	                        (recentAvgTimePerSchedule * 0.7) + (currentRate * 0.3);
+	                }
+
+	                lastUpdateTime = now;
+	                lastScheduleCount = schedulesDone;
+	            }
+
+	            int remainingSchedules = maxSchedules - schedulesDone;
+	            long remainingTime = (long) (recentAvgTimePerSchedule * remainingSchedules);
+
+	            long seconds = (long) Math.ceil(remainingTime / 1000.0);
+
+	            // Only update UI if:
+	            // 1. Time changed
+	            // 2. At least 700ms passed since last UI update
+	            if (seconds != lastDisplayedSeconds[0] &&
+	                now - lastUiUpdateTime[0] > 700)
+	            {
+	                lastDisplayedSeconds[0] = seconds;
+	                lastUiUpdateTime[0] = now;
+
+	                int currentSchedules = schedulesDone;
+
+	                SwingUtilities.invokeLater(() ->
+	                {
+	                    loadingScreen.setProgress(currentSchedules, maxSchedules);
+	                    loadingScreen.setTimeRemaining(seconds * 1000);
+	                });
+	            }
+	        }
 	    }
 
 	    return possibleSchedules;
 	}
-	
-	
 	
 	
 	

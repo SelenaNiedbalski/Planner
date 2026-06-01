@@ -30,19 +30,44 @@ public class LoadingScreenView extends JFrame
 
     public LoadingScreenView()
     {
-        setTitle("Loading...");
-        setSize(700, 800);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setUndecorated(true);
+    	setTitle("Loading...");
+    	setSize(700, 800);
+    	setLocationRelativeTo(null);
+    	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	setUndecorated(true);
 
-        // Background GIF
-        ImageIcon gifIcon = new ImageIcon(
-                getClass().getResource("/images/Loading Screen Gif.gif")
-        );
-        
-        backgroundLabel = new JLabel(gifIcon);
-        backgroundLabel.setLayout(new BorderLayout());
+    	// Load GIF (no scaling)
+    	ImageIcon gifIcon = new ImageIcon(
+    	        getClass().getResource("/images/Loading Screen Gif.gif")
+    	);
+
+    	// Load background image
+    	Image bgImage = new ImageIcon(
+    	        getClass().getResource("/images/Loading Screen Background.jpg")
+    	).getImage();
+
+    	JLabel basePanel = new JLabel()
+    	{
+    	    @Override
+    	    protected void paintComponent(Graphics g)
+    	    {
+    	        super.paintComponent(g);
+
+    	        // Stretch background to fill entire window
+    	        g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+    	    }
+    	};
+
+    	basePanel.setLayout(new BorderLayout());
+
+
+    	// GIF on top (original size)
+    	backgroundLabel = new JLabel(gifIcon);
+    	backgroundLabel.setLayout(new BorderLayout());
+    	backgroundLabel.setOpaque(false);
+
+    	// Add GIF on top of background
+    	basePanel.add(backgroundLabel, BorderLayout.CENTER);
 
         // North panel for loading text and progress bar
         JPanel topPanel = new JPanel();
@@ -83,7 +108,7 @@ public class LoadingScreenView extends JFrame
 
         backgroundLabel.add(topPanel, BorderLayout.NORTH);
 
-        setContentPane(backgroundLabel);
+        setContentPane(basePanel);
         setVisible(false);
     }
 
@@ -126,7 +151,7 @@ public class LoadingScreenView extends JFrame
 		long minutes = seconds / 60;
 		seconds = seconds % 60;
 
-		timeLabel.setText("~ " + minutes + "m " + seconds + "s remaining");
+		timeLabel.setText("About " + minutes + "m " + seconds + "s remaining");
 	}
 
 	/**

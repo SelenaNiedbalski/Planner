@@ -402,7 +402,7 @@ public class FileService
 
             Schedule schedule = topThreeSchedules.get(i);
 
-            String baseFileName = "Schedule_" + (i + 1);
+            String baseFileName = "Schedule " + (i + 1);
             String filePath = topThreeSchedulesDestinationPath.toString()
                     + "/" + baseFileName + ".csv";
 
